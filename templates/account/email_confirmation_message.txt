@@ -1,0 +1,10 @@
+{% load account %}
+{% user_display user as user_display %}
+
+{% autoescape off %}
+You're receiving this e-mail because user {{ user_display }} has given your e-mail address to register an account on {{ site_name }}.
+
+To confirm this is correct, go to {{ activate_url }}
+
+{{ site_name }}: {{ site_domain }}
+{% endautoescape %}

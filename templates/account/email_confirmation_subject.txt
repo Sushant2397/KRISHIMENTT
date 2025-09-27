@@ -1,0 +1,4 @@
+{% load account %}
+{% with site_name=site.name|default:"Your Site" %}
+Please Confirm Your E-mail Address on {{ site_name }}
+{% endwith %}
