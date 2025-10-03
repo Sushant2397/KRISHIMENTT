@@ -229,6 +229,7 @@ const Register = () => {
         name: formData.name,
         phone: formData.phone,
         password: formData.password,
+        confirm_password: formData.confirmPassword,
         role: formData.role,
       });
       
@@ -327,7 +328,7 @@ const Register = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 error={touched.name && errors.name}
-                placeholder="John Doe"
+                placeholder="sushant jayram kanchalwad"
                 autoComplete="name"
               />
               
@@ -340,7 +341,7 @@ const Register = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 error={touched.phone && errors.phone}
-                placeholder="+1 (555) 123-4567"
+                placeholder="+91 9511858750"
                 autoComplete="tel"
               />
             </div>
