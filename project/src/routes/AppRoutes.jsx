@@ -1,34 +1,50 @@
 // src/routes/AppRoutes.jsx
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import ProtectedRoute from "../components/Auth/ProtectedRoute";
+import MainLayout from "../components/Layout/MainLayout";
 
 // Pages
 import LandingPage from "../pages/LandingPage";
 import RoleSelection from "../components/Auth/RoleSelection";
 import FarmerDashboard from "../pages/FarmerDashboard";
 import LabourDashboard from "../pages/LabourDashboard";
-import GovernmentSchemes from "../components/Common/GovernmentSchemes";
-import TodoPage from "../pages/TodoPage"; // ✅ Todo page
+import GovernmentSchemes from "../components/Common/GovernmentSchemes.tsx";
+import TodoPage from "../pages/TodoPage";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 
 // Constants
 import { USER_ROLES } from "../utils/constants";
 
+// Layout wrapper for authenticated routes
+const AuthenticatedLayout = () => {
+  const { user } = useAuth();
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return (
+    <MainLayout>
+      <Outlet />
+    </MainLayout>
+  );
+};
+
 const AppContent = () => {
   const { user } = useAuth();
 
   return (
     <Routes>
-      {/* Public Landing & Signup */}
+      {/* Public Routes */}
       <Route
         path="/"
         element={
           user && user.role ? (
             <Navigate
-              to={user.role === USER_ROLES.FARMER ? "/farmer-dashboard" : "/labour-dashboard"}
+              to={user.role === USER_ROLES.FARMER ? "/dashboard" : "/dashboard"}
               replace
             />
           ) : (
@@ -42,7 +58,7 @@ const AppContent = () => {
         element={
           user ? (
             <Navigate
-              to={user.role === USER_ROLES.FARMER ? "/farmer-dashboard" : "/labour-dashboard"}
+              to={user.role === USER_ROLES.FARMER ? "/dashboard" : "/dashboard"}
               replace
             />
           ) : (
@@ -53,56 +69,47 @@ const AppContent = () => {
       {/* Keep the /register route for backward compatibility */}
       <Route path="/register" element={<Navigate to="/signup" replace />} />
       
-      {/* Role selection is now part of the registration flow */}
+      {/* Role selection is part of the registration flow */}
       <Route 
         path="/select-role" 
         element={
           user ? (
-            <Navigate
-              to={user.role === USER_ROLES.FARMER ? "/farmer-dashboard" : "/labour-dashboard"}
-              replace
-            />
+            user.role ? (
+              <Navigate
+                to={
+                  user.role === USER_ROLES.FARMER 
+                    ? "/farmer-dashboard" 
+                    : "/labour-dashboard"
+                }
+                replace
+              />
+            ) : (
+              <RoleSelection />
+            )
           ) : (
-            <RoleSelection />
+            <Navigate to="/login" state={{ from: "/select-role" }} replace />
           )
         } 
       />
 
-      {/* Protected routes */}
-      <Route
-        path="/schemes"
-        element={
-          <ProtectedRoute>
-            <GovernmentSchemes />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/farmer-dashboard"
-        element={
-          <ProtectedRoute allowedRoles={[USER_ROLES.FARMER]}>
+      {/* Authenticated Routes with Layout */}
+      <Route element={<AuthenticatedLayout />}>
+        <Route path="/dashboard" element={user?.role === USER_ROLES.FARMER ? <FarmerDashboard /> : <LabourDashboard />} />
+        <Route path="/schemes" element={<GovernmentSchemes />} />
+        <Route path="/todo" element={<TodoPage />} />
+        
+        {/* Role-specific routes */}
+        <Route path="/farmer-dashboard" element={
+          <ProtectedRoute requiredRole={USER_ROLES.FARMER}>
             <FarmerDashboard />
           </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/labour-dashboard"
-        element={
-          <ProtectedRoute allowedRoles={[USER_ROLES.LABOUR]}>
+        } />
+        <Route path="/labour-dashboard" element={
+          <ProtectedRoute requiredRole={USER_ROLES.LABOUR}>
             <LabourDashboard />
           </ProtectedRoute>
-        }
-      />
-
-      {/* Todo page (example) */}
-      <Route
-        path="/todos"
-        element={
-          <ProtectedRoute>
-            <TodoPage />
-          </ProtectedRoute>
-        }
-      />
+        } />
+      </Route>
 
       {/* 404 fallback */}
       <Route

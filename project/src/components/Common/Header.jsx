@@ -4,82 +4,54 @@ import { Search, Menu, X, User, Shield, Bell, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-const Header = () => {
+const Header = ({ onMenuClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, logout } = useAuth();
 
+  const handleMenuClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+    if (onMenuClick) onMenuClick();
+  };
+
   return (
-    <header className="bg-card border-b border-border shadow-sm">
-      {/* Top bar with emergency info */}
-      <div className="bg-primary text-primary-foreground py-2">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between text-sm">
-            <span>🔔 Emergency Helpline: 1800-xxx-xxxx</span>
-            <div className="flex items-center space-x-4">
-              <span>Last Updated: 22 Sep 2024</span>
-              <Button
-                variant="link"
-                size="sm"
-                className="text-primary-foreground hover:text-primary-light"
-              >
-                <Bell className="w-4 h-4 mr-1" />
-                Updates
-              </Button>
+    <div className="bg-background border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+      <div className="h-16 px-4">
+        <div className="flex items-center justify-between h-full max-w-7xl mx-auto">
+          {/* Logo and menu button */}
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={handleMenuClick}
+              className="p-2 rounded-md text-gray-600 hover:bg-gray-100 lg:hidden"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                <Shield className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <div className="hidden md:block">
+                <h1 className="text-lg font-semibold text-foreground">
+                  Smart Agriculture
+                </h1>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Main navigation */}
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-4">
-          {/* Logo and title */}
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-              <Shield className="w-8 h-8 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">
-                Smart Agriculture
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Citizen Services Hub
-              </p>
-            </div>
-          </div>
-
-          {/* Desktop navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            <a href="/" className="text-foreground hover:text-primary transition-colors font-medium">
-              Home
-            </a>
-            <a href="/services" className="text-foreground hover:text-primary transition-colors font-medium">
-              Services
-            </a>
-            <a href="/schemes" className="text-foreground hover:text-primary transition-colors font-medium">
-              Gov Schemes
-            </a>
-            <a href="/resources" className="text-foreground hover:text-primary transition-colors font-medium">
-              Resources
-            </a>
-            <a href="/support" className="text-foreground hover:text-primary transition-colors font-medium">
-              Support
-            </a>
-          </nav>
 
           {/* Search and user actions */}
-          <div className="flex items-center space-x-4">
-            {/* Search bar */}
-            <div className="hidden md:flex relative">
+          <div className="flex-1 max-w-2xl mx-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search schemes..."
-                className="w-64 pr-10"
-                aria-label="Search government schemes"
+                placeholder="Search schemes, services, or resources..."
+                className="w-full pl-10 pr-4 py-2"
+                aria-label="Search government schemes and services"
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             </div>
+          </div>
 
+          <div className="flex items-center space-x-4">
             {/* Authenticated user */}
             {user ? (
               <div className="flex items-center space-x-3">
@@ -117,9 +89,9 @@ const Header = () => {
             {/* Mobile menu button */}
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               className="lg:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={handleMenuClick}
               aria-label="Toggle navigation menu"
             >
               {isMenuOpen ? (
@@ -130,18 +102,18 @@ const Header = () => {
             </Button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile search */}
-        <div className="md:hidden pb-4">
-          <div className="relative">
-            <Input
-              type="search"
-              placeholder="Search schemes..."
-              className="w-full pr-10"
-              aria-label="Search government schemes"
-            />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          </div>
+      {/* Mobile search */}
+      <div className="md:hidden px-4 pb-4 bg-background">
+        <div className="relative">
+          <Input
+            type="search"
+            placeholder="Search schemes..."
+            className="w-full pr-10"
+            aria-label="Search government schemes"
+          />
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         </div>
       </div>
 
@@ -192,7 +164,7 @@ const Header = () => {
           </nav>
         </div>
       )}
-    </header>
+    </div>
   );
 };
 
