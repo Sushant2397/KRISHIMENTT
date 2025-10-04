@@ -1,13 +1,17 @@
 from rest_framework import serializers
-from .models import Todo
-
-class TodoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Todo
-        fields = '__all__'
-# api/serializers.py
-from .models import CustomUser
 from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
+from .models import Equipment
+
+User = get_user_model()
+
+class UserSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='first_name', read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'name', 'phone', 'role')
+        read_only_fields = ('id',)
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -21,46 +25,54 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    confirm_password = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    confirm_password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    name = serializers.CharField(source='first_name', required=True)
     
     class Meta:
-        model = CustomUser
-        fields = ('username', 'email', 'name', 'phone', 'role', 'password', 'confirm_password')
+        model = User
+        fields = ('username', 'email', 'password', 'confirm_password', 'name', 'phone', 'role')
         extra_kwargs = {
-            'name': {'required': True},
             'email': {'required': True},
             'phone': {'required': True},
-            'role': {'required': True},
+            'role': {'required': True}
         }
     
     def validate(self, attrs):
         if attrs['password'] != attrs.pop('confirm_password'):
-            raise serializers.ValidationError("Passwords do not match")
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
         return attrs
-    
-    def validate_email(self, value):
-        if CustomUser.objects.filter(email=value).exists():
-            raise serializers.ValidationError("A user with this email already exists.")
-        return value
-    
-    def validate_username(self, value):
-        if CustomUser.objects.filter(username=value).exists():
-            raise serializers.ValidationError("A user with this username already exists.")
-        return value
     
     def create(self, validated_data):
         # Remove confirm_password as it's not a model field
         validated_data.pop('confirm_password', None)
-        
-        # Create the user with all fields
-        user = CustomUser(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            name=validated_data['name'],
-            phone=validated_data['phone'],
-            role=validated_data['role']
-        )
-        user.set_password(validated_data['password'])
-        user.save()
+        # Create user with the validated data
+        user = User.objects.create_user(**validated_data)
         return user
+    
+class EquipmentSerializer(serializers.ModelSerializer):
+    seller_name = serializers.CharField(source='seller.name', read_only=True)
+    seller_rating = serializers.FloatField(source='seller.rating', read_only=True)
+    posted_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+    image_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Equipment
+        fields = [
+            'id', 'title', 'description', 'price', 'category', 'condition', 
+            'location', 'image', 'image_url', 'posted_date', 'seller', 'seller_name', 'seller_rating'
+        ]
+        read_only_fields = ['seller', 'posted_date', 'image_url']
+    
+    def get_image_url(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+        return None
+    
+    def create(self, validated_data):
+        # Get the current user from the request context
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['seller'] = request.user
+        return super().create(validated_data)

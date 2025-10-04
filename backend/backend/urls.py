@@ -21,11 +21,20 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.views import serve
 from django.views.decorators.cache import never_cache
+from django.conf.urls import handler404, handler500
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),  # Include the API URLs
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Error handlers
+handler404 = 'api.views.error_handlers.handler404'
+handler500 = 'api.views.error_handlers.handler500'
 
 # Serve static files in development
 if settings.DEBUG:

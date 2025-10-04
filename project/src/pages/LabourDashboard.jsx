@@ -19,7 +19,7 @@ const LabourDashboard = () => {
     console.log(`Clicked on ${cardId}`);
     // Add navigation logic based on cardId
     switch(cardId) {
-      case 'apply-job':
+      case 'find-jobs':
         navigate('/jobs');
         break;
       case 'government-schemes':
@@ -27,6 +27,15 @@ const LabourDashboard = () => {
         break;
       case 'my-applications':
         navigate('/my-applications');
+        break;
+      case 'skills':
+        navigate('/skills');
+        break;
+      case 'earnings':
+        navigate('/earnings');
+        break;
+      case 'notifications':
+        navigate('/notifications');
         break;
       // Add more cases as needed
       default:

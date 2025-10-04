@@ -30,7 +30,6 @@ export const AuthProvider = ({ children }) => {
           const parsedUser = JSON.parse(storedUser);
           const parsedTokens = JSON.parse(storedTokens);
           
-          // Only set user if it has a valid role
           if (parsedUser && parsedUser.role && Object.values(USER_ROLES).includes(parsedUser.role)) {
             setUser(parsedUser);
             setTokens(parsedTokens);
@@ -42,7 +41,6 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('Error loading user from localStorage:', error);
-        // Clear invalid data
         localStorage.removeItem("user");
         localStorage.removeItem("tokens");
       } finally {
@@ -68,20 +66,23 @@ export const AuthProvider = ({ children }) => {
       
       if (!res.ok) {
         console.error('Login failed:', data);
-        // Clear any existing auth data on failed login
         localStorage.removeItem("user");
         localStorage.removeItem("tokens");
         setUser(null);
         setTokens(null);
-        return { error: data.detail || 'Login failed. Please check your credentials.' };
+        return { error: data.error || 'Login failed. Please check your credentials.' };
       }
       
-      if (!data.user || !data.tokens) {
+      if (!data.user) {
         console.error('Invalid login response:', data);
         return { error: 'Invalid server response. Please try again.' };
       }
       
-      // Validate that the user has a valid role
+      const tokens = {
+        access: data.access,
+        refresh: data.refresh
+      };
+      
       if (!data.user.role || !Object.values(USER_ROLES).includes(data.user.role)) {
         console.error('Invalid or missing user role in login response:', data.user.role);
         return { 
@@ -89,11 +90,10 @@ export const AuthProvider = ({ children }) => {
         };
       }
       
-      // Only update state and storage if we have valid data
       setUser(data.user);
-      setTokens(data.tokens);
+      setTokens(tokens);
       localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("tokens", JSON.stringify(data.tokens));
+      localStorage.setItem("tokens", JSON.stringify(tokens));
       
       return { user: data.user };
     } catch (error) {
@@ -103,69 +103,40 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
-    console.log('Starting registration with data:', userData);
     try {
-      const url = `${API_BASE_URL}/api/auth/register/`;
-      console.log('Making request to:', url);
-      
-      const options = {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register/`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
         body: JSON.stringify(userData),
-      };
+      });
       
-      console.log('Request options:', JSON.stringify(options, null, 2));
-      
-      const res = await fetch(url, options);
-      console.log('Response status:', res.status);
-      
-      let data;
-      try {
-        data = await res.json();
-        console.log('Response data:', data);
-      } catch (jsonError) {
-        console.error('Error parsing JSON response:', jsonError);
-        return { error: 'Invalid server response' };
-      }
+      const data = await res.json();
       
       if (!res.ok) {
-        console.error('Registration failed with status:', res.status);
-        console.error('Error details:', data);
-        // If the response is not ok, return the error data
+        console.error('Registration failed:', data);
         return { 
-          error: data.detail || data.message || 'Registration failed',
-          status: res.status,
-          response: data
+          error: data.error || 'Registration failed. Please try again.',
+          details: data
         };
       }
       
-      console.log('Registration successful, user data:', data.user);
-      
-      // If we get here, registration was successful
-      if (data.user) {
-        setUser(data.user);
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-      
-      if (data.tokens) {
-        setTokens(data.tokens);
-        localStorage.setItem("tokens", JSON.stringify(data.tokens));
-      }
-      
-      return { 
-        success: true, 
-        user: data.user,
-        tokens: data.tokens
+      const tokens = {
+        access: data.access,
+        refresh: data.refresh
       };
+      
+      setUser(data.user);
+      setTokens(tokens);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("tokens", JSON.stringify(tokens));
+      
+      return { user: data.user };
     } catch (error) {
       console.error('Registration error:', error);
-      return { 
-        error: error.message || 'Network error. Please try again.',
-        details: error
-      };
+      return { error: 'An error occurred during registration. Please try again.' };
     }
   };
 
@@ -176,7 +147,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("tokens");
   };
 
-  // The value that will be given to the context
   const value = {
     user,
     tokens,
@@ -184,12 +154,12 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    isAuthenticated: !!user, // Helper to check if user is authenticated
+    isAuthenticated: !!user,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

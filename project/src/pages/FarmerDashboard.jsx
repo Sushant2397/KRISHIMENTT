@@ -10,11 +10,34 @@ const FarmerDashboard = () => {
   const navigate = useNavigate();
 
   const handleCardClick = (cardId) => {
-    if (cardId === 'government-schemes') {
-      navigate('/schemes');
-      return;
+    switch(cardId) {
+      case 'government-schemes':
+        navigate('/schemes');
+        break;
+      case 'equipment-buy':
+        navigate('/equipment/buy');
+        break;
+      case 'equipment-sell':
+        navigate('/equipment/sell');
+        break;
+      case 'worker-applications':
+        navigate('/worker-applications');
+        break;
+      case 'upload-jobs':
+        navigate('/upload-jobs');
+        break;
+      case 'real-time-prices':
+        navigate('/market-prices');
+        break;
+      case 'notifications':
+        navigate('/notifications');
+        break;
+      case 'history':
+        navigate('/history');
+        break;
+      default:
+        console.log(`No specific route for ${cardId}`);
     }
-    console.log(`Clicked on ${cardId}`);
   };
 
   return (

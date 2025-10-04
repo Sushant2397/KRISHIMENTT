@@ -14,6 +14,9 @@ import GovernmentSchemes from "../components/Common/GovernmentSchemes.tsx";
 import TodoPage from "../pages/TodoPage";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import BuySellPage from "../pages/BuySellPage";
+import SellPage from "../pages/SellPage";
+import EquipmentDetailPage from "../pages/EquipmentDetailPage";
 
 // Constants
 import { USER_ROLES } from "../utils/constants";
@@ -96,6 +99,12 @@ const AppContent = () => {
       <Route element={<AuthenticatedLayout />}>
         <Route path="/dashboard" element={user?.role === USER_ROLES.FARMER ? <FarmerDashboard /> : <LabourDashboard />} />
         <Route path="/schemes" element={<GovernmentSchemes />} />
+        <Route path="/equipment/buy" element={<BuySellPage />} />
+        <Route path="/equipment/sell" element={<SellPage />} />
+        <Route path="/equipment/:id" element={<EquipmentDetailPage />} />
+        {/* Keep the old routes for backward compatibility */}
+        <Route path="/marketplace" element={<Navigate to="/equipment/buy" replace />} />
+        <Route path="/buy-sell" element={<Navigate to="/equipment/buy" replace />} />
         <Route path="/todo" element={<TodoPage />} />
         
         {/* Role-specific routes */}

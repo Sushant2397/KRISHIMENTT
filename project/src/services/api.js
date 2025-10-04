@@ -10,10 +10,23 @@ const API = axios.create({
 // Request interceptor → add token
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const tokens = localStorage.getItem('tokens');
+    if (tokens) {
+      try {
+        const parsedTokens = JSON.parse(tokens);
+        if (parsedTokens.access) {
+          config.headers.Authorization = `Bearer ${parsedTokens.access}`;
+        }
+      } catch (error) {
+        console.error('Error parsing tokens:', error);
+      }
     }
+    
+    // Remove Content-Type header for FormData to let axios set it automatically
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
@@ -24,7 +37,7 @@ API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('tokens');
       localStorage.removeItem('user');
       window.location.href = '/';
     }

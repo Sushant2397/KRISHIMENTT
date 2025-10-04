@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Search, 
   Filter,
@@ -28,133 +28,24 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { fetchSchemes } from '@/services/schemeService';
+import { Scheme as SchemeType } from '@/services/schemeService';
 
-// Define TypeScript interfaces
-interface Scheme {
-  id: number;
-  title: string;
-  category: string;
-  description: string;
-  eligibility: string;
-  benefits: string;
-  amount: string;
-  deadline: string;
-  status: string;
-  applicants: string;
-  icon: any;
-  color: string;
-  bgColor: string;
-  tags: string[];
-  applyLink: string;
-}
+// Import icon components from lucide-react
+const iconComponents: { [key: string]: any } = {
+  Sprout,
+  Heart,
+  Briefcase,
+  GraduationCap,
+  Home,
+  Flame
+};
 
-const schemes: Scheme[] = [
-  {
-    id: 1,
-    title: 'PM-KISAN Samman Nidhi',
-    category: 'Agriculture',
-    description: 'Direct income support to farmers with landholding up to 2 hectares. ₹6,000 per year in three installments.',
-    eligibility: 'Small & marginal farmers',
-    benefits: 'Financial Support',
-    amount: '₹6,000/year',
-    deadline: '2024-10-31',
-    status: 'Active',
-    applicants: '12M+',
-    icon: Sprout,
-    color: 'text-green-600',
-    bgColor: 'bg-green-50',
-    tags: ['Financial Aid', 'Farmers', 'Direct Benefit Transfer'],
-    applyLink: 'https://pmkisan.gov.in/'
-  },
-  {
-    id: 2,
-    title: 'Ayushman Bharat',
-    category: 'Healthcare',
-    description: 'Health insurance coverage up to ₹10 lakhs per family per year for secondary and tertiary care.',
-    eligibility: 'BPL families',
-    benefits: 'Health Insurance',
-    amount: '₹10 Lakh coverage',
-    deadline: 'Ongoing',
-    status: 'Active',
-    applicants: '50M+',
-    icon: Heart,
-    color: 'text-red-600',
-    bgColor: 'bg-red-50',
-    tags: ['Health', 'Insurance', 'BPL'],
-    applyLink: 'https://pmjay.gov.in/'
-  },
-  {
-    id: 3,
-    title: 'PM Kaushal Vikas Yojana',
-    category: 'Employment',
-    description: 'Skill development program providing training in various sectors to enhance employability.',
-    eligibility: 'Youth 18-35 years',
-    benefits: 'Skill Development',
-    amount: 'Free training',
-    deadline: '2023-12-15',
-    status: 'Inactive',
-    applicants: '8M+',
-    icon: Briefcase,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    tags: ['Training', 'Youth', 'Employment'],
-    applyLink: 'https://www.pmkvyofficial.org/'
-  },
-  {
-    id: 4,
-    title: 'National Scholarship Portal',
-    category: 'Education',
-    description: 'Scholarships for students from pre-matric to post-graduate levels across various categories.',
-    eligibility: 'Students from economically weaker sections',
-    benefits: 'Education Support',
-    amount: 'Up to ₹2 Lakh/year',
-    deadline: '2024-11-30',
-    status: 'Active',
-    applicants: '25M+',
-    icon: GraduationCap,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
-    tags: ['Scholarship', 'Students', 'Education'],
-    applyLink: 'https://scholarships.gov.in/'
-  },
-  {
-    id: 5,
-    title: 'PM Awas Yojana',
-    category: 'Housing',
-    description: 'Housing for All by 2024 - Affordable housing scheme for urban and rural poor.',
-    eligibility: 'Economically Weaker Sections (EWS)',
-    benefits: 'Housing',
-    amount: 'Up to ₹2.5 Lakh',
-    deadline: '2024-12-31',
-    status: 'Active',
-    applicants: '30M+',
-    icon: Home,
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-50',
-    tags: ['Housing', 'Subsidy', 'EWS'],
-    applyLink: 'https://pmaymis.gov.in/'
-  },
-  {
-    id: 6,
-    title: 'Ujjwala Yojana',
-    category: 'Social Welfare',
-    description: 'Providing free LPG connections to women from below poverty line (BPL) households.',
-    eligibility: 'BPL families',
-    benefits: 'LPG Connection',
-    amount: 'Free connection',
-    deadline: '2023-06-30',
-    status: 'Inactive',
-    applicants: '90M+',
-    icon: Flame,
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-50',
-    tags: ['LPG', 'Women', 'BPL'],
-    applyLink: 'https://pmuy.gov.in/'
-  }
-];
+// Define categories for filtering
+const categories = ['All', 'Agriculture', 'Healthcare', 'Employment', 'Education', 'Housing', 'Social Welfare'];
 
-// Extract unique categories
-const categories = ['All', ...new Set(schemes.map(scheme => scheme.category))];
+// Number of schemes to load per page
+const SCHEMES_PER_PAGE = 6;
 
 const GovernmentSchemes = () => {
   // State for filters and search
@@ -163,33 +54,62 @@ const GovernmentSchemes = () => {
   const [sortBy, setSortBy] = useState<string>('relevance');
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-  const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
+  const [selectedScheme, setSelectedScheme] = useState<SchemeType | null>(null);
+  const [schemes, setSchemes] = useState<SchemeType[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [page, setPage] = useState<number>(1);
+  const [totalSchemes, setTotalSchemes] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
-  // Filter and sort schemes
-  const filteredAndSortedSchemes = schemes
-    .filter(scheme => {
-      const matchesCategory = selectedCategory === 'All' || scheme.category === selectedCategory;
-      const matchesSearch = searchQuery === '' || 
-                          scheme.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          scheme.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          scheme.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      return matchesCategory && matchesSearch;
-    })
-    .sort((a, b) => {
-      switch(sortBy) {
-        case 'newest':
-          return new Date(b.deadline).getTime() - new Date(a.deadline).getTime();
-        case 'applicants':
-          return parseInt(b.applicants) - parseInt(a.applicants);
-        case 'title':
-          return a.title.localeCompare(b.title);
-        default:
-          return 0;
+  // Fetch schemes from API
+  const fetchSchemesData = useCallback(async (reset = false) => {
+    try {
+      setIsLoading(true);
+      const currentPage = reset ? 1 : page;
+      
+      const response = await fetchSchemes({
+        page: currentPage,
+        limit: SCHEMES_PER_PAGE,
+        search: searchQuery,
+        category: selectedCategory,
+        sortBy
+      });
+
+      setTotalSchemes(response.total);
+      setHasMore(currentPage < response.totalPages);
+      
+      if (reset) {
+        setSchemes(response.data);
+      } else {
+        setSchemes(prev => [...prev, ...response.data]);
       }
-    });
+    } catch (error) {
+      console.error('Error fetching schemes:', error);
+      // Handle error (e.g., show error message)
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, searchQuery, selectedCategory, sortBy]);
 
-  // Filter schemes based on search and category
-  const filteredSchemes = filteredAndSortedSchemes;
+  // Initial load and when filters change
+  useEffect(() => {
+    setPage(1);
+    fetchSchemesData(true);
+  }, [searchQuery, selectedCategory, sortBy]);
+
+  // Load more schemes
+  useEffect(() => {
+    if (page > 1) {
+      fetchSchemesData();
+    }
+  }, [page]);
+
+  // Load more schemes
+  const loadMoreSchemes = () => {
+    if (hasMore && !isLoading) {
+      setPage(prev => prev + 1);
+    }
+  };
 
   return (
     <section className="py-8 md:py-12 bg-muted min-h-screen" id="government-schemes">
@@ -255,9 +175,9 @@ const GovernmentSchemes = () => {
         </div>
 
         {/* Schemes Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
-          {filteredSchemes.map((scheme) => {
-            const IconComponent = scheme.icon;
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          {schemes.map((scheme) => {
+            const IconComponent = iconComponents[scheme.icon] || Home;
             
             return (
               <Card key={scheme.id} className="p-6 hover:shadow-md transition-all duration-300">
@@ -407,13 +327,58 @@ const GovernmentSchemes = () => {
           })}
         </div>
 
-        {/* Call to Action */}
-        <div className="text-center">
-          <Button size="lg" className="px-8">
-            View All 500+ Schemes
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-        </div>
+        {/* Load More Button */}
+        {hasMore && (
+          <div className="text-center mt-6">
+            <Button 
+              size="lg" 
+              className="px-8"
+              onClick={loadMoreSchemes}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Loading...
+                </>
+              ) : (
+                <>
+                  View More Schemes
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </>
+              )}
+            </Button>
+            <p className="text-sm text-muted-foreground mt-2">
+              Showing {schemes.length} of {totalSchemes} schemes
+            </p>
+          </div>
+        )}
+        
+        {!hasMore && schemes.length > 0 && (
+          <div className="text-center text-muted-foreground text-sm mt-4">
+            You've reached the end of the list. {totalSchemes} schemes found.
+          </div>
+        )}
+        
+        {!isLoading && schemes.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No schemes found matching your criteria.</p>
+            <Button 
+              variant="outline" 
+              className="mt-4"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('All');
+                setSortBy('relevance');
+              }}
+            >
+              Clear Filters
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

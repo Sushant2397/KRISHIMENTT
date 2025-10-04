@@ -1,14 +1,18 @@
-# api/urls.py
 from django.urls import path, include
 from rest_framework import routers
-from .views import TodoViewSet, RegisterView, LoginView
+from .views.equipment_views import EquipmentViewSet
+from .views.auth_views import RegisterView, LoginView
 
-# DRF router for Todo CRUD
+# DRF router for API endpoints
 router = routers.DefaultRouter()
-router.register(r'todos', TodoViewSet)
+router.register(r'equipment', EquipmentViewSet, basename='equipment')
 
 urlpatterns = [
-    path('', include(router.urls)),  # include all Todo routes
+    path('', include(router.urls)),  # include all routes
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/login/', LoginView.as_view(), name='login'),
+    
+    # Equipment endpoints
+    path('equipment/categories/', EquipmentViewSet.as_view({'get': 'categories'}), name='equipment-categories'),
+    path('equipment/conditions/', EquipmentViewSet.as_view({'get': 'conditions'}), name='equipment-conditions'),
 ]
