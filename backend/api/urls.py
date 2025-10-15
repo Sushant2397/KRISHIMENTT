@@ -1,11 +1,15 @@
 from django.urls import path, include
 from rest_framework import routers
 from .views.equipment_views import EquipmentViewSet
+from .views.inquiry_views import InquiryViewSet
+from .views.notification_views import NotificationViewSet
 from .views.auth_views import RegisterView, LoginView
 
 # DRF router for API endpoints
 router = routers.DefaultRouter()
 router.register(r'equipment', EquipmentViewSet, basename='equipment')
+router.register(r'inquiries', InquiryViewSet, basename='inquiry')
+router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [
     path('', include(router.urls)),  # include all routes

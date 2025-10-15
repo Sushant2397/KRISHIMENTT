@@ -17,6 +17,8 @@ import Register from "../pages/Register";
 import BuySellPage from "../pages/BuySellPage";
 import SellPage from "../pages/SellPage";
 import EquipmentDetailPage from "../pages/EquipmentDetailPage";
+import Notifications from "../pages/Notifications";
+import MarketPrices from "../pages/MarketPrices";
 
 // Constants
 import { USER_ROLES } from "../utils/constants";
@@ -102,6 +104,8 @@ const AppContent = () => {
         <Route path="/equipment/buy" element={<BuySellPage />} />
         <Route path="/equipment/sell" element={<SellPage />} />
         <Route path="/equipment/:id" element={<EquipmentDetailPage />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/market-prices" element={<MarketPrices />} />
         {/* Keep the old routes for backward compatibility */}
         <Route path="/marketplace" element={<Navigate to="/equipment/buy" replace />} />
         <Route path="/buy-sell" element={<Navigate to="/equipment/buy" replace />} />

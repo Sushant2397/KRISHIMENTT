@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from .models import Equipment
+from .models import Equipment, Inquiry, Notification
 
 User = get_user_model()
 
@@ -76,3 +76,32 @@ class EquipmentSerializer(serializers.ModelSerializer):
         if request and hasattr(request, 'user'):
             validated_data['seller'] = request.user
         return super().create(validated_data)
+
+class InquirySerializer(serializers.ModelSerializer):
+    equipment_title = serializers.CharField(source='equipment.title', read_only=True)
+    seller_email = serializers.EmailField(source='seller.email', read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = Inquiry
+        fields = (
+            'id', 'equipment', 'seller', 'buyer_name', 'buyer_email', 'buyer_phone', 'message',
+            'created_at', 'equipment_title', 'seller_email'
+        )
+        read_only_fields = ('seller', 'created_at')
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+class NotificationSerializer(serializers.ModelSerializer):
+    equipment_title = serializers.CharField(source='equipment.title', read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = Notification
+        fields = (
+            'id', 'title', 'message', 'created_at', 'is_read',
+            'equipment', 'equipment_title', 'inquiry',
+            'buyer_name', 'buyer_email', 'buyer_phone'
+        )
+        read_only_fields = ('created_at',)

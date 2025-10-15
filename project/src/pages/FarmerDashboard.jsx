@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import DashboardCard from '../components/Common/DashboardCard';
 import { FARMER_CARDS } from '../utils/constants';
+import { getMyInquiries } from '../services/inquiryService.ts';
 import { useAuth } from '../contexts/AuthContext';
 
 const FarmerDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [inquiries, setInquiries] = useState([]);
+  const [loadingInquiries, setLoadingInquiries] = useState(false);
 
   const handleCardClick = (cardId) => {
     switch(cardId) {
@@ -39,6 +42,21 @@ const FarmerDashboard = () => {
         console.log(`No specific route for ${cardId}`);
     }
   };
+
+  useEffect(() => {
+    const load = async () => {
+      setLoadingInquiries(true);
+      try {
+        const data = await getMyInquiries();
+        setInquiries(data);
+      } catch (e) {
+        console.error('Failed to load inquiries', e);
+      } finally {
+        setLoadingInquiries(false);
+      }
+    };
+    if (user) load();
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
@@ -80,6 +98,47 @@ const FarmerDashboard = () => {
               <p className="text-2xl font-bold">8</p>
             </div>
           </div>
+        </div>
+
+        <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">Leads (Buyer Inquiries)</h2>
+            {loadingInquiries && <span className="text-sm text-gray-500">Loading...</span>}
+          </div>
+          {inquiries.length === 0 && !loadingInquiries ? (
+            <p className="text-gray-600">No inquiries yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left text-sm">
+                <thead>
+                  <tr className="text-gray-600">
+                    <th className="py-2 pr-4">Date</th>
+                    <th className="py-2 pr-4">Equipment</th>
+                    <th className="py-2 pr-4">Buyer</th>
+                    <th className="py-2 pr-4">Email</th>
+                    <th className="py-2 pr-4">Phone</th>
+                    <th className="py-2 pr-4">Message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {inquiries.map((inq) => (
+                    <tr key={inq.id} className="border-t">
+                      <td className="py-2 pr-4">{new Date(inq.created_at).toLocaleString()}</td>
+                      <td className="py-2 pr-4">{inq.equipment_title || inq.equipment}</td>
+                      <td className="py-2 pr-4">{inq.buyer_name}</td>
+                      <td className="py-2 pr-4">
+                        <a className="text-blue-600 hover:underline" href={`mailto:${inq.buyer_email}`}>{inq.buyer_email}</a>
+                      </td>
+                      <td className="py-2 pr-4">
+                        {inq.buyer_phone ? <a className="text-blue-600 hover:underline" href={`tel:${inq.buyer_phone}`}>{inq.buyer_phone}</a> : '—'}
+                      </td>
+                      <td className="py-2 pr-4 max-w-md truncate" title={inq.message}>{inq.message}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </main>
     </div>

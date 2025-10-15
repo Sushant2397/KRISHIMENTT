@@ -5,6 +5,7 @@ import { Input } from '../Common/ui/input';
 import { Textarea } from '../Common/ui/textarea';
 import { Label } from '../Common/ui/label';
 import { X, Phone, Mail, MessageCircle, User } from 'lucide-react';
+import { createInquiry } from '../../services/inquiryService';
 
 interface Seller {
   name: string;
@@ -51,23 +52,20 @@ export function ContactSellerModal({ equipment, isOpen, onClose }: ContactSeller
     setIsSubmitting(true);
     
     try {
-      // TODO: Implement API call to send inquiry
-      console.log('Sending inquiry:', {
-        equipmentId: equipment.id,
-        equipmentTitle: equipment.title,
-        sellerName: equipment.seller.name,
-        ...inquiryData
+      await createInquiry({
+        equipment: equipment.id,
+        buyer_name: inquiryData.name,
+        buyer_email: inquiryData.email,
+        buyer_phone: inquiryData.phone || undefined,
+        message: inquiryData.message,
       });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      alert('Your inquiry has been sent successfully! The seller will contact you soon.');
+
+      alert('Your inquiry has been sent. The seller will contact you soon.');
       onClose();
       setInquiryData({ name: '', email: '', phone: '', message: '' });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send inquiry:', error);
-      alert('Failed to send inquiry. Please try again.');
+      alert(error?.message || 'Failed to send inquiry. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
