@@ -50,3 +50,42 @@ class LoginView(APIView):
             }, 
             'tokens': tokens
         }, status=status.HTTP_200_OK)
+
+
+
+
+from django.core.mail import send_mail
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
+@api_view(['POST'])
+def buy_equipment(request):
+    try:
+        buyer_name = request.data.get('buyer_name')
+        buyer_email = request.data.get('buyer_email')
+        seller_email = request.data.get('seller_email')
+        equipment_name = request.data.get('equipment_name')
+
+        subject = f"{buyer_name} is interested in your equipment: {equipment_name}"
+        message = f"""
+        Hello Seller,
+
+        {buyer_name} ({buyer_email}) wants to buy your equipment: {equipment_name}.
+        Please get in touch with them directly.
+
+        Thank you,
+        Krishiment Team
+        """
+
+        send_mail(
+            subject,
+            message,
+            'krishimentapp@gmail.com',  # use your sender Gmail
+            [seller_email],
+            fail_silently=False,
+        )
+
+        return Response({"message": "Email sent successfully!"}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -6,6 +6,7 @@ import { Textarea } from '../Common/ui/textarea';
 import { Label } from '../Common/ui/label';
 import { X, Phone, Mail, MessageCircle, User } from 'lucide-react';
 import { createInquiry } from '../../services/inquiryService';
+import { buyEquipment } from '../../services/inquiryService';
 
 interface Seller {
   name: string;
@@ -47,29 +48,56 @@ export function ContactSellerModal({ equipment, isOpen, onClose }: ContactSeller
     }));
   };
 
-  const handleSubmitInquiry = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  // const handleSubmitInquiry = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
     
-    try {
-      await createInquiry({
-        equipment: equipment.id,
-        buyer_name: inquiryData.name,
-        buyer_email: inquiryData.email,
-        buyer_phone: inquiryData.phone || undefined,
-        message: inquiryData.message,
-      });
+  //   try {
+  //     await createInquiry({
+  //       equipment: equipment.id,
+  //       buyer_name: inquiryData.name,
+  //       buyer_email: inquiryData.email,
+  //       buyer_phone: inquiryData.phone || undefined,
+  //       message: inquiryData.message,
+  //     });
 
-      alert('Your inquiry has been sent. The seller will contact you soon.');
-      onClose();
-      setInquiryData({ name: '', email: '', phone: '', message: '' });
-    } catch (error: any) {
-      console.error('Failed to send inquiry:', error);
-      alert(error?.message || 'Failed to send inquiry. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  //     alert('Your inquiry has been sent. The seller will contact you soon.');
+  //     onClose();
+  //     setInquiryData({ name: '', email: '', phone: '', message: '' });
+  //   } catch (error: any) {
+  //     console.error('Failed to send inquiry:', error);
+  //     alert(error?.message || 'Failed to send inquiry. Please try again.');
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+
+  const handleSubmitInquiry = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
+    await buyEquipment({
+      equipment_id: equipment.id,
+      buyer_name: inquiryData.name,
+      buyer_email: inquiryData.email,
+      buyer_phone: inquiryData.phone || '',
+      message: inquiryData.message,
+    });
+
+    alert('Your inquiry has been sent. The seller will contact you soon.');
+    onClose();
+    setInquiryData({ name: '', email: '', phone: '', message: '' });
+  } catch (error: any) {
+    console.error('Failed to send inquiry:', error);
+    alert(error?.message || 'Failed to send inquiry. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
 
   const handlePhoneCall = () => {
     if (equipment.seller.phone) {
