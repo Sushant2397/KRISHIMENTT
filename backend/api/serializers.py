@@ -49,33 +49,39 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Create user with the validated data
         user = User.objects.create_user(**validated_data)
         return user
-    
+
+
 class EquipmentSerializer(serializers.ModelSerializer):
-    seller_name = serializers.CharField(source='seller.name', read_only=True)
+    seller_name = serializers.SerializerMethodField()
     seller_rating = serializers.FloatField(source='seller.rating', read_only=True)
     posted_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
     image_url = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Equipment
         fields = [
-            'id', 'title', 'description', 'price', 'category', 'condition', 
+            'id', 'title', 'description', 'price', 'category', 'condition',
             'location', 'image', 'image_url', 'posted_date', 'seller', 'seller_name', 'seller_rating'
         ]
-        read_only_fields = ['seller', 'posted_date', 'image_url']
-    
+        read_only_fields = ['seller', 'posted_date', 'image_url', 'seller_name']
+
+    def get_seller_name(self, obj):
+        # Use first_name if available, else fallback to username
+        return obj.seller.first_name or obj.seller.username or "Seller"
+
     def get_image_url(self, obj):
         if obj.image:
             request = self.context.get('request')
             return request.build_absolute_uri(obj.image.url) if request else obj.image.url
         return None
-    
+
     def create(self, validated_data):
-        # Get the current user from the request context
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['seller'] = request.user
         return super().create(validated_data)
+
+
 
 class InquirySerializer(serializers.ModelSerializer):
     equipment_title = serializers.CharField(source='equipment.title', read_only=True)
