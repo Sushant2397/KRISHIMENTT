@@ -88,7 +88,21 @@
   "notifications_title": "Notifications",
   "notifications_desc": "View important updates and alerts",
   "history_title": "History",
-  "history_desc": "View your transaction and activity history"
+  "history_desc": "View your transaction and activity history",
+
+   "find_jobs_title": "Find Jobs",
+  "find_jobs_desc": "Browse and apply for available agricultural jobs",
+  
+  "my_applications_title": "My Applications",
+  "my_applications_desc": "View the status of your job applications",
+  
+  "skills_title": "My Skills",
+  "skills_desc": "Manage your agricultural skills and certifications",
+  
+  "earnings_title": "My Earnings",
+  "earnings_desc": "Track your job earnings and payments"
+  
+  
 
 
 

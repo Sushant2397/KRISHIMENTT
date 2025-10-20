@@ -156,8 +156,7 @@
   "Notifications": "सूचनाएं",
   "History": "इतिहास",
   "Logout": "लॉग आउट",
-
-
+  "Leads": "लीड्स",
 
  "government_schemes_title": "सरकारी योजनाएँ",
   "government_schemes_desc": "उपलब्ध सरकारी कृषि योजनाएँ और अनुदान देखें",
@@ -193,5 +192,26 @@
   "skills_desc": "अपने कृषि कौशल और प्रमाणपत्र प्रबंधित करें",
   
   "earnings_title": "मेरी कमाई",
-  "earnings_desc": "अपने नौकरी की कमाई और भुगतान ट्रैक करें"
+  "earnings_desc": "अपने नौकरी की कमाई और भुगतान ट्रैक करें",
+  "Your Activity": "आपकी गतिविधि",
+  "Applications Sent": "भेजे गए आवेदन",
+  "Jobs Completed": "पूर्ण किए गए कार्य",
+  "Rating": "रेटिंग",
+  
+  "Find job opportunities and grow your agricultural career.": "नौकरी के अवसर खोजें और अपने कृषि करियर को आगे बढ़ाएं।",
+
+ "Search schemes, services, or resources...": "योजनाएँ, सेवाएँ या संसाधन खोजें...",
+  "Search government schemes and services": "सरकारी योजनाएँ और सेवाएँ खोजें",
+  "Search schemes...": "योजनाएँ खोजें...",
+  "Search government schemes": "सरकारी योजनाएँ खोजें",
+  "Citizen Login": "नागरिक लॉगिन",
+  "Admin Login": "प्रशासक लॉगिन",
+  "Services": "सेवाएँ",
+  "Gov Schemes": "सरकारी योजनाएँ",
+  "Resources": "संसाधन",
+  "Support": "सहायता",
+  "Toggle menu": "मेनू बदलें"
+ 
+
+  
 }

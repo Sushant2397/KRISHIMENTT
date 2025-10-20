@@ -227,12 +227,12 @@ export const LABOUR_CARDS = [
     hoverColor: 'hover:bg-green-600'
   },
   {
-    id: 'government-schemes',
-    titleKey: 'government_schemes_title',
-    descriptionKey: 'government_schemes_desc',
+     id: 'government-schemes',
+    titleKey: 'government_schemes_title',       
+    descriptionKey: 'government_schemes_desc',  
     icon: 'Building2',
-    color: 'bg-purple-500',
-    hoverColor: 'hover:bg-purple-600'
+    color: 'bg-blue-500',
+    hoverColor: 'hover:bg-blue-600'
   },
   {
     id: 'skills',

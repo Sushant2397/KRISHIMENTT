@@ -136,7 +136,7 @@
   "Active Jobs": "सक्रिय नोकऱ्या",
   "Applications": "अर्ज",
   "Equipment Listed": "उपकरणांची यादी",
-  "Leads": "लीड्स ",
+  "Leads": "लीड्स",
   "Loading...": "लोड करत आहे...",
   "No inquiries yet.": "अद्याप कोणतीही विचारणा नाही.",
   "Date": "दिनांक",
@@ -197,11 +197,27 @@
   "skills_desc": "आपली कृषी कौशल्ये आणि प्रमाणपत्रे व्यवस्थापित करा",
   
   "earnings_title": "माझी कमाई",
-  "earnings_desc": "आपल्या नोकरीच्या कमाई आणि देयकांचे ट्रॅक ठेवा"
+  "earnings_desc": "आपल्या नोकरीच्या कमाई आणि देयकांचे ट्रॅक ठेवा",
 
 
+"Your Activity": "तुमची क्रियाशीलता",
+  "Applications Sent": "पाठवलेल्या अर्ज",
+  "Jobs Completed": "पूर्ण झालेली कामे",
+  "Rating": "रेटिंग",
 
 
+  "Find job opportunities and grow your agricultural career.": "नोकरीच्या संधी शोधा आणि तुमच्या कृषी करिअरचा विकास करा.",
 
-
+  
+  "Search schemes, services, or resources...": "योजना, सेवा किंवा संसाधने शोधा...",
+  "Search government schemes and services": "शासकीय योजना आणि सेवा शोधा",
+  "Search schemes...": "योजना शोधा...",
+  "Search government schemes": "शासकीय योजना शोधा",
+  "Citizen Login": "नागरिक लॉगिन",
+  "Admin Login": "प्रशासक लॉगिन",
+  "Services": "सेवा",
+  "Gov Schemes": "शासकीय योजना",
+  "Resources": "संसाधने",
+  "Support": "मदत",
+  "Toggle menu": "मेनू उघडा/बंद करा"
 }
