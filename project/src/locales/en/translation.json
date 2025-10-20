@@ -1,0 +1,95 @@
+{
+   "Krishiment": "Krishiment",
+    "Home": "Home",
+    "Features": "Features",
+    "About": "About",
+    "Contact": "Contact",
+    "Login/Signup": "Login/Signup",
+
+
+     "hero": {
+    "title": "Smart Agriculture",
+    "subtitle": "Platform",
+    "description": "Connecting farmers and agricultural workers through technology. Access government schemes, real-time market prices, and equipment marketplace all in one place.",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
+  },
+  "stats": {
+    "farmers": "Active Farmers",
+    "workers": "Agricultural Workers",
+    "equipment": "Equipment Listed",
+    "success": "Success Rate"
+  },
+  "featuresSection": {
+    "title": "Why Choose Our Platform?",
+    "subtitle": "We provide comprehensive solutions for modern agriculture with cutting-edge technology."
+  },
+  "features": {
+    "connectTitle": "Connect Farmers & Workers",
+    "connectDesc": "Bridge the gap between farmers and agricultural workers with our smart matching system.",
+    "marketTitle": "Real-time Market Prices",
+    "marketDesc": "Stay updated with live market prices for crops, grains, and vegetables.",
+    "schemesTitle": "Government Schemes",
+    "schemesDesc": "Access information about government agricultural schemes and subsidies.",
+    "equipmentTitle": "Equipment Marketplace",
+    "equipmentDesc": "Buy and sell agricultural equipment with ease and transparency."
+  },
+  "about": {
+    "title": "Empowering Agriculture Through Technology",
+    "description": "Our platform bridges the gap between traditional farming and modern technology.",
+    "point1": "Trusted by thousands of farmers",
+    "point2": "Secure and reliable platform",
+    "point3": "24/7 customer support",
+    "farmerTitle": "For Farmers",
+    "farmerDesc": "Manage operations, find workers, access schemes",
+    "workerTitle": "For Workers",
+    "workerDesc": "Find jobs, build reputation, grow career"
+  },
+  "cta": {
+    "title": "Ready to Transform Your Agricultural Journey?",
+    "subtitle": "Join thousands of farmers and workers who are already benefiting from our platform.",
+    "button": "Start Your Journey"
+  },
+  "footer": {
+    "title": "Smart Agriculture",
+    "desc": "Connecting farmers and workers through innovative technology solutions.",
+    "platformTitle": "Platform",
+    "platform1": "For Farmers",
+    "platform2": "For Workers",
+    "platform3": "Equipment Marketplace",
+    "platform4": "Government Schemes",
+    "supportTitle": "Support",
+    "support1": "Help Center",
+    "support2": "Contact Us",
+    "support3": "Privacy Policy",
+    "support4": "Terms of Service",
+    "contactTitle": "Contact",
+    "address1": "123 Agriculture Hub",
+    "address2": "Green Valley, India",
+    "copyright": "© 2025 Smart Agriculture Platform. All rights reserved."
+  },
+
+
+
+  
+  
+  "government_schemes_title": "Government Schemes",
+  "government_schemes_desc": "View available government agricultural schemes and subsidies",
+  "equipment_buy_title": "Equipment to Buy",
+  "equipment_buy_desc": "Browse and purchase agricultural equipment",
+  "equipment_sell_title": "Equipment to Sell",
+  "equipment_sell_desc": "List your equipment for sale",
+  "worker_applications_title": "Worker Applications",
+  "worker_applications_desc": "Review applications from agricultural workers",
+  "upload_jobs_title": "Upload Jobs",
+  "upload_jobs_desc": "Post job opportunities for agricultural workers",
+  "real_time_prices_title": "Real-time Prices",
+  "real_time_prices_desc": "Check current market prices for crops and grains",
+  "notifications_title": "Notifications",
+  "notifications_desc": "View important updates and alerts",
+  "history_title": "History",
+  "history_desc": "View your transaction and activity history"
+
+
+
+}
