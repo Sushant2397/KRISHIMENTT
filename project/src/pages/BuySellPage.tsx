@@ -5,6 +5,8 @@ import { Search, Plus, Tractor, Sprout, Droplet, Warehouse, Wrench, X, BarChart3
 import { ProductCard } from '../components/Products/ProductCard';
 import { EquipmentComparisonModal } from '../components/Products/EquipmentComparisonModal';
 import { createEquipmentListing, fetchEquipment } from '../services/api';
+import { useTranslation } from 'react-i18next';
+
 
 interface Seller {
   name: string;
@@ -44,6 +46,7 @@ const categories = [
 ];
 
 export default function BuySellPage() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
