@@ -18,8 +18,8 @@ const MarketPrices = () => {
   useEffect(() => {
     // If you prefer the free sample API key from data.gov.in, paste it here.
     // Sample key is limited to 10 records; replace with your own for more.
-    const SAMPLE_KEY = '579b464db66ec23bdd00000148fa3dd4615d40c85445414b1d2c0303';
-    const stop = startPollingAgmark(SAMPLE_KEY, setData, {}, 30000); // every 30s
+    const API_KEY = '579b464db66ec23bdd0000016a65c82889ef432e78c1e7ac1f92801b';
+    const stop = startPollingAgmark(API_KEY, setData, {}, 30000); // every 30s
     return stop;
   }, []);
 

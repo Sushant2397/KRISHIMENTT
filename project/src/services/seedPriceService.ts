@@ -86,6 +86,21 @@ function buildAgmarkUrl(apiKey: string, filters: AgmarkFilters = {}): string {
   return `https://api.data.gov.in/resource/${AGMARK_RESOURCE_ID}?${params.toString()}`;
 }
 
+function parseArrivalDate(value: any): string {
+  if (!value || typeof value !== 'string') return new Date().toISOString();
+  // Common AGMARK format: DD/MM/YYYY
+  const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (m) {
+    const [_, dd, mm, yyyy] = m;
+    const d = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+    if (!isNaN(d.getTime())) return d.toISOString();
+  }
+  // Try generic Date parsing as fallback
+  const d2 = new Date(value);
+  if (!isNaN(d2.getTime())) return d2.toISOString();
+  return new Date().toISOString();
+}
+
 export async function fetchAgmarkPrices(apiKey: string, filters: AgmarkFilters = {}): Promise<SeedPrice[]> {
   const url = buildAgmarkUrl(apiKey, filters);
   const res = await fetch(url);
@@ -97,9 +112,11 @@ export async function fetchAgmarkPrices(apiKey: string, filters: AgmarkFilters =
   const records = json?.records ?? [];
   const now = new Date();
   const mapped: SeedPrice[] = records.map((r: any, idx: number) => {
-    const price = Number(r?.modal_price ?? r?.max_price ?? r?.min_price ?? 0);
-    const prev = Number(r?.min_price ?? price);
-    const updatedAt = r?.arrival_date ? new Date(r.arrival_date).toISOString() : now.toISOString();
+    const priceNum = Number(r?.modal_price ?? r?.max_price ?? r?.min_price ?? 0);
+    const prevNum = Number(r?.min_price ?? priceNum);
+    const price = isFinite(priceNum) ? priceNum : 0;
+    const prev = isFinite(prevNum) ? prevNum : undefined;
+    const updatedAt = r?.arrival_date ? parseArrivalDate(r.arrival_date) : now.toISOString();
     return {
       id: `${updatedAt}-${idx}-${r?.market ?? ''}`,
       crop: r?.commodity ?? 'Unknown',
@@ -107,8 +124,8 @@ export async function fetchAgmarkPrices(apiKey: string, filters: AgmarkFilters =
       state: r?.state ?? r?.state_keyword ?? '—',
       market: r?.market ?? '—',
       unit: '₹/quintal',
-      price: isFinite(price) ? price : 0,
-      prevPrice: isFinite(prev) ? prev : undefined,
+      price,
+      prevPrice: prev,
       updatedAt,
     };
   });

@@ -113,16 +113,27 @@ import DashboardCard from '../components/Common/DashboardCard';
 import { LABOUR_CARDS } from '../utils/constants';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import userService from '../services/userService';
 
 const LabourDashboard = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [isAvailable, setIsAvailable] = useState(null);
 
   useEffect(() => {
-    // Simulate initialization
-    setLoading(false);
+    const init = async () => {
+      try {
+        const res = await userService.getAvailability();
+        setIsAvailable(!!res.data.is_available);
+      } catch (e) {
+        setIsAvailable(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
   }, []);
 
   const handleCardClick = (cardId) => {
@@ -163,6 +174,33 @@ const LabourDashboard = () => {
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Availability toggle */}
+        <div className="mb-6 bg-white rounded-xl shadow p-4 flex items-center justify-between">
+          <div>
+            <div className="text-sm text-gray-500">{t('Availability')}</div>
+            <div className="text-lg font-semibold text-gray-900">
+              {isAvailable ? t('Active and looking for jobs') : t('Inactive')}
+            </div>
+          </div>
+          <button
+            onClick={async () => {
+              if (isAvailable === null) return;
+              const next = !isAvailable;
+              setIsAvailable(next);
+              try {
+                await userService.setAvailability(next);
+              } catch (e) {
+                // revert on error
+                setIsAvailable(!next);
+                alert(t('Failed to update availability'));
+              }
+            }}
+            className={`px-4 py-2 rounded-lg text-white ${isAvailable ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-500 hover:bg-gray-600'}`}
+            disabled={isAvailable === null}
+          >
+            {isAvailable ? t('Set Inactive') : t('Set Active')}
+          </button>
+        </div>
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">

@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.hashers import make_password
 from ..serializers import UserSerializer, RegisterSerializer
@@ -78,3 +79,23 @@ class LoginView(APIView):
                 {'error': 'An error occurred during authentication'}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class AvailabilityView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({'is_available': user.is_available})
+
+    def put(self, request):
+        user = request.user
+        is_available = request.data.get('is_available')
+        if is_available is None:
+            return Response({'error': 'is_available is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user.is_available = bool(is_available) if isinstance(is_available, bool) else str(is_available).lower() in ['true', '1', 'yes']
+            user.save(update_fields=['is_available'])
+            return Response({'is_available': user.is_available})
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
