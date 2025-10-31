@@ -100,10 +100,92 @@
   "skills_desc": "Manage your agricultural skills and certifications",
   
   "earnings_title": "My Earnings",
-  "earnings_desc": "Track your job earnings and payments"
+  "earnings_desc": "Track your job earnings and payments",
   
   
+  "sell_equipment": "Sell Farming Equipment",
+  "fill_details": "Fill in the details of your farming equipment to list it for sale",
+  "equipment_photos": "Equipment Photos",
+  "add_photo": "Add Photo",
+  "main_display_note": "First photo will be the main display. Add up to 8 photos.",
+  "equipment_title": "Equipment Title*",
+  "equipment_title_hint": "Include key details like brand, model, and year",
+  "price": "Price (₹)*",
+  "category": "Category*",
+  "condition": "Condition*",
+  "location": "Location*",
+  "description": "Description*",
+  "description_hint": "Provide details about the equipment, including specifications, usage hours, maintenance history, and any included accessories",
+  "cancel": "Cancel",
+  "publish_listing": "Publish Listing",
+  "publishing": "Publishing...",
+  "success_message": "Your equipment has been listed successfully!",
+  "login_required": "Please log in to create a listing.",
+  "sell_your_equipment": "Sell Your Equipment",
+
+  
+  "marketPrices": {
+    "title": "Real-time Seed Prices",
+    "autoUpdate": "Auto-updating every ~8s",
+    "searchPlaceholder": "Search market...",
+    "allCrops": "All Crops",
+    "allStates": "All States",
+    "allVarieties": "All Varieties",
+    "crop": "Crop",
+    "variety": "Variety",
+    "state": "State",
+    "market": "Market",
+    "price": "Price",
+    "change": "Change",
+    "updated": "Updated"
+ },
+
+
+  "notifications": {
+    "title": "Notifications",
+    "mark_all": "Mark all read",
+    "loading": "Loading...",
+    "new": "New",
+    "buyer": "Buyer",
+    "email": "Email",
+    "phone": "Phone",
+    "equipment": "Equipment",
+    "empty": "No notifications yet.",
+    "load_error": "Failed to load notifications",
+    "mark_error": "Failed to mark as read"
+  },
+
+
+  "farmEquipmentMarketplace": "Farm Equipment Marketplace",
+  "findQualityEquipment": "Find quality farming equipment and supplies",
+  "listEquipment": "List Equipment",
+  "compare": "Compare",
+  "search": "Search",
+  "searchPlaceholder": "Search for equipment...",
+ 
+  "allCategories": "All Categories",
+  "priceRange": "Price Range",
+  "noEquipmentFound": "No equipment found",
+  "tryAdjusting": "Try adjusting your search or filter to find what you're looking for",
+  "listNewEquipment": "List New Equipment",
+  "title": "Title",
+  
+  "equipmentImage": "Equipment Image",
+  "chooseFile": "Choose File",
+  "noFileChosen": "No file chosen",
+  
+  "listEquipmentButton": "List Equipment",
+  "new": "New",
+  "usedLikeNew": "Used - Like New",
+  "usedGood": "Used - Good",
+  "usedFair": "Used - Fair",
+  "failedToLoad": "Failed to load equipment listings. Please try again later."
+
+
+  
+  }
 
 
 
-}
+
+

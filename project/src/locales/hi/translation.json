@@ -210,8 +210,99 @@
   "Gov Schemes": "सरकारी योजनाएँ",
   "Resources": "संसाधन",
   "Support": "सहायता",
-  "Toggle menu": "मेनू बदलें"
- 
+  "Toggle menu": "मेनू बदलें",
+
+
 
   
+  "sell_equipment": "खेती के उपकरण बेचें",
+  "fill_details": "अपने खेती के उपकरणों के विवरण भरें ताकि उन्हें बिक्री के लिए सूचीबद्ध किया जा सके",
+  "equipment_photos": "उपकरणों के फोटो",
+  "add_photo": "फोटो जोड़ें",
+  "main_display_note": "पहली फोटो मुख्य रूप में दिखाई जाएगी। अधिकतम 8 फोटो जोड़ें।",
+  "equipment_title": "उपकरण का शीर्षक*",
+  "equipment_title_hint": "ब्रांड, मॉडल और वर्ष जैसे प्रमुख विवरण शामिल करें",
+  "price": "कीमत (₹)*",
+  "category": "श्रेणी*",
+  "condition": "स्थिति*",
+  "location": "स्थान*",
+  "description": "विवरण*",
+  "description_hint": "उपकरण के बारे में विवरण दें, जैसे विनिर्देश, उपयोग के घंटे, रखरखाव इतिहास और अन्य",
+  "cancel": "रद्द करें",
+  "publish_listing": "लिस्टिंग प्रकाशित करें",
+  "publishing": "प्रकाशित हो रहा है...",
+  "success_message": "आपका उपकरण सफलतापूर्वक सूचीबद्ध हो गया है!",
+  "login_required": "कृपया लिस्टिंग बनाने के लिए लॉगिन करें।",
+
+ 
+  "sell_your_equipment": "अपना कृषि उपकरण बेचें",
+
+
+
+  "marketPrices": {
+    "title": "रियल-टाइम बीज मूल्य",
+    "autoUpdate": "हर ~8 सेकंड में स्वचालित अद्यतन",
+    "searchPlaceholder": "बाज़ार खोजें...",
+    "allCrops": "सभी फसलें",
+    "allStates": "सभी राज्य",
+    "allVarieties": "सभी किस्में",
+    "crop": "फसल",
+    "variety": "किस्म",
+    "state": "राज्य",
+    "market": "बाज़ार",
+    
+    "change": "परिवर्तन",
+    "updated": "अद्यतन"
+  },
+
+
+  "notifications": {
+    "title": "सूचनाएँ",
+    "mark_all": "सभी को पढ़ा हुआ चिन्हित करें",
+    "loading": "लोड हो रहा है...",
+    "new": "नया",
+    "buyer": "खरीदार",
+    "email": "ईमेल",
+    "phone": "फ़ोन",
+    "equipment": "उपकरण",
+    "empty": "अभी तक कोई सूचना नहीं है।",
+    "load_error": "सूचनाएँ लोड करने में विफल",
+    "mark_error": "पढ़ा हुआ चिन्हित करने में विफल"
+  },
+
+
+
+  "farmEquipmentMarketplace": "कृषि उपकरण मार्केटप्लेस",
+  "findQualityEquipment": "उच्च गुणवत्ता वाले कृषि उपकरण और सामग्री खोजें",
+  "listEquipment": "उपकरण सूचीबद्ध करें",
+  "compare": "तुलना करें",
+  "search": "खोजें",
+  "searchPlaceholder": "उपकरण खोजें...",
+ 
+  "allCategories": "सभी श्रेणियाँ",
+  "priceRange": "मूल्य सीमा",
+  "noEquipmentFound": "कोई उपकरण नहीं मिला",
+  "tryAdjusting": "अपने खोज या फ़िल्टर को समायोजित करके देखें",
+  "listNewEquipment": "नया उपकरण सूचीबद्ध करें",
+  "title": "शीर्षक",
+ 
+  "equipmentImage": "उपकरण की छवि",
+  "chooseFile": "फ़ाइल चुनें",
+  "noFileChosen": "कोई फ़ाइल नहीं चुनी गई",
+ 
+  "listEquipmentButton": "उपकरण सूचीबद्ध करें",
+  "new": "नया",
+  "usedLikeNew": "उपयोग किया हुआ - नया जैसा",
+  "usedGood": "उपयोग किया हुआ - अच्छा",
+  "usedFair": "उपयोग किया हुआ - ठीक",
+  "failedToLoad": "उपकरण लिस्टिंग लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।",
+  "pleaseLogin": "कृपया लॉगिन करें",
+  "failedToCreate": "सूची बनाने में विफल। कृपया पुनः प्रयास करें।",
+  "addedToComparison": "उपकरण तुलना सूची में जोड़ा गया!",
+  "alreadyInComparison": "यह उपकरण पहले से ही आपकी तुलना सूची में है!",
+  "maxComparison": "एक समय में अधिकतम 4 आइटम की तुलना कर सकते हैं!"
 }
+
+
+  
+
