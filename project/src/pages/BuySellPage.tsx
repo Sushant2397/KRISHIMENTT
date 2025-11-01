@@ -234,8 +234,8 @@ export default function BuySellPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Farm Equipment Marketplace</h1>
-          <p className="text-gray-600 mt-2">Find quality farming equipment and supplies</p>
+          <h1 className="text-3xl font-bold text-gray-800"> {t("Farm Equipment Marketplace")}</h1>
+          <p className="text-gray-600 mt-2">  {t("Find quality farming equipment and supplies")}</p>
         </div>
         <div className="flex gap-3">
           {comparisonList.length > 0 && (
@@ -252,7 +252,7 @@ export default function BuySellPage() {
             className="bg-green-600 hover:bg-green-700"
             onClick={() => setShowForm(true)}
           >
-            <Plus className="mr-2 h-4 w-4" /> List Equipment
+            <Plus className="mr-2 h-4 w-4" />  {t("List Equipment")}
           </Button>
         </div>
       </div>
@@ -261,7 +261,7 @@ export default function BuySellPage() {
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="md:col-span-2">
-            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">   {t("Search")}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
@@ -278,14 +278,14 @@ export default function BuySellPage() {
           </div>
           
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">  {t("Category")}</label>
             <select
               id="category"
               className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
-              <option value="All">All Categories</option>
+              <option value="All">{t("All Categories")}</option>
               {categories.map((category) => (
                 <option key={category.name} value={category.name}>
                   {category.name}
@@ -296,7 +296,7 @@ export default function BuySellPage() {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Price Range: ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
+              {t("Price Range")} ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
             </label>
             <div className="flex items-center space-x-4">
               <span>₹{priceRange[0].toLocaleString()}</span>
@@ -357,7 +357,7 @@ export default function BuySellPage() {
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">List New Equipment</h2>
+                <h2 className="text-xl font-semibold text-gray-900">{t("List New Equipment")}</h2>
                 <button
                   type="button"
                   className="text-gray-400 hover:text-gray-500"
@@ -373,8 +373,8 @@ export default function BuySellPage() {
             
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+               
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">{t("Title")}</label>
                   <Input
                     id="title"
                     name="title"
@@ -387,7 +387,7 @@ export default function BuySellPage() {
                 </div>
                 
                 <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
+                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">{t("Price")}</label>
                   <Input
                     id="price"
                     name="price"
@@ -401,40 +401,57 @@ export default function BuySellPage() {
                   />
                 </div>
                 
-                <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
-                  <select
-                    id="category"
-                    name="category"
-                    required
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  >
-                    {categories.map((category) => (
-                      <option key={category.name} value={category.name}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label htmlFor="condition" className="block text-sm font-medium text-gray-700 mb-1">Condition *</label>
-                  <select
-                    id="condition"
-                    name="condition"
-                    required
-                    value={formData.condition}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  >
-                    <option value="New">New</option>
-                    <option value="Used - Like New">Used - Like New</option>
-                    <option value="Used - Good">Used - Good</option>
-                    <option value="Used - Fair">Used - Fair</option>
-                  </select>
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Category Field */}
+      <div>
+        <label
+          htmlFor="category"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          {t("Category")} *
+        </label>
+        <select
+          id="category"
+          name="category"
+          required
+          value={formData.category}
+          onChange={handleInputChange}
+          className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+        >
+          <option value="" disabled>
+            {t("Select Category")}
+          </option>
+          {categories.map((category) => (
+            <option key={category.name} value={category.name}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Condition Field */}
+      <div>
+        <label
+          htmlFor="condition"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          {t("Condition")} *
+        </label>
+        <select
+          id="condition"
+          name="condition"
+          required
+          value={formData.condition}
+          onChange={handleInputChange}
+          className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+        >
+          <option value="">{t("Select Condition")}</option>
+          <option value="New">{t("New")}</option>
+          <option value="Used - Like New">{t("Used - Like New")}</option>
+          <option value="Used - Good">{t("Used - Good")}</option>
+          <option value="Used - Fair">{t("Used - Fair")}</option>
+        </select>
+      </div>
                 
                 <div>
                   <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">Location *</label>

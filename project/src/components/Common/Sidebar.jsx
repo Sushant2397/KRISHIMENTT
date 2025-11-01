@@ -261,7 +261,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       path: '/workers',
       submenu: [
         { title: t('Applications'), path: '/workers/applications' },
-        { title: t('Post Jobs'), path: '/workers/post-job' }
+        { title: t('Post Jobs'), path: '/upload-jobs' }
       ]
     },
     { 

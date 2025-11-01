@@ -300,7 +300,61 @@
   "failedToCreate": "सूची बनाने में विफल। कृपया पुनः प्रयास करें।",
   "addedToComparison": "उपकरण तुलना सूची में जोड़ा गया!",
   "alreadyInComparison": "यह उपकरण पहले से ही आपकी तुलना सूची में है!",
-  "maxComparison": "एक समय में अधिकतम 4 आइटम की तुलना कर सकते हैं!"
+  "maxComparison": "एक समय में अधिकतम 4 आइटम की तुलना कर सकते हैं!",
+
+
+
+  
+  "Upload Job": "नौकरी अपलोड करें",
+  "Job Title": "नौकरी का शीर्षक",
+  "Category": "श्रेणी",
+  "Description": "विवरण",
+  "Wage per Day": "प्रति दिन वेतन",
+  "Duration": "अवधि",
+  "Workers Needed": "आवश्यक श्रमिक",
+  "Start Date": "प्रारंभ तिथि",
+  "End Date": "समाप्ति तिथि",
+  "Job Location": "नौकरी का स्थान",
+  "Use Current Location": "वर्तमान स्थान का उपयोग करें",
+  "Getting Location...": "स्थान प्राप्त किया जा रहा है...",
+  "Address": "पता",
+  "Latitude": "अक्षांश",
+  "Longitude": "देशांतर",
+  "Labour Availability": "श्रमिक उपलब्धता",
+  "Check Availability": "उपलब्धता जांचें",
+  "Hide Map": "मानचित्र छिपाएं",
+  "Show Map": "मानचित्र दिखाएं",
+  "Available Labours": "उपलब्ध श्रमिक",
+  "Search Radius": "खोज त्रिज्या",
+  "Nearby Labours": "निकटवर्ती श्रमिक",
+  "And": "और",
+  "more labours available": "अधिक श्रमिक उपलब्ध हैं",
+  "Cancel": "रद्द करें",
+  "Create Job": "नौकरी बनाएं",
+  "Creating Job...": "नौकरी बनाई जा रही है...",
+
+
+  "Farm Equipment Marketplace": "कृषि उपकरण बाजार",
+  "Find quality farming equipment and supplies": "गुणवत्तापूर्ण कृषि उपकरण और सामग्री खोजें",
+  "Search": "खोजें",
+  "Price Range": "मूल्य सीमा",
+  "All Categories": "सभी श्रेणियाँ",
+  "No equipment found": "कोई उपकरण नहीं मिला",
+  "Try adjusting your search": "अपनी खोज या फ़िल्टर बदलकर पुनः प्रयास करें।",
+  "List Equipment": "उपकरण जोड़ें",
+  "List New Equipment": "नया उपकरण सूचीबद्ध करें",
+  "Title": "शीर्षक",
+  "Price": "मूल्य",
+  "Condition": "स्थिति",
+  "Location": "स्थान",
+  "Equipment Image": "उपकरण की छवि",
+  "Choose File": "फ़ाइल चुनें",
+  "No file chosen": "कोई फ़ाइल नहीं चुनी गई",
+  "Compare": "तुलना करें"
+
+
+
+
 }
 
 

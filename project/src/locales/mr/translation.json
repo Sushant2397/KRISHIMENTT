@@ -274,11 +274,120 @@
     "empty": "अद्याप कोणत्याही सूचना नाहीत.",
     "load_error": "सूचना लोड करण्यात अयशस्वी",
     "mark_error": "वाचलेल्या म्हणून चिन्हांकित करण्यात अयशस्वी"
-  }
+  },
 
+  "farmEquipmentMarketplace": "शेती उपकरण मार्केटप्लेस",
+  "findQualityEquipment": "उत्तम दर्जाच्या शेती उपकरणे आणि साहित्य शोधा",
+  "listEquipment": "उपकरण सूचीबद्ध करा",
+  "compare": "तुलना करा",
+  "search": "शोधा",
+  "searchPlaceholder": "उपकरणासाठी शोधा...",
+ 
+  "allCategories": "सर्व वर्ग",
+  "priceRange": "किंमत श्रेणी",
+  "noEquipmentFound": "कोणतेही उपकरण सापडले नाही",
+  "tryAdjusting": "आपल्या शोध किंवा फिल्टरमध्ये बदल करून पाहा",
+  "listNewEquipment": "नवीन उपकरण सूचीबद्ध करा",
+  "title": "शीर्षक",
+ 
+  "equipmentImage": "उपकरणाची प्रतिमा",
+  "chooseFile": "फाइल निवडा",
+  "noFileChosen": "कोणतीही फाइल निवडलेली नाही",
+  
+  "listEquipmentButton": "उपकरण सूचीबद्ध करा",
+  "new": "नवीन",
+  "usedLikeNew": "वापरलेले - नवीनासारखे",
+  "usedGood": "वापरलेले - चांगले",
+  "usedFair": "वापरलेले - मध्यम",
+  "failedToLoad": "उपकरण लिस्टिंग लोड करण्यात अयशस्वी. कृपया नंतर पुन्हा प्रयत्न करा.",
+  "pleaseLogin": "कृपया लॉगिन करा",
+  "failedToCreate": "सूची तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+  "addedToComparison": "उपकरण तुलना यादीत जोडले!",
+  "alreadyInComparison": "हे उपकरण आधीच आपल्या तुलना यादीत आहे!",
+  "maxComparison": "एकावेळी 4 वस्तूंपर्यंतच तुलना करू शकता!",
 
+  
+  "Upload Job": "नोकरी अपलोड करा",
+  "Job Title": "नोकरीचे शीर्षक",
+  "Category": "श्रेणी",
+  "Description": "वर्णन",
+  "Wage per Day": "दररोजचे वेतन",
+  "Duration": "कालावधी",
+  "Workers Needed": "आवश्यक कामगार",
+  "Start Date": "सुरुवातीची तारीख",
+  "End Date": "समाप्तीची तारीख",
+  "Job Location": "नोकरीचे ठिकाण",
+  "Use Current Location": "सध्याचे स्थान वापरा",
+  "Getting Location...": "स्थान मिळवत आहोत...",
+  "Address": "पत्ता",
+  "Latitude": "अक्षांश",
+  "Longitude": "रेखांश",
+  "Labour Availability": "कामगार उपलब्धता",
+  "Check Availability": "उपलब्धता तपासा",
+  "Hide Map": "नकाशा लपवा",
+  "Show Map": "नकाशा दाखवा",
+  "Available Labours": "उपलब्ध कामगार",
+  "Search Radius": "शोध परिघ",
+  "Nearby Labours": "जवळचे कामगार",
+  "And": "आणि",
+  "more labours available": "अजून कामगार उपलब्ध आहेत",
+  "Cancel": "रद्द करा",
+  "Create Job": "नोकरी तयार करा",
+  "Creating Job...": "नोकरी तयार केली जात आहे...",
 
+  
+  "Farm Equipment Marketplace": "शेती उपकरण बाजार",
+  "Find quality farming equipment and supplies": "उत्तम दर्जाची शेती उपकरणे आणि साहित्य शोधा",
+  "Search": "शोधा",
+  
+  "Price Range": "किंमत श्रेणी",
+  "All Categories": "सर्व श्रेण्या",
+  "No equipment found": "कोणतेही उपकरण सापडले नाही",
+  "Try adjusting your search": "आपला शोध किंवा फिल्टर बदलून पुन्हा प्रयत्न करा.",
+  "List Equipment": "उपकरण जोडा",
+  "List New Equipment": "नवीन उपकरण जोडा",
+  "Title": "शीर्षक",
+  "Price": "किंमत",
+  "Condition": "स्थिती",
+  "Location": "स्थान",
+  
+  "Equipment Image": "उपकरणाचे चित्र",
+  "Choose File": "फाइल निवडा",
+  "No file chosen": "कोणतीही फाइल निवडलेली नाही",
+ 
+  "Compare": "तुलना करा",
 
+  
+  "Browse Schemes by Category": "योजनांची श्रेणीप्रमाणे माहिती घ्या",
+  "Find government schemes tailored to your needs. Click on any category to explore available programs and benefits.": "तुमच्या गरजेनुसार सरकारी योजना शोधा. उपलब्ध कार्यक्रम आणि लाभ पाहण्यासाठी कोणत्याही श्रेणीवर क्लिक करा.",
+  "Education": "शिक्षण",
+  "Healthcare": "आरोग्य सेवा",
+  "Employment": "रोजगार",
+  "Agriculture": "कृषी",
+  "Housing": "गृहनिर्माण",
+  "Social Welfare": "सामाजिक कल्याण",
+  "Disability Support": "अपंग सहाय्य",
+  "Women & Child": "महिला आणि बालकल्याण",
+  "Scholarships, student loans, and educational support": "शिष्यवृत्ती, विद्यार्थी कर्जे आणि शैक्षणिक मदत",
+  "Medical insurance, health schemes, and wellness programs": "वैद्यकीय विमा, आरोग्य योजना आणि कल्याण कार्यक्रम",
+  "Job training, skill development, and employment schemes": "नोकरी प्रशिक्षण, कौशल्य विकास आणि रोजगार योजना",
+  "Farmer support, crop insurance, and agricultural loans": "शेतकरी सहाय्य, पीक विमा आणि कृषी कर्जे",
+  "Housing loans, rural housing, and urban development": "गृहनिर्माण कर्जे, ग्रामीण गृहनिर्माण आणि शहरी विकास",
+  "Pension schemes, social security, and welfare programs": "पेन्शन योजना, सामाजिक सुरक्षा आणि कल्याण कार्यक्रम",
+  "Support for persons with disabilities and special needs": "अपंग आणि विशेष गरजा असलेल्या व्यक्तींसाठी सहाय्य",
+  "Maternal health, child development, and women empowerment": "मातृत्व आरोग्य, बालविकास आणि महिला सक्षमीकरण",
+  "schemes available": "योजना उपलब्ध",
+  "Explore": "पहा",
+  "View All Schemes": "सर्व योजना पाहा"
 
-
+  
 }
+
+
+
+
+
+
+
+
+
