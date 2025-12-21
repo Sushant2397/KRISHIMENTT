@@ -151,7 +151,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Common/Header';
 import DashboardCard from '../components/Common/DashboardCard';
 import { FARMER_CARDS } from '../utils/constants';
 import { getMyInquiries } from '../services/inquiryService.ts';
@@ -195,10 +194,8 @@ const FarmerDashboard = () => {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
-      <Header />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 min-h-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -284,7 +281,7 @@ const FarmerDashboard = () => {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 };

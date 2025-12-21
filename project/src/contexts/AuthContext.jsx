@@ -62,16 +62,22 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ username, password }),
       });
       
-      const data = await res.json();
-      
       if (!res.ok) {
-        console.error('Login failed:', data);
+        let errorData;
+        try {
+          errorData = await res.json();
+        } catch (e) {
+          errorData = { error: `Server error: ${res.status} ${res.statusText}` };
+        }
+        console.error('Login failed:', errorData);
         localStorage.removeItem("user");
         localStorage.removeItem("tokens");
         setUser(null);
         setTokens(null);
-        return { error: data.error || 'Login failed. Please check your credentials.' };
+        return { error: errorData.error || errorData.detail || 'Login failed. Please check your credentials.' };
       }
+      
+      const data = await res.json();
       
       if (!data.user) {
         console.error('Invalid login response:', data);
@@ -98,7 +104,15 @@ export const AuthProvider = ({ children }) => {
       return { user: data.user };
     } catch (error) {
       console.error('Login error:', error);
-      return { error: 'An error occurred during login. Please try again.' };
+      
+      // Provide more specific error messages
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        return { 
+          error: 'Cannot connect to server. Please make sure the backend server is running on http://localhost:8000' 
+        };
+      }
+      
+      return { error: error.message || 'An error occurred during login. Please try again.' };
     }
   };
 

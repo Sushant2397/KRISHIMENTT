@@ -1,800 +1,289 @@
-// import React, { useState } from 'react';
-// import { useNavigate, Link } from 'react-router-dom';
-// import { useAuth } from '../contexts/AuthContext';
-// import { USER_ROLES } from '../utils/constants';
-
-// // Form field component for consistent styling
-// const FormField = ({ 
-//   id, 
-//   label, 
-//   type = 'text', 
-//   required = false, 
-//   value, 
-//   onChange, 
-//   onBlur, 
-//   placeholder, 
-//   autoComplete, 
-//   error 
-// }) => (
-//   <div className="mb-4">
-//     <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
-//       {label} {required && <span className="text-red-500">*</span>}
-//     </label>
-//     <input
-//       id={id}
-//       name={id}
-//       type={type}
-//       required={required}
-//       className={`appearance-none block w-full px-3 py-2 border ${
-//         error ? 'border-red-500' : 'border-gray-300'
-//       } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm`}
-//       value={value}
-//       onChange={onChange}
-//       onBlur={onBlur}
-//       placeholder={placeholder}
-//       autoComplete={autoComplete}
-//     />
-//     {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-//   </div>
-// );
-
-// // Password requirement component with improved styling
-// const PasswordRequirement = ({ label, meets }) => (
-//   <li className="flex items-start mb-1">
-//     {meets ? (
-//       <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-//         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-//       </svg>
-//     ) : (
-//       <svg className="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-//         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-//       </svg>
-//     )}
-//     <span className={`text-sm ${meets ? 'text-gray-700' : 'text-gray-500'}`}>
-//       {label}
-//     </span>
-//   </li>
-// );
-
-// const Register = () => {
-//   const [formData, setFormData] = useState({
-//     username: '',
-//     email: '',
-//     name: '',
-//     phone: '',
-//     password: '',
-//     confirmPassword: '',
-//     role: USER_ROLES.FARMER,
-//   });
-  
-//   const [touched, setTouched] = useState({
-//     username: false,
-//     email: false,
-//     name: false,
-//     phone: false,
-//     password: false,
-//     confirmPassword: false,
-//   });
-  
-//   const [errors, setErrors] = useState({});
-//   const [loading, setLoading] = useState(false);
-//   const [submitError, setSubmitError] = useState('');
-//   const { register } = useAuth();
-//   const navigate = useNavigate();
-
-//   // Validate form fields
-//   const validateField = (name, value) => {
-//     const newErrors = { ...errors };
-    
-//     switch (name) {
-//       case 'username':
-//         if (!value.trim()) {
-//           newErrors.username = 'Username is required';
-//         } else if (value.length < 3) {
-//           newErrors.username = 'Username must be at least 3 characters';
-//         } else {
-//           delete newErrors.username;
-//         }
-//         break;
-        
-//       case 'email':
-//         if (!value) {
-//           newErrors.email = 'Email is required';
-//         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-//           newErrors.email = 'Please enter a valid email address';
-//         } else {
-//           delete newErrors.email;
-//         }
-//         break;
-        
-//       case 'name':
-//         if (!value.trim()) {
-//           newErrors.name = 'Full name is required';
-//         } else {
-//           delete newErrors.name;
-//         }
-//         break;
-        
-//       case 'phone':
-//         if (!value) {
-//           newErrors.phone = 'Phone number is required';
-//         } else if (!/^[0-9+\-\s()]{10,}$/.test(value)) {
-//           newErrors.phone = 'Please enter a valid phone number';
-//         } else {
-//           delete newErrors.phone;
-//         }
-//         break;
-        
-//       case 'password':
-//         if (!value) {
-//           newErrors.password = 'Password is required';
-//         } else if (value.length < 8) {
-//           newErrors.password = 'Password must be at least 8 characters';
-//         } else {
-//           delete newErrors.password;
-//         }
-//         break;
-        
-//       case 'confirmPassword':
-//         if (!value) {
-//           newErrors.confirmPassword = 'Please confirm your password';
-//         } else if (value !== formData.password) {
-//           newErrors.confirmPassword = 'Passwords do not match';
-//         } else {
-//           delete newErrors.confirmPassword;
-//         }
-//         break;
-        
-//       default:
-//         break;
-//     }
-    
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
-
-//   // Handle input change
-//   const handleChange = (e) => {
-//     const { name, value, type, checked } = e.target;
-//     const newValue = type === 'checkbox' ? checked : value;
-    
-//     setFormData(prev => ({
-//       ...prev,
-//       [name]: newValue
-//     }));
-    
-//     // Validate field if it has been touched
-//     if (touched[name]) {
-//       validateField(name, newValue);
-//     }
-//   };
-  
-//   // Handle blur event
-//   const handleBlur = (e) => {
-//     const { name, value } = e.target;
-    
-//     setTouched(prev => ({
-//       ...prev,
-//       [name]: true
-//     }));
-    
-//     validateField(name, value);
-//   };
-  
-//   // Check if form is valid
-//   const isFormValid = () => {
-//     return (
-//       formData.username &&
-//       formData.email &&
-//       formData.name &&
-//       formData.phone &&
-//       formData.password &&
-//       formData.confirmPassword &&
-//       formData.password === formData.confirmPassword &&
-//       Object.keys(errors).length === 0
-//     );
-//   };
-  
-//   // Handle form submission
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setSubmitError('');
-    
-//     // Mark all fields as touched
-//     const newTouched = {};
-//     Object.keys(formData).forEach(key => {
-//       if (key !== 'role') { // Skip role field
-//         newTouched[key] = true;
-//       }
-//     });
-//     setTouched(newTouched);
-    
-//     // Validate all fields
-//     let isValid = true;
-//     Object.entries(formData).forEach(([key, value]) => {
-//       if (key !== 'role') { // Skip role field
-//         isValid = validateField(key, value) && isValid;
-//       }
-//     });
-    
-//     if (!isValid) {
-//       return;
-//     }
-    
-//     try {
-//       setLoading(true);
-//       const result = await register({
-//         username: formData.username,
-//         email: formData.email,
-//         name: formData.name,
-//         phone: formData.phone,
-//         password: formData.password,
-//         confirm_password: formData.confirmPassword,
-//         role: formData.role,
-//       });
-      
-//       if (result.error) {
-//         setSubmitError(result.error);
-//       } else {
-//         // Redirect based on role after successful registration
-//         navigate(`/${formData.role === USER_ROLES.FARMER ? 'farmer' : 'labour'}-dashboard`);
-//       }
-//     } catch (error) {
-//       console.error('Registration error:', error);
-//       setSubmitError('An error occurred during registration. Please try again.');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // Check password requirements
-//   const checkPasswordRequirements = (password, confirmPassword) => {
-//     return {
-//       hasMinLength: password.length >= 8,
-//       hasUpperCase: /[A-Z]/.test(password),
-//       hasNumber: /[0-9]/.test(password),
-//       hasSpecialChar: /[^A-Za-z0-9]/.test(password),
-//       passwordsMatch: password === confirmPassword && confirmPassword !== ''
-//     };
-//   };
-
-//   const passwordRequirements = checkPasswordRequirements(formData.password, formData.confirmPassword);
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-//       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-//         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-//           Create your account
-//         </h2>
-//         <p className="mt-2 text-center text-sm text-gray-600">
-//           Already have an account?{' '}
-//           <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
-//             Sign in
-//           </Link>
-//         </p>
-//       </div>
-
-//       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-//         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-//           {submitError && (
-//             <div className="mb-4 bg-red-50 border-l-4 border-red-400 p-4">
-//               <div className="flex">
-//                 <div className="flex-shrink-0">
-//                   <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-//                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-//                   </svg>
-//                 </div>
-//                 <div className="ml-3">
-//                   <p className="text-sm text-red-700">{submitError}</p>
-//                 </div>
-//               </div>
-//             </div>
-//           )}
-          
-//           <form className="space-y-6" onSubmit={handleSubmit}>
-//             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-//               <FormField
-//                 id="username"
-//                 label="Username"
-//                 required
-//                 value={formData.username}
-//                 onChange={handleChange}
-//                 onBlur={handleBlur}
-//                 error={touched.username && errors.username}
-//                 placeholder="johndoe"
-//                 autoComplete="username"
-//               />
-              
-//               <FormField
-//                 id="email"
-//                 label="Email address"
-//                 type="email"
-//                 required
-//                 value={formData.email}
-//                 onChange={handleChange}
-//                 onBlur={handleBlur}
-//                 error={touched.email && errors.email}
-//                 placeholder="you@example.com"
-//                 autoComplete="email"
-//               />
-//             </div>
-            
-//             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-//               <FormField
-//                 id="name"
-//                 label="Full Name"
-//                 required
-//                 value={formData.name}
-//                 onChange={handleChange}
-//                 onBlur={handleBlur}
-//                 error={touched.name && errors.name}
-//                 placeholder="sushant jayram kanchalwad"
-//                 autoComplete="name"
-//               />
-              
-//               <FormField
-//                 id="phone"
-//                 label="Phone Number"
-//                 type="tel"
-//                 required
-//                 value={formData.phone}
-//                 onChange={handleChange}
-//                 onBlur={handleBlur}
-//                 error={touched.phone && errors.phone}
-//                 placeholder="+91 9511858750"
-//                 autoComplete="tel"
-//               />
-//             </div>
-            
-//             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-//               <div>
-//                 <FormField
-//                   id="password"
-//                   label="Password"
-//                   type="password"
-//                   required
-//                   value={formData.password}
-//                   onChange={handleChange}
-//                   onBlur={handleBlur}
-//                   error={touched.password && errors.password}
-//                   placeholder="••••••••"
-//                   autoComplete="new-password"
-//                 />
-//               </div>
-              
-//               <div>
-//                 <FormField
-//                   id="confirmPassword"
-//                   label="Confirm Password"
-//                   type="password"
-//                   required
-//                   value={formData.confirmPassword}
-//                   onChange={handleChange}
-//                   onBlur={handleBlur}
-//                   error={touched.confirmPassword && errors.confirmPassword}
-//                   placeholder="••••••••"
-//                   autoComplete="new-password"
-//                 />
-//               </div>
-//             </div>
-            
-//             {/* Password Requirements */}
-//             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-//               <h4 className="text-sm font-medium text-gray-700 mb-3">Password Requirements:</h4>
-//               <ul className="space-y-1">
-//                 <PasswordRequirement 
-//                   label="At least 8 characters" 
-//                   meets={passwordRequirements.hasMinLength} 
-//                 />
-//                 <PasswordRequirement 
-//                   label="At least one uppercase letter" 
-//                   meets={passwordRequirements.hasUpperCase} 
-//                 />
-//                 <PasswordRequirement 
-//                   label="At least one number" 
-//                   meets={passwordRequirements.hasNumber} 
-//                 />
-//                 <PasswordRequirement 
-//                   label="At least one special character" 
-//                   meets={passwordRequirements.hasSpecialChar} 
-//                 />
-//                 <PasswordRequirement 
-//                   label="Passwords match" 
-//                   meets={passwordRequirements.passwordsMatch} 
-//                 />
-//               </ul>
-//             </div>
-            
-//             {/* Role Selection */}
-//             <div className="pt-2">
-//               <fieldset>
-//                 <legend className="text-sm font-medium text-gray-700 mb-3">I am a:</legend>
-//                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-//                   <label className={`relative border rounded-lg p-4 flex flex-col cursor-pointer focus:outline-none ${
-//                     formData.role === USER_ROLES.FARMER ? 'ring-2 ring-green-500 border-green-500 bg-green-50' : 'border-gray-300 hover:border-gray-400'
-//                   }`}>
-//                     <div className="flex items-center">
-//                       <input
-//                         type="radio"
-//                         name="role"
-//                         value={USER_ROLES.FARMER}
-//                         checked={formData.role === USER_ROLES.FARMER}
-//                         onChange={handleChange}
-//                         className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
-//                       />
-//                       <span className="ml-3 block text-sm font-medium text-gray-700">
-//                         Farmer
-//                       </span>
-//                     </div>
-//                     <p className="mt-1 text-xs text-gray-500">Looking to hire workers and manage your farm</p>
-//                   </label>
-                  
-//                   <label className={`relative border rounded-lg p-4 flex flex-col cursor-pointer focus:outline-none ${
-//                     formData.role === USER_ROLES.LABOUR ? 'ring-2 ring-green-500 border-green-500 bg-green-50' : 'border-gray-300 hover:border-gray-400'
-//                   }`}>
-//                     <div className="flex items-center">
-//                       <input
-//                         type="radio"
-//                         name="role"
-//                         value={USER_ROLES.LABOUR}
-//                         checked={formData.role === USER_ROLES.LABOUR}
-//                         onChange={handleChange}
-//                         className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
-//                       />
-//                       <span className="ml-3 block text-sm font-medium text-gray-700">
-//                         Agricultural Worker
-//                       </span>
-//                     </div>
-//                     <p className="mt-1 text-xs text-gray-500">Looking for farming jobs and opportunities</p>
-//                   </label>
-//                 </div>
-//               </fieldset>
-//             </div>
-            
-//             {/* Terms and Conditions */}
-//             <div className="flex items-start">
-//               <div className="flex items-center h-5">
-//                 <input
-//                   id="terms"
-//                   name="terms"
-//                   type="checkbox"
-//                   required
-//                   className="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded"
-//                 />
-//               </div>
-//               <div className="ml-3 text-sm">
-//                 <label htmlFor="terms" className="font-medium text-gray-700">
-//                   I agree to the{' '}
-//                   <a href="/terms" className="text-green-600 hover:text-green-500">
-//                     Terms of Service
-//                   </a>{' '}
-//                   and{' '}
-//                   <a href="/privacy" className="text-green-600 hover:text-green-500">
-//                     Privacy Policy
-//                   </a>
-//                 </label>
-//               </div>
-//             </div>
-            
-//             {/* Submit Button */}
-//             <div className="pt-2">
-//               <button
-//                 type="submit"
-//                 disabled={!isFormValid() || loading}
-//                 className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-//                   !isFormValid() || loading
-//                     ? 'bg-green-300 cursor-not-allowed'
-//                     : 'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
-//                 }`}
-//               >
-//                 {loading ? (
-//                   <>
-//                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-//                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-//                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-//                     </svg>
-//                     Creating Account...
-//                   </>
-//                 ) : 'Create Account'}
-//               </button>
-//             </div>
-//           </form>
-          
-//           <div className="mt-6">
-//             <div className="relative">
-//               <div className="absolute inset-0 flex items-center">
-//                 <div className="w-full border-t border-gray-300"></div>
-//               </div>
-//               <div className="relative flex justify-center text-sm">
-//                 <span className="px-2 bg-white text-gray-500">
-//                   Already have an account?
-//                 </span>
-//               </div>
-//             </div>
-            
-//             <div className="mt-6">
-//               <Link 
-//                 to="/login" 
-//                 className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-//               >
-//                 Sign in to your account
-//               </Link>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Register;
-
-
-
-
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { USER_ROLES } from '../utils/constants';
 import { useTranslation } from 'react-i18next';
-
-// Form field component
-const FormField = ({ id, label, type = 'text', required = false, value, onChange, onBlur, placeholder, autoComplete, error }) => {
-  const { t } = useTranslation();
-  return (
-    <div className="mb-4">
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
-        {t(label)} {required && <span className="text-red-500">*</span>}
-      </label>
-      <input
-        id={id}
-        name={id}
-        type={type}
-        required={required}
-        className={`appearance-none block w-full px-3 py-2 border ${
-          error ? 'border-red-500' : 'border-gray-300'
-        } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm`}
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
-        placeholder={t(placeholder)}
-        autoComplete={autoComplete}
-      />
-      {error && <p className="mt-1 text-sm text-red-600">{t(error)}</p>}
-    </div>
-  );
-};
-
-// Password requirement component
-const PasswordRequirement = ({ label, meets }) => {
-  const { t } = useTranslation();
-  return (
-    <li className="flex items-start mb-1">
-      {meets ? (
-        <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
-      ) : (
-        <svg className="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      )}
-      <span className={`text-sm ${meets ? 'text-gray-700' : 'text-gray-500'}`}>
-        {t(label)}
-      </span>
-    </li>
-  );
-};
+import { motion, AnimatePresence } from 'framer-motion';
+import { BasicDetailsStep } from '../components/auth/signup/BasicDetailsStep';
+import { AadhaarVerificationStep } from '../components/auth/signup/AadhaarVerificationStep';
+import { ProfileCompletionStep } from '../components/auth/signup/ProfileCompletionStep';
+import { Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 
 const Register = () => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    name: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    role: USER_ROLES.FARMER,
-  });
-  const [touched, setTouched] = useState({});
-  const [errors, setErrors] = useState({});
+  const [step, setStep] = useState(1);
+  const [basicData, setBasicData] = useState(null);
+  const [aadhaarData, setAadhaarData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const { register } = useAuth();
+  const { register: registerUser } = useAuth();
   const navigate = useNavigate();
 
-  const validateField = (name, value) => {
-    const newErrors = { ...errors };
-    switch (name) {
-      case 'username':
-        if (!value.trim()) newErrors.username = 'Username is required';
-        else if (value.length < 3) newErrors.username = 'Username must be at least 3 characters';
-        else delete newErrors.username;
-        break;
-      case 'email':
-        if (!value) newErrors.email = 'Email is required';
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) newErrors.email = 'Please enter a valid email address';
-        else delete newErrors.email;
-        break;
-      case 'name':
-        if (!value.trim()) newErrors.name = 'Full name is required';
-        else delete newErrors.name;
-        break;
-      case 'phone':
-        if (!value) newErrors.phone = 'Phone number is required';
-        else if (!/^[0-9+\-\s()]{10,}$/.test(value)) newErrors.phone = 'Please enter a valid phone number';
-        else delete newErrors.phone;
-        break;
-      case 'password':
-        if (!value) newErrors.password = 'Password is required';
-        else if (value.length < 8) newErrors.password = 'Password must be at least 8 characters';
-        else delete newErrors.password;
-        break;
-      case 'confirmPassword':
-        if (!value) newErrors.confirmPassword = 'Please confirm your password';
-        else if (value !== formData.password) newErrors.confirmPassword = 'Passwords do not match';
-        else delete newErrors.confirmPassword;
-        break;
-      default:
-        break;
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
-    setFormData(prev => ({ ...prev, [name]: newValue }));
-    if (touched[name]) validateField(name, newValue);
-  };
-
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    setTouched(prev => ({ ...prev, [name]: true }));
-    validateField(name, value);
-  };
-
-  const isFormValid = () => {
-    return (
-      formData.username &&
-      formData.email &&
-      formData.name &&
-      formData.phone &&
-      formData.password &&
-      formData.confirmPassword &&
-      formData.password === formData.confirmPassword &&
-      Object.keys(errors).length === 0
-    );
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleBasicNext = (data) => {
+    setBasicData(data);
+    setStep(2);
     setSubmitError('');
-    const newTouched = {};
-    Object.keys(formData).forEach(key => { if (key !== 'role') newTouched[key] = true; });
-    setTouched(newTouched);
+  };
 
-    let isValid = true;
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key !== 'role') isValid = validateField(key, value) && isValid;
-    });
-    if (!isValid) return;
+  const handleAadhaarNext = (data) => {
+    setAadhaarData(data);
+    setStep(3);
+    setSubmitError('');
+  };
+
+  const handleFinalSubmit = async (profileData) => {
+    setLoading(true);
+    setSubmitError('');
 
     try {
-      setLoading(true);
-      const result = await register({
-        username: formData.username,
-        email: formData.email,
-        name: formData.name,
-        phone: formData.phone,
-        password: formData.password,
-        confirm_password: formData.confirmPassword,
-        role: formData.role,
-      });
-      if (result.error) setSubmitError(result.error);
-      else navigate(`/${formData.role === USER_ROLES.FARMER ? 'farmer' : 'labour'}-dashboard`);
+      const finalPayload = {
+        username: basicData.username,
+        email: basicData.email,
+        name: basicData.name,
+        phone: basicData.phone,
+        password: basicData.password,
+        confirm_password: basicData.confirmPassword,
+        role: profileData.role,
+        // Aadhaar data is stored but not sent to backend (demo only)
+        aadhaarNumber: aadhaarData?.aadhaarNumber,
+      };
+
+      const result = await registerUser(finalPayload);
+
+      if (result.error) {
+        setSubmitError(result.error);
+        setLoading(false);
+        return;
+      }
+
+      if (result.user) {
+        // Redirect based on role after successful registration
+        const role = result.user.role?.toLowerCase();
+        navigate(`/${role === USER_ROLES.FARMER ? 'farmer' : 'labour'}-dashboard`);
+      } else {
+        setSubmitError(t('Registration successful but user data is missing. Please try again.'));
+        setLoading(false);
+      }
     } catch (error) {
       console.error('Registration error:', error);
       setSubmitError(t('An error occurred during registration. Please try again.'));
-    } finally {
       setLoading(false);
     }
   };
 
-  const passwordRequirements = {
-    hasMinLength: formData.password.length >= 8,
-    hasUpperCase: /[A-Z]/.test(formData.password),
-    hasNumber: /[0-9]/.test(formData.password),
-    hasSpecialChar: /[^A-Za-z0-9]/.test(formData.password),
-    passwordsMatch: formData.password === formData.confirmPassword && formData.confirmPassword !== ''
-  };
+  const steps = [
+    { number: 1, label: t('Basic Details') },
+    { number: 2, label: t('Verification') },
+    { number: 3, label: t('Profile') },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">{t('Create your account')}</h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          {t('Already have an account?')}{' '}
-          <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
-            {t('Sign in')}
-          </Link>
-        </p>
+    <div className="min-h-screen flex">
+      {/* Left Side - Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-700 to-pink-800">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/images/signup-hero.png" 
+            alt="Agricultural Innovation - Technology meets farming" 
+            className="w-full h-full object-cover"
+            loading="eager"
+            style={{ display: 'block' }}
+            onLoad={() => console.log('Signup image loaded successfully')}
+            onError={(e) => {
+              console.error('Failed to load signup image. Path:', e.target.src);
+              console.error('Make sure the image exists at: public/images/signup-hero.png');
+            }}
+          />
+        </div>
+        
+        {/* Subtle overlay for better visual integration */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-br from-indigo-600/10 via-purple-700/5 to-pink-800/10 pointer-events-none"></div>
+        
+        {/* Decorative Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-20">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-indigo-400/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-pink-400/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-400/10 rounded-full blur-3xl"></div>
+        </div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {submitError && (
-            <div className="mb-4 bg-red-50 border-l-4 border-red-400 p-4">
-              <p className="text-sm text-red-700">{submitError}</p>
+      {/* Right Side - Signup Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-12 bg-gradient-to-br from-gray-50 via-indigo-50/30 to-purple-50/50 overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-lg"
+        >
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-center mb-8"
+          >
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg mb-4">
+              <Sparkles className="w-8 h-8 text-white" />
             </div>
-          )}
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {t('Create Your Account')}
+            </h1>
+            <p className="text-gray-600">
+              {t('Join us and start your journey')}
+            </p>
+          </motion.div>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Use FormField with translation */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <FormField id="username" label="Username" required value={formData.username} onChange={handleChange} onBlur={handleBlur} error={touched.username && errors.username} placeholder="Enter your username" autoComplete="username" />
-              <FormField id="email" label="Email address" type="email" required value={formData.email} onChange={handleChange} onBlur={handleBlur} error={touched.email && errors.email} placeholder="Enter your email" autoComplete="email" />
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <FormField id="name" label="Full Name" required value={formData.name} onChange={handleChange} onBlur={handleBlur} error={touched.name && errors.name} placeholder="Enter your full name" autoComplete="name" />
-              <FormField id="phone" label="Phone Number" type="tel" required value={formData.phone} onChange={handleChange} onBlur={handleBlur} error={touched.phone && errors.phone} placeholder="Enter your phone number" autoComplete="tel" />
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <FormField id="password" label="Password" type="password" required value={formData.password} onChange={handleChange} onBlur={handleBlur} error={touched.password && errors.password} placeholder="••••••••" autoComplete="new-password" />
-              <FormField id="confirmPassword" label="Confirm Password" type="password" required value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} error={touched.confirmPassword && errors.confirmPassword} placeholder="••••••••" autoComplete="new-password" />
-            </div>
-
-            {/* Password Requirements */}
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">{t('Password Requirements:')}</h4>
-              <ul className="space-y-1">
-                <PasswordRequirement label="At least 8 characters" meets={passwordRequirements.hasMinLength} />
-                <PasswordRequirement label="At least one uppercase letter" meets={passwordRequirements.hasUpperCase} />
-                <PasswordRequirement label="At least one number" meets={passwordRequirements.hasNumber} />
-                <PasswordRequirement label="At least one special character" meets={passwordRequirements.hasSpecialChar} />
-                <PasswordRequirement label="Passwords match" meets={passwordRequirements.passwordsMatch} />
-              </ul>
-            </div>
-
-            {/* Role selection */}
-            <fieldset>
-              <legend className="text-sm font-medium text-gray-700 mb-3">{t('I am a:')}</legend>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <label className={`relative border rounded-lg p-4 flex flex-col cursor-pointer ${formData.role === USER_ROLES.FARMER ? 'ring-2 ring-green-500 border-green-500 bg-green-50' : 'border-gray-300 hover:border-gray-400'}`}>
-                  <div className="flex items-center">
-                    <input type="radio" name="role" value={USER_ROLES.FARMER} checked={formData.role === USER_ROLES.FARMER} onChange={handleChange} className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500" />
-                    <span className="ml-3 block text-sm font-medium text-gray-700">{t('Farmer')}</span>
+          {/* Progress Steps */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mb-8"
+          >
+            <div className="flex items-center justify-between">
+              {steps.map((stepItem, index) => (
+                <React.Fragment key={stepItem.number}>
+                  <div className="flex flex-col items-center flex-1">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-300 ${
+                        step >= stepItem.number
+                          ? stepItem.number === 1 && step === 1
+                            ? 'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-lg scale-110'
+                            : 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-lg scale-110'
+                          : 'bg-gray-200 text-gray-500'
+                      }`}
+                    >
+                      {step > stepItem.number ? (
+                        <CheckCircle2 className="w-5 h-5" />
+                      ) : (
+                        stepItem.number
+                      )}
+                    </div>
+                    <span
+                      className={`mt-2 text-xs font-medium transition-colors ${
+                        step >= stepItem.number 
+                          ? stepItem.number === 1 && step === 1
+                            ? 'text-green-600'
+                            : 'text-indigo-600'
+                          : 'text-gray-400'
+                      }`}
+                    >
+                      {stepItem.label}
+                    </span>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">{t('Looking to hire workers and manage your farm')}</p>
-                </label>
-                <label className={`relative border rounded-lg p-4 flex flex-col cursor-pointer ${formData.role === USER_ROLES.LABOUR ? 'ring-2 ring-green-500 border-green-500 bg-green-50' : 'border-gray-300 hover:border-gray-400'}`}>
-                  <div className="flex items-center">
-                    <input type="radio" name="role" value={USER_ROLES.LABOUR} checked={formData.role === USER_ROLES.LABOUR} onChange={handleChange} className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500" />
-                    <span className="ml-3 block text-sm font-medium text-gray-700">{t('Agricultural Worker')}</span>
-                  </div>
-                  <p className="mt-1 text-xs text-gray-500">{t('Looking for farming jobs and opportunities')}</p>
-                </label>
-              </div>
-            </fieldset>
-
-            {/* Terms */}
-            <div className="flex items-start">
-              <input id="terms" name="terms" type="checkbox" required className="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded" />
-              <label htmlFor="terms" className="ml-3 text-sm font-medium text-gray-700">
-                {t('I agree to the')} <a href="/terms" className="text-green-600 hover:text-green-500">{t('Terms of Service')}</a> {t('and')} <a href="/privacy" className="text-green-600 hover:text-green-500">{t('Privacy Policy')}</a>
-              </label>
+                  {index < steps.length - 1 && (
+                    <div
+                      className={`flex-1 h-1 mx-2 rounded-full transition-all duration-300 ${
+                        step > stepItem.number
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600'
+                          : 'bg-gray-200'
+                      }`}
+                    />
+                  )}
+                </React.Fragment>
+              ))}
             </div>
+          </motion.div>
 
-            <button type="submit" disabled={!isFormValid() || loading} className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${!isFormValid() || loading ? 'bg-green-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'}`}>
-              {loading ? t('Creating Account...') : t('Create Account')}
-            </button>
-          </form>
-        </div>
+          {/* Form Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-8"
+          >
+            {submitError && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2"
+                role="alert"
+              >
+                <div className="flex-shrink-0">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-sm font-medium">{submitError}</span>
+              </motion.div>
+            )}
+
+            <AnimatePresence mode="wait">
+              {step === 1 && (
+                <motion.div
+                  key="step1"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <BasicDetailsStep onNext={handleBasicNext} />
+                </motion.div>
+              )}
+
+              {step === 2 && (
+                <motion.div
+                  key="step2"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AadhaarVerificationStep
+                    onNext={handleAadhaarNext}
+                    onBack={() => setStep(1)}
+                  />
+                </motion.div>
+              )}
+
+              {step === 3 && (
+                <motion.div
+                  key="step3"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ProfileCompletionStep
+                    onSubmit={handleFinalSubmit}
+                    onBack={() => setStep(2)}
+                    loading={loading}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Sign In Link */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mt-6 text-center"
+          >
+            <p className="text-sm text-gray-600">
+              {t('Already have an account?')}{' '}
+              <Link
+                to="/login"
+                className="font-semibold text-green-600 hover:text-green-700 transition-colors inline-flex items-center gap-1 group"
+              >
+                {t('Sign in')}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </p>
+          </motion.div>
+
+          {/* Footer */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-6 text-center text-xs text-gray-500"
+          >
+            <p>© 2025 Smart Agriculture Platform. All rights reserved.</p>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

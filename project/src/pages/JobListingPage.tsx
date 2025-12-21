@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import Header from '../components/Common/Header';
 import { jobService } from '../services/jobService';
 import LeafletMap from '../components/Common/LeafletMap';
 import { MapPin, Users, Calendar, DollarSign, Clock, Briefcase, Filter } from 'lucide-react';
@@ -81,14 +80,35 @@ const JobListingPage = () => {
         contactPhone = prompt(t('Enter contact phone (optional). Leave empty to use profile phone:' )) || undefined;
         contactName = prompt(t('Enter contact name (optional):')) || undefined;
       } catch {}
+      
       await jobService.applyForJob(jobId, message, contactPhone, contactName);
+      
       // Reload jobs to update application status
-      await loadJobs();
+      await loadJobs(userLocation?.lat, userLocation?.lng);
       alert(t('Application submitted successfully!'));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error applying for job:', error);
-      const msg = error?.response?.data?.error || error?.response?.data?.detail || error?.message || 'Failed to apply for job.';
-      alert(t(msg));
+      
+      // Extract error message from response
+      let errorMessage = t('Failed to apply for job. Please try again.');
+      
+      if (error?.response?.data) {
+        const errorData = error.response.data;
+        if (errorData.error) {
+          errorMessage = errorData.error;
+        } else if (errorData.detail) {
+          errorMessage = errorData.detail;
+        } else if (typeof errorData === 'string') {
+          errorMessage = errorData;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      // Show user-friendly error message
+      alert(errorMessage);
     } finally {
       setApplyingJob(null);
     }
@@ -121,20 +141,15 @@ const JobListingPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
-        <Header />
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
-      <Header />
-      
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 min-h-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
             <Briefcase className="h-8 w-8 text-blue-600 mr-3" />
@@ -366,7 +381,7 @@ const JobListingPage = () => {
             ))
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 };

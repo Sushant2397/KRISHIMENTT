@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../components/Common/Header';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import jobService from '../services/jobService';
-import { Users, Clock, Calendar, MapPin, CheckCircle, XCircle, MessageSquare, Phone } from 'lucide-react';
+import RatingModal from '../components/Common/RatingModal';
+import { Users, Clock, Calendar, MapPin, CheckCircle, XCircle, MessageSquare, Phone, Star, CheckCircle2 } from 'lucide-react';
 
 const WorkerApplications = () => {
   const { t } = useTranslation();
@@ -15,6 +15,8 @@ const WorkerApplications = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [applications, setApplications] = useState([]);
   const [processing, setProcessing] = useState(null);
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState(null);
 
   useEffect(() => {
     if (!user || user.role !== 'farmer') {
@@ -66,23 +68,61 @@ const WorkerApplications = () => {
     }
   };
 
+  const handleMarkCompleted = async (applicationId) => {
+    if (!selectedJob) return;
+    setProcessing(applicationId);
+    try {
+      await jobService.updateApplication(applicationId, { status: 'completed' });
+      await loadApplications(selectedJob);
+    } catch (e) {
+      alert(t('Failed to mark as completed'));
+    } finally {
+      setProcessing(null);
+    }
+  };
+
   const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
+
+  const handleOpenRatingModal = (application) => {
+    setSelectedApplication(application);
+    setRatingModalOpen(true);
+  };
+
+  const handleRatingSubmitted = () => {
+    if (selectedJob) {
+      loadApplications(selectedJob);
+    }
+  };
+
+  const renderStars = (rating) => {
+    return (
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`w-4 h-4 ${
+              star <= rating
+                ? 'fill-yellow-400 text-yellow-400'
+                : 'text-gray-300'
+            }`}
+          />
+        ))}
+        <span className="ml-1 text-sm text-gray-600">({rating}/5)</span>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
-        <Header />
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
-      <Header />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 min-h-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
             <Users className="h-8 w-8 text-blue-600 mr-3" />
@@ -168,6 +208,26 @@ const WorkerApplications = () => {
                           </div>
                         </div>
 
+                        {/* Rating display for completed jobs */}
+                        {app.status === 'completed' && app.has_rating && app.rating && (
+                          <div className="mb-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="text-sm font-medium text-gray-700 mb-1">
+                                  {t('Your Rating')}
+                                </div>
+                                {renderStars(app.rating.rating)}
+                              </div>
+                              {app.rating.comment && (
+                                <div className="text-sm text-gray-600 italic">
+                                  "{app.rating.comment}"
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Action buttons */}
                         {app.status === 'pending' && (
                           <div className="flex space-x-2">
                             <button
@@ -188,6 +248,29 @@ const WorkerApplications = () => {
                             </button>
                           </div>
                         )}
+
+                        {/* Mark as completed button for accepted applications */}
+                        {app.status === 'accepted' && (
+                          <button
+                            onClick={() => handleMarkCompleted(app.id)}
+                            disabled={processing === app.id}
+                            className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                          >
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            {t('Mark as Completed')}
+                          </button>
+                        )}
+
+                        {/* Rate button for completed jobs without rating */}
+                        {app.status === 'completed' && !app.has_rating && (
+                          <button
+                            onClick={() => handleOpenRatingModal(app)}
+                            className="w-full flex items-center justify-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                          >
+                            <Star className="h-4 w-4 mr-2 fill-current" />
+                            {t('Rate Performance')}
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -196,7 +279,15 @@ const WorkerApplications = () => {
             </div>
           </div>
         )}
-      </main>
+      </div>
+
+      {/* Rating Modal */}
+      <RatingModal
+        isOpen={ratingModalOpen}
+        onClose={() => setRatingModalOpen(false)}
+        jobApplication={selectedApplication}
+        onRatingSubmitted={handleRatingSubmitted}
+      />
     </div>
   );
 };

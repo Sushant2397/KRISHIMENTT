@@ -159,6 +159,107 @@ class JobApplication(models.Model):
     def __str__(self):
         return f"{self.labour.first_name} applied for {self.job.title}"
 
+# Rating model for farmers to rate laborers after job completion
+class LabourRating(models.Model):
+    RATING_CHOICES = [
+        (1, '1 - Poor'),
+        (2, '2 - Fair'),
+        (3, '3 - Good'),
+        (4, '4 - Very Good'),
+        (5, '5 - Excellent'),
+    ]
+    
+    job_application = models.OneToOneField(JobApplication, on_delete=models.CASCADE, related_name='rating')
+    farmer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='given_ratings')
+    labour = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='received_ratings')
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    comment = models.TextField(blank=True, help_text='Optional feedback about the laborer')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ['job_application', 'farmer']  # One rating per job application
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.farmer.first_name} rated {self.labour.first_name} - {self.rating}/5"
+
+# Skills model for laborers to showcase their skills
+class LabourSkill(models.Model):
+    SKILL_CATEGORIES = [
+        ('planting', 'Planting'),
+        ('harvesting', 'Harvesting'),
+        ('irrigation', 'Irrigation'),
+        ('pest_control', 'Pest Control'),
+        ('plowing', 'Plowing'),
+        ('fertilizing', 'Fertilizing'),
+        ('pruning', 'Pruning'),
+        ('livestock', 'Livestock Management'),
+        ('machinery', 'Machinery Operation'),
+        ('organic_farming', 'Organic Farming'),
+        ('other', 'Other'),
+    ]
+    
+    EXPERIENCE_LEVELS = [
+        ('beginner', 'Beginner (0-1 years)'),
+        ('intermediate', 'Intermediate (1-3 years)'),
+        ('advanced', 'Advanced (3-5 years)'),
+        ('expert', 'Expert (5+ years)'),
+    ]
+    
+    labour = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='skills')
+    skill_name = models.CharField(max_length=100)
+    category = models.CharField(max_length=30, choices=SKILL_CATEGORIES)
+    experience_level = models.CharField(max_length=20, choices=EXPERIENCE_LEVELS)
+    years_of_experience = models.PositiveIntegerField(default=0)
+    description = models.TextField(blank=True)
+    certifications = models.TextField(blank=True, help_text='Comma-separated list of certifications')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['labour', 'skill_name']  # Prevent duplicate skills
+    
+    def __str__(self):
+        return f"{self.labour.first_name} - {self.skill_name} ({self.get_experience_level_display()})"
+
+# Earnings model to track laborer earnings from completed jobs
+class LabourEarning(models.Model):
+    PAYMENT_STATUS = [
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('disputed', 'Disputed'),
+    ]
+    
+    job_application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='earnings')
+    labour = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='earnings')
+    job_title = models.CharField(max_length=200)
+    farmer_name = models.CharField(max_length=150)
+    wage_per_day = models.DecimalField(max_digits=10, decimal_places=2)
+    days_worked = models.PositiveIntegerField()
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending')
+    payment_date = models.DateField(null=True, blank=True)
+    payment_method = models.CharField(max_length=50, blank=True, help_text='Cash, Bank Transfer, UPI, etc.')
+    transaction_id = models.CharField(max_length=100, blank=True)
+    notes = models.TextField(blank=True)
+    job_start_date = models.DateField()
+    job_end_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.labour.first_name} - {self.job_title} - ₹{self.total_amount}"
+    
+    def save(self, *args, **kwargs):
+        # Auto-calculate total amount
+        if not self.total_amount:
+            self.total_amount = self.wage_per_day * self.days_worked
+        super().save(*args, **kwargs)
+
 # Simple notification model for notifying sellers about buyer inquiries
 class Notification(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')

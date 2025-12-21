@@ -4,6 +4,9 @@ from .views.equipment_views import EquipmentViewSet
 from .views.inquiry_views import InquiryViewSet
 from .views.notification_views import NotificationViewSet
 from .views.job_views import JobViewSet, JobApplicationViewSet
+from .views.rating_views import LabourRatingViewSet
+from .views.skills_views import LabourSkillViewSet
+from .views.earnings_views import LabourEarningViewSet
 from .views.auth_views import RegisterView, LoginView, AvailabilityView
 from .views.buy_equipment import buy_equipment 
 # DRF router for API endpoints
@@ -13,6 +16,9 @@ router.register(r'inquiries', InquiryViewSet, basename='inquiry')
 router.register(r'notifications', NotificationViewSet, basename='notification')
 router.register(r'jobs', JobViewSet, basename='job')
 router.register(r'job-applications', JobApplicationViewSet, basename='job-application')
+router.register(r'labour-ratings', LabourRatingViewSet, basename='labour-rating')
+router.register(r'labour-skills', LabourSkillViewSet, basename='labour-skill')
+router.register(r'labour-earnings', LabourEarningViewSet, basename='labour-earning')
 
 urlpatterns = [
     path('', include(router.urls)),  # include all routes

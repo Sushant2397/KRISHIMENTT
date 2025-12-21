@@ -179,7 +179,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from 'react-i18next'; // ✅ Add this
 
-const Header = ({ onMenuClick }) => {
+const Header = ({ onMenuClick, isSidebarOpen = false }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const { t } = useTranslation(); // ✅ translation hook
@@ -189,18 +189,38 @@ const Header = ({ onMenuClick }) => {
     if (onMenuClick) onMenuClick();
   };
 
+  const handleSidebarToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Button clicked! Current sidebar state:', isSidebarOpen);
+    if (onMenuClick) {
+      console.log('Calling onMenuClick');
+      onMenuClick();
+    } else {
+      console.error('onMenuClick is not defined!');
+    }
+  };
+
   return (
     <div className="bg-background border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
       <div className="h-16 px-4">
         <div className="flex items-center justify-between h-full max-w-7xl mx-auto">
-          {/* Logo */}
+          {/* Logo and Sidebar Toggle */}
           <div className="flex items-center space-x-4">
+            {/* 3-line Hamburger Menu Button for Sidebar */}
             <button
-              onClick={handleMenuClick}
-              className="p-2 rounded-md text-gray-600 hover:bg-gray-100 lg:hidden"
-              aria-label={t('Toggle menu')}
+              type="button"
+              onClick={handleSidebarToggle}
+              className="p-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 cursor-pointer relative z-50 border border-transparent hover:border-gray-300"
+              aria-label={t('Toggle sidebar')}
+              title={t('Toggle sidebar')}
+              style={{ minWidth: '40px', minHeight: '40px' }}
             >
-              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              <div className="w-6 h-6 flex flex-col justify-center items-center space-y-1.5 pointer-events-none">
+                <span className={`block h-0.5 w-6 bg-gray-700 transition-all duration-300 ${isSidebarOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                <span className={`block h-0.5 w-6 bg-gray-700 transition-all duration-300 ${isSidebarOpen ? 'opacity-0' : ''}`}></span>
+                <span className={`block h-0.5 w-6 bg-gray-700 transition-all duration-300 ${isSidebarOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+              </div>
             </button>
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">

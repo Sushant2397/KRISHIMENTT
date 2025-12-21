@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import Header from '../components/Common/Header';
 import LeafletMap from '../components/Common/LeafletMap';
 import { jobService } from '../services/jobService';
 import { MapPin, Users, Calendar, DollarSign, Clock, Upload, Map } from 'lucide-react';
@@ -279,10 +278,8 @@ const JobUploadPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
-      <Header />
-      
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 min-h-full">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="flex items-center mb-6">
             <Upload className="h-8 w-8 text-indigo-600 mr-3" />
@@ -641,7 +638,7 @@ const JobUploadPage = () => {
             )}
           </form>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

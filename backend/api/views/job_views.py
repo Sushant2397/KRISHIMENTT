@@ -173,37 +173,55 @@ class JobViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Check distance
+        # Check distance (only if user has location set)
         if request.user.latitude and request.user.longitude:
-            distance = calculate_distance(
-                request.user.latitude, request.user.longitude,
-                job.latitude, job.longitude
-            )
-            if distance > float(job.radius_km):
-                return Response(
-                    {'error': f'You are too far from this job location (>{job.radius_km}km)'}, 
-                    status=status.HTTP_400_BAD_REQUEST
+            try:
+                distance = calculate_distance(
+                    float(request.user.latitude), float(request.user.longitude),
+                    float(job.latitude), float(job.longitude)
                 )
+                if distance > float(job.radius_km):
+                    return Response(
+                        {'error': f'You are too far from this job location ({distance:.1f}km > {job.radius_km}km). Please update your location or find jobs closer to you.'}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            except (ValueError, TypeError) as e:
+                # If distance calculation fails, log but don't block application
+                print(f"Distance calculation error: {e}")
         
         # Create application
         application_data = {
-            'job': job.id,
+            'job': job.id,  # Pass job ID - DRF will convert to ForeignKey
             'message': request.data.get('message', ''),
             'contact_name': request.data.get('contact_name', ''),
             'contact_phone': request.data.get('contact_phone', ''),
         }
         
-        serializer = JobApplicationSerializer(data=application_data, context={'request': request})
+        serializer = JobApplicationSerializer(data=application_data, context={'request': request, 'job': job})
+        
+        # Debug: Print what we're sending
+        print(f"Application data: {application_data}")
+        print(f"Serializer is_valid: {serializer.is_valid()}")
+        if not serializer.is_valid():
+            print(f"Serializer errors: {serializer.errors}")
         if serializer.is_valid():
-            application = serializer.save()
+            try:
+                application = serializer.save()
+            except Exception as e:
+                print(f"Error saving application: {e}")
+                return Response(
+                    {'error': f'Failed to create application: {str(e)}'}, 
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
             
             # Notify farmer about new application
-            contact_phone = application.contact_phone or request.user.phone or ''
-            contact_name = application.contact_name or request.user.first_name or ''
-            Notification.objects.create(
-                user=job.farmer,
-                title=f"New Application for {job.title}",
-                message=(
+            try:
+                contact_phone = application.contact_phone or request.user.phone or ''
+                contact_name = application.contact_name or request.user.first_name or ''
+                Notification.objects.create(
+                    user=job.farmer,
+                    title=f"New Application for {job.title}",
+                    message=(
                     f"{request.user.first_name} has applied for your job. "
                     f"Contact: {contact_name} {('(' + contact_phone + ')') if contact_phone else ''}"
                 ).strip(),
@@ -211,9 +229,24 @@ class JobViewSet(viewsets.ModelViewSet):
                 job_application=application
             )
             
+            except Exception as e:
+                print(f"Error creating notification: {e}")
+                # Don't fail the application if notification fails
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Return serializer errors in a consistent format
+        error_messages = []
+        for field, errors in serializer.errors.items():
+            if isinstance(errors, list):
+                error_messages.extend([f"{field}: {error}" for error in errors])
+            else:
+                error_messages.append(f"{field}: {errors}")
+        
+        return Response(
+            {'error': ' '.join(error_messages) if error_messages else 'Invalid application data'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
     
     @action(detail=True, methods=['get'])
     def applications(self, request, pk=None):
@@ -432,3 +465,57 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             # Labours can see their own applications
             return JobApplication.objects.filter(labour=user)
         return JobApplication.objects.none()
+
+    def update(self, request, *args, **kwargs):
+        """Custom update to handle status changes"""
+        instance = self.get_object()
+        
+        # Check permissions
+        if request.user.role == 'farmer':
+            # Farmers can only update applications for their own jobs
+            if instance.job.farmer != request.user:
+                return Response(
+                    {'error': 'You can only update applications for your own jobs'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        elif request.user.role == 'labour':
+            # Labours can only update their own applications
+            if instance.labour != request.user:
+                return Response(
+                    {'error': 'You can only update your own applications'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        else:
+            return Response(
+                {'error': 'Invalid user role'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Only allow status updates
+        new_status = request.data.get('status')
+        if new_status:
+            # Validate status transition
+            if instance.status == 'pending' and new_status == 'completed':
+                return Response(
+                    {'error': 'Cannot mark pending application as completed. Please accept it first.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            if instance.status == 'rejected' and new_status == 'completed':
+                return Response(
+                    {'error': 'Cannot mark rejected application as completed.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Update status
+            instance.status = new_status
+            if new_status == 'completed' and not instance.responded_at:
+                # Set responded_at if marking as completed
+                instance.responded_at = timezone.now()
+            instance.save()
+            
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        
+        # For other fields, use default update
+        return super().update(request, *args, **kwargs)

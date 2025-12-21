@@ -108,12 +108,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Common/Header';
 import DashboardCard from '../components/Common/DashboardCard';
 import { LABOUR_CARDS } from '../utils/constants';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import userService from '../services/userService';
+import ratingService from '../services/ratingService';
+import { Star } from 'lucide-react';
 
 const LabourDashboard = () => {
   const { t } = useTranslation();
@@ -121,6 +122,8 @@ const LabourDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isAvailable, setIsAvailable] = useState(null);
+  const [averageRating, setAverageRating] = useState(null);
+  const [totalRatings, setTotalRatings] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -129,6 +132,16 @@ const LabourDashboard = () => {
         setIsAvailable(!!res.data.is_available);
       } catch (e) {
         setIsAvailable(null);
+      }
+      
+      // Load rating data
+      try {
+        const ratingRes = await ratingService.getMyAverageRating();
+        setAverageRating(ratingRes.data.average_rating);
+        setTotalRatings(ratingRes.data.total_ratings);
+      } catch (e) {
+        console.error('Failed to load rating:', e);
+        setAverageRating(null);
       } finally {
         setLoading(false);
       }
@@ -170,10 +183,8 @@ const LabourDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
-      <Header />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 min-h-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Availability toggle */}
         <div className="mb-6 bg-white rounded-xl shadow p-4 flex items-center justify-between">
           <div>
@@ -246,11 +257,26 @@ const LabourDashboard = () => {
             </div>
             <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-4 text-white">
               <h3 className="text-lg font-semibold mb-2">{t('Rating')}</h3>
-              <p className="text-2xl font-bold">4.8⭐</p>
+              {averageRating !== null ? (
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-2xl font-bold">{averageRating.toFixed(1)}</p>
+                    <Star className="w-6 h-6 fill-current" />
+                  </div>
+                  <p className="text-sm opacity-90">
+                    {totalRatings} {totalRatings === 1 ? t('rating') : t('ratings')}
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-2xl font-bold">-</p>
+                  <p className="text-sm opacity-90">{t('No ratings yet')}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

@@ -227,13 +227,17 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../contexts/AuthContext';
+import { Briefcase } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
   const [openSubmenu, setOpenSubmenu] = React.useState(null);
   const { t } = useTranslation(); // Translation hook
+  const { user } = useAuth(); // Get user role
 
-  const menuItems = [
+  // Base menu items
+  const baseMenuItems = [
     { 
       title: t('Dashboard'), 
       icon: <Home size={20} />, 
@@ -256,15 +260,6 @@ const Sidebar = ({ isOpen, onClose }) => {
       ]
     },
     { 
-      title: t('Worker Management'), 
-      icon: <Users size={20} />, 
-      path: '/workers',
-      submenu: [
-        { title: t('Applications'), path: '/workers/applications' },
-        { title: t('Post Jobs'), path: '/upload-jobs' }
-      ]
-    },
-    { 
       title: t('Market Prices'), 
       icon: <BarChart2 size={20} />, 
       path: '/market-prices',
@@ -284,6 +279,37 @@ const Sidebar = ({ isOpen, onClose }) => {
     }
   ];
 
+  // Role-specific menu items
+  const roleSpecificItems = [];
+  
+  if (user?.role === 'labour') {
+    // For laborers: Show "Find Jobs" instead of "Worker Management"
+    roleSpecificItems.push({
+      title: t('Find Jobs'),
+      icon: <Briefcase size={20} />,
+      path: '/jobs',
+      submenu: []
+    });
+  } else if (user?.role === 'farmer') {
+    // For farmers: Show "Worker Management"
+    roleSpecificItems.push({
+      title: t('Worker Management'),
+      icon: <Users size={20} />,
+      path: '/workers',
+      submenu: [
+        { title: t('Applications'), path: '/worker-applications' },
+        { title: t('Post Jobs'), path: '/upload-jobs' }
+      ]
+    });
+  }
+
+  // Combine base items with role-specific items (insert role-specific items after Equipment Marketplace)
+  const menuItems = [
+    ...baseMenuItems.slice(0, 3), // Dashboard, Government Schemes, Equipment Marketplace
+    ...roleSpecificItems, // Role-specific items
+    ...baseMenuItems.slice(3) // Market Prices, Notifications, History
+  ];
+
   const toggleSubmenu = (index) => {
     setOpenSubmenu(openSubmenu === index ? null : index);
   };
@@ -296,7 +322,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   return (
     <aside 
       className={cn(
-        "fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out",
         isOpen ? 'translate-x-0' : '-translate-x-full'
       )}
       aria-label="Sidebar"

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from .models import Equipment, Inquiry, Notification, Job, JobApplication
+from .models import Equipment, Inquiry, Notification, Job, JobApplication, LabourRating, LabourSkill, LabourEarning
 
 User = get_user_model()
 
@@ -189,6 +189,8 @@ class JobApplicationSerializer(serializers.ModelSerializer):
     labour_phone = serializers.CharField(source='labour.phone', read_only=True)
     applied_at = serializers.DateTimeField(read_only=True)
     responded_at = serializers.DateTimeField(read_only=True)
+    has_rating = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
 
     class Meta:
         model = JobApplication
@@ -196,12 +198,117 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             'id', 'job', 'job_title', 'job_category', 'job_wage',
             'labour', 'labour_name', 'labour_phone', 'message',
             'contact_name', 'contact_phone',
-            'status', 'applied_at', 'responded_at'
+            'status', 'applied_at', 'responded_at', 'has_rating', 'rating'
         ]
         read_only_fields = ['labour', 'applied_at', 'responded_at']
+
+    def get_has_rating(self, obj):
+        try:
+            return hasattr(obj, 'rating') and obj.rating is not None
+        except Exception:
+            return False
+
+    def get_rating(self, obj):
+        try:
+            if hasattr(obj, 'rating') and obj.rating:
+                return {
+                    'id': obj.rating.id,
+                    'rating': obj.rating.rating,
+                    'comment': obj.rating.comment,
+                    'created_at': obj.rating.created_at
+                }
+        except Exception:
+            pass
+        return None
 
     def create(self, validated_data):
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['labour'] = request.user
+        
+        # Ensure job is set - prefer from context (job object) over validated_data (job ID)
+        job = self.context.get('job')
+        if job:
+            # Use the job object from context if available
+            validated_data['job'] = job
+        elif 'job' in validated_data and validated_data['job']:
+            # If job is an ID in validated_data, ensure it's converted to object
+            job_id = validated_data['job']
+            if isinstance(job_id, int):
+                from ..models import Job
+                validated_data['job'] = Job.objects.get(id=job_id)
+        
+        # Ensure job is set - raise error if not
+        if 'job' not in validated_data or validated_data.get('job') is None:
+            raise serializers.ValidationError({'job': 'Job is required'})
+        
+        return super().create(validated_data)
+
+class LabourRatingSerializer(serializers.ModelSerializer):
+    farmer_name = serializers.CharField(source='farmer.first_name', read_only=True)
+    labour_name = serializers.CharField(source='labour.first_name', read_only=True)
+    job_title = serializers.CharField(source='job_application.job.title', read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = LabourRating
+        fields = [
+            'id', 'job_application', 'farmer', 'farmer_name', 'labour', 'labour_name',
+            'rating', 'comment', 'created_at', 'job_title'
+        ]
+        read_only_fields = ['farmer', 'labour', 'created_at']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['farmer'] = request.user
+            # Get labour from job_application
+            job_application = validated_data.get('job_application')
+            if job_application:
+                validated_data['labour'] = job_application.labour
+        return super().create(validated_data)
+
+class LabourSkillSerializer(serializers.ModelSerializer):
+    labour_name = serializers.CharField(source='labour.first_name', read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+    updated_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = LabourSkill
+        fields = [
+            'id', 'labour', 'labour_name', 'skill_name', 'category',
+            'experience_level', 'years_of_experience', 'description',
+            'certifications', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['labour', 'created_at', 'updated_at']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['labour'] = request.user
+        return super().create(validated_data)
+
+class LabourEarningSerializer(serializers.ModelSerializer):
+    labour_name = serializers.CharField(source='labour.first_name', read_only=True)
+    job_title_display = serializers.CharField(source='job_title', read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+    updated_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = LabourEarning
+        fields = [
+            'id', 'job_application', 'labour', 'labour_name', 'job_title', 'job_title_display',
+            'farmer_name', 'wage_per_day', 'days_worked', 'total_amount',
+            'payment_status', 'payment_date', 'payment_method', 'transaction_id',
+            'notes', 'job_start_date', 'job_end_date', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['labour', 'total_amount', 'created_at', 'updated_at']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['labour'] = request.user
+            # Auto-calculate total amount
+            if 'wage_per_day' in validated_data and 'days_worked' in validated_data:
+                validated_data['total_amount'] = validated_data['wage_per_day'] * validated_data['days_worked']
         return super().create(validated_data)

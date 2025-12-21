@@ -23,6 +23,8 @@ import JobUploadPage from "../pages/JobUploadPage";
 import JobListingPage from "../pages/JobListingPage";
 import MyApplications from "../pages/MyApplications.jsx";
 import WorkerApplications from "../pages/WorkerApplications.jsx";
+import MySkills from "../pages/MySkills.jsx";
+import MyEarnings from "../pages/MyEarnings.jsx";
 
 // Constants
 import { USER_ROLES } from "../utils/constants";
@@ -114,6 +116,8 @@ const AppContent = () => {
         <Route path="/jobs" element={<JobListingPage />} />
         <Route path="/my-applications" element={<MyApplications />} />
         <Route path="/worker-applications" element={<WorkerApplications />} />
+        <Route path="/skills" element={<MySkills />} />
+        <Route path="/earnings" element={<MyEarnings />} />
         {/* Keep the old routes for backward compatibility */}
         <Route path="/marketplace" element={<Navigate to="/equipment/buy" replace />} />
         <Route path="/buy-sell" element={<Navigate to="/equipment/buy" replace />} />
