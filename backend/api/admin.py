@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Todo
+from .models import CustomUser, Todo, Landmark, LandmarkDistance
 
 # Register your models here.
 
@@ -25,3 +25,23 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Todo)
+
+
+class LandmarkDistanceInline(admin.TabularInline):
+    model = LandmarkDistance
+    fk_name = 'from_landmark'
+    extra = 0
+
+
+@admin.register(Landmark)
+class LandmarkAdmin(admin.ModelAdmin):
+    list_display = ('name', 'location_type', 'latitude', 'longitude')
+    list_filter = ('location_type',)
+    search_fields = ('name', 'address')
+    inlines = [LandmarkDistanceInline]
+
+
+@admin.register(LandmarkDistance)
+class LandmarkDistanceAdmin(admin.ModelAdmin):
+    list_display = ('from_landmark', 'to_landmark', 'distance_km', 'travel_time_min')
+    list_filter = ('from_landmark', 'to_landmark')

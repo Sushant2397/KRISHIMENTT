@@ -1,0 +1,2 @@
+# Load .env for OPENAI_API_KEY (AI assistant)
+python-dotenv>=1.0.0

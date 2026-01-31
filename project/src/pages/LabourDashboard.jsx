@@ -114,6 +114,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import userService from '../services/userService';
 import ratingService from '../services/ratingService';
+import jobService from '../services/jobService';
 import { Star } from 'lucide-react';
 
 const LabourDashboard = () => {
@@ -124,6 +125,8 @@ const LabourDashboard = () => {
   const [isAvailable, setIsAvailable] = useState(null);
   const [averageRating, setAverageRating] = useState(null);
   const [totalRatings, setTotalRatings] = useState(0);
+  const [applicationsSent, setApplicationsSent] = useState(0);
+  const [jobsCompleted, setJobsCompleted] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -142,6 +145,19 @@ const LabourDashboard = () => {
       } catch (e) {
         console.error('Failed to load rating:', e);
         setAverageRating(null);
+      }
+
+      // Load application statistics
+      try {
+        const applicationsRes = await jobService.getMyApplications();
+        const applications = applicationsRes.data || [];
+        setApplicationsSent(applications.length);
+        const completedCount = applications.filter(app => app.status === 'completed').length;
+        setJobsCompleted(completedCount);
+      } catch (e) {
+        console.error('Failed to load applications:', e);
+        setApplicationsSent(0);
+        setJobsCompleted(0);
       } finally {
         setLoading(false);
       }
@@ -249,11 +265,11 @@ const LabourDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-white">
               <h3 className="text-lg font-semibold mb-2">{t('Applications Sent')}</h3>
-              <p className="text-2xl font-bold">23</p>
+              <p className="text-2xl font-bold">{applicationsSent}</p>
             </div>
             <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-white">
               <h3 className="text-lg font-semibold mb-2">{t('Jobs Completed')}</h3>
-              <p className="text-2xl font-bold">15</p>
+              <p className="text-2xl font-bold">{jobsCompleted}</p>
             </div>
             <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-4 text-white">
               <h3 className="text-lg font-semibold mb-2">{t('Rating')}</h3>

@@ -7,8 +7,9 @@ from django.utils import timezone
 from decimal import Decimal
 import math
 
-from ..models import Job, JobApplication, CustomUser, Notification
+from ..models import Job, JobApplication, CustomUser, Notification, LabourEarning, Landmark, LandmarkDistance
 from ..serializers import JobSerializer, JobApplicationSerializer
+from ..routing_service import compute_optimal_route
 
 
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -448,6 +449,72 @@ class JobViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @action(detail=False, methods=['get'], url_path='route')
+    def route(self, request):
+        """
+        Compute optimal route between farmer/job location and destination (labour, mandi, warehouse).
+        Uses Dijkstra for local routing and Spatial Landmark Model (SLM) for long-distance.
+        Query params: from_lat, from_lon, to_lat, to_lon; optional to_type, to_id, to_label.
+        """
+        if not request.user.is_authenticated:
+            return Response(
+                {'error': 'Authentication required'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        from_lat = request.query_params.get('from_lat')
+        from_lon = request.query_params.get('from_lon')
+        to_lat = request.query_params.get('to_lat')
+        to_lon = request.query_params.get('to_lon')
+        to_type = request.query_params.get('to_type', 'labour')
+        to_id = request.query_params.get('to_id')
+        to_label = request.query_params.get('to_label', 'Destination')
+        if not all([from_lat, from_lon, to_lat, to_lon]):
+            return Response(
+                {'error': 'from_lat, from_lon, to_lat, to_lon are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            from_lat = float(from_lat)
+            from_lon = float(from_lon)
+            to_lat = float(to_lat)
+            to_lon = float(to_lon)
+        except (ValueError, TypeError):
+            return Response(
+                {'error': 'Invalid latitude/longitude values'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        # Labour nodes: destination plus nearby labours (for graph connectivity)
+        labour_nodes = [
+            {
+                'id': 'dest',
+                'lat': to_lat,
+                'lon': to_lon,
+                'label': to_label or 'Destination',
+            }
+        ]
+        radius_km = 80
+        labours = CustomUser.objects.filter(
+            role='labour',
+            latitude__isnull=False,
+            longitude__isnull=False,
+        )
+        for labour in labours:
+            d = calculate_distance(from_lat, from_lon, float(labour.latitude), float(labour.longitude))
+            if d <= radius_km:
+                labour_nodes.append({
+                    'id': f'labour_{labour.id}',
+                    'lat': float(labour.latitude),
+                    'lon': float(labour.longitude),
+                    'label': labour.first_name or labour.email,
+                })
+        result = compute_optimal_route(
+            from_lat, from_lon, to_lat, to_lon,
+            labour_nodes,
+            Landmark.objects.all(),
+            LandmarkDistance.objects.all(),
+        )
+        return Response(result)
+
 
 class JobApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = JobApplicationSerializer
@@ -508,11 +575,37 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
                 )
             
             # Update status
+            old_status = instance.status
             instance.status = new_status
             if new_status == 'completed' and not instance.responded_at:
                 # Set responded_at if marking as completed
                 instance.responded_at = timezone.now()
             instance.save()
+            
+            # Automatically create earning record when job is marked as completed
+            if new_status == 'completed' and old_status != 'completed':
+                try:
+                    # Check if earning already exists
+                    if not LabourEarning.objects.filter(job_application=instance).exists():
+                        job = instance.job
+                        days_worked = (job.end_date - job.start_date).days + 1
+                        if days_worked < 1:
+                            days_worked = 1
+                        
+                        LabourEarning.objects.create(
+                            job_application=instance,
+                            labour=instance.labour,
+                            job_title=job.title,
+                            farmer_name=job.farmer.first_name,
+                            wage_per_day=job.wage_per_day,
+                            days_worked=days_worked,
+                            job_start_date=job.start_date,
+                            job_end_date=job.end_date,
+                            payment_status='pending'
+                        )
+                except Exception as e:
+                    # Log error but don't fail the status update
+                    print(f"Error creating earning record: {e}")
             
             serializer = self.get_serializer(instance)
             return Response(serializer.data)

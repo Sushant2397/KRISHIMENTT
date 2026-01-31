@@ -281,3 +281,41 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.user.email}: {self.title}"
+
+
+# Routing: landmarks (mandis, warehouses) for Spatial Landmark Model (SLM)
+class Landmark(models.Model):
+    """Major locations used as landmarks for long-distance route optimization (SLM)."""
+    TYPE_CHOICES = [
+        ('mandi', 'Mandi'),
+        ('warehouse', 'Warehouse'),
+        ('market', 'Market'),
+    ]
+    name = models.CharField(max_length=200)
+    location_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    address = models.CharField(max_length=300, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.name} ({self.get_location_type_display()})"
+
+
+class LandmarkDistance(models.Model):
+    """Pre-computed distance between two landmarks for fast SLM routing."""
+    from_landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE, related_name='distances_from')
+    to_landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE, related_name='distances_to')
+    distance_km = models.DecimalField(max_digits=10, decimal_places=2)
+    travel_time_min = models.PositiveIntegerField(help_text='Estimated travel time in minutes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['from_landmark', 'to_landmark']
+        ordering = ['from_landmark', 'to_landmark']
+
+    def __str__(self):
+        return f"{self.from_landmark.name} → {self.to_landmark.name}: {self.distance_km}km"

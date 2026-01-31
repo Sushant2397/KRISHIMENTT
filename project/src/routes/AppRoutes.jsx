@@ -152,10 +152,6 @@ const AppContent = () => {
   );
 };
 
-const AppRoutes = () => (
-  <AuthProvider>
-    <AppContent />
-  </AuthProvider>
-);
+const AppRoutes = () => <AppContent />;
 
 export default AppRoutes;

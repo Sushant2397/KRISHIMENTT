@@ -44,6 +44,15 @@ const MyEarnings = () => {
       setEarnings(earningsRes.data || []);
     } catch (e) {
       console.error('Failed to load earnings:', e);
+      // Set default values if API fails
+      setSummary({
+        total_earnings: 0,
+        total_jobs: 0,
+        paid_earnings: 0,
+        pending_earnings: 0,
+        monthly_earnings: []
+      });
+      setEarnings([]);
     } finally {
       setLoading(false);
     }
@@ -130,7 +139,7 @@ const MyEarnings = () => {
               <p className="text-sm opacity-90 mb-1">{t('Paid Earnings')}</p>
               <p className="text-3xl font-bold">{formatCurrency(summary.paid_earnings)}</p>
               <p className="text-sm opacity-75 mt-2">
-                {((summary.paid_earnings / summary.total_earnings) * 100 || 0).toFixed(0)}% {t('of total')}
+                {summary.total_earnings > 0 ? ((summary.paid_earnings / summary.total_earnings) * 100).toFixed(0) : 0}% {t('of total')}
               </p>
             </motion.div>
 
