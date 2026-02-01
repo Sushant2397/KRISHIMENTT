@@ -333,6 +333,11 @@
   "Cancel": "रद्द करें",
   "Create Job": "नौकरी बनाएं",
   "Creating Job...": "नौकरी बनाई जा रही है...",
+  "Get route": "मार्ग प्राप्त करें",
+  "Optimal route": "इष्टतम मार्ग",
+  "Computing optimal route...": "इष्टतम मार्ग गणना हो रहा है...",
+  "Dijkstra's algorithm": "डिज्क्स्ट्रा एल्गोरिथम",
+  "Spatial Landmark Model": "स्थानिक लैंडमार्क मॉडल",
 
 
   "Farm Equipment Marketplace": "कृषि उपकरण बाजार",

@@ -50,6 +50,18 @@ export const jobService = {
     API.get('/jobs/labour_count/', {
       params: { latitude, longitude, radius }
     }),
+
+  // Get optimal route (Dijkstra local / SLM long-distance)
+  getOptimalRoute: (fromLat: number, fromLon: number, toLat: number, toLon: number, toLabel?: string) =>
+    API.get('/jobs/route/', {
+      params: {
+        from_lat: fromLat,
+        from_lon: fromLon,
+        to_lat: toLat,
+        to_lon: toLon,
+        to_label: toLabel || 'Destination'
+      }
+    }),
   
   // Get job applications for labour
   getMyApplications: () => API.get('/job-applications/'),

@@ -8,7 +8,8 @@ from .views.rating_views import LabourRatingViewSet
 from .views.skills_views import LabourSkillViewSet
 from .views.earnings_views import LabourEarningViewSet
 from .views.auth_views import RegisterView, LoginView, AvailabilityView
-from .views.buy_equipment import buy_equipment 
+from .views.buy_equipment import buy_equipment
+from .views.ai_views import AIChatView
 # DRF router for API endpoints
 router = routers.DefaultRouter()
 router.register(r'equipment', EquipmentViewSet, basename='equipment')
@@ -26,7 +27,7 @@ urlpatterns = [
     path('auth/login/', LoginView.as_view(), name='login'),
     path('auth/me/availability/', AvailabilityView.as_view(), name='availability'),
     path('buy-equipment/', buy_equipment, name='buy_equipment'),
- 
+    path('ai/chat/', AIChatView.as_view(), name='ai-chat'),
     # Equipment endpoints
     path('equipment/categories/', EquipmentViewSet.as_view({'get': 'categories'}), name='equipment-categories'),
     path('equipment/conditions/', EquipmentViewSet.as_view({'get': 'conditions'}), name='equipment-conditions'),

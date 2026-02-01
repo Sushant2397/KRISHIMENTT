@@ -180,7 +180,12 @@
   "usedLikeNew": "Used - Like New",
   "usedGood": "Used - Good",
   "usedFair": "Used - Fair",
-  "failedToLoad": "Failed to load equipment listings. Please try again later."
+  "failedToLoad": "Failed to load equipment listings. Please try again later.",
+  "Get route": "Get route",
+  "Optimal route": "Optimal route",
+  "Computing optimal route...": "Computing optimal route...",
+  "Dijkstra's algorithm": "Dijkstra's algorithm",
+  "Spatial Landmark Model": "Spatial Landmark Model"
 
 
   

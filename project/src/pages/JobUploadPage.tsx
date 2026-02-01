@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import LeafletMap from '../components/Common/LeafletMap';
+import type { RouteWaypoint } from '../components/Common/LeafletMap';
 import { jobService } from '../services/jobService';
-import { MapPin, Users, Calendar, DollarSign, Clock, Upload, Map } from 'lucide-react';
+import { MapPin, Users, Calendar, DollarSign, Clock, Upload, Map, Navigation } from 'lucide-react';
 
 interface FormData {
   title: string;
@@ -61,6 +62,10 @@ const JobUploadPage = () => {
   const [checkingLocation, setCheckingLocation] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [showMap, setShowMap] = useState(false);
+  const [routeWaypoints, setRouteWaypoints] = useState<RouteWaypoint[]>([]);
+  const [routeInfo, setRouteInfo] = useState<{ total_distance_km: number; total_time_min: number; algorithm_used: string } | null>(null);
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [routeError, setRouteError] = useState<string | null>(null);
 
   // Normalize and validate coordinates; auto-swap if user entered reversed order
   const normalizeCoords = (lat: number, lon: number) => {
@@ -203,6 +208,41 @@ const JobUploadPage = () => {
         ...prev,
         labourCheck: t('Failed to check labour availability: ') + (error.response?.data?.error || error.message)
       }));
+    }
+  };
+
+  const getOptimalRoute = async (labour: Labour) => {
+    if (!formData.latitude || !formData.longitude || typeof labour.latitude !== 'number' || typeof labour.longitude !== 'number') {
+      setRouteError(t('Location and labour coordinates are required'));
+      return;
+    }
+    setRouteLoading(true);
+    setRouteError(null);
+    setRouteWaypoints([]);
+    setRouteInfo(null);
+    try {
+      const response = await jobService.getOptimalRoute(
+        parseFloat(formData.latitude),
+        parseFloat(formData.longitude),
+        labour.latitude,
+        labour.longitude,
+        labour.name
+      );
+      const data = response.data as { waypoints: RouteWaypoint[]; total_distance_km: number; total_time_min: number; algorithm_used: string };
+      setRouteWaypoints(data.waypoints || []);
+      setRouteInfo({
+        total_distance_km: data.total_distance_km,
+        total_time_min: data.total_time_min,
+        algorithm_used: data.algorithm_used
+      });
+      if (!showMap) setShowMap(true);
+    } catch (err: unknown) {
+      const message = err && typeof err === 'object' && 'response' in err && err.response && typeof (err.response as { data?: { error?: string } }).data?.error === 'string'
+        ? (err.response as { data: { error: string } }).data.error
+        : t('Failed to compute route');
+      setRouteError(message);
+    } finally {
+      setRouteLoading(false);
     }
   };
 
@@ -557,12 +597,26 @@ const JobUploadPage = () => {
                       <h4 className="font-medium text-gray-900 mb-2">{t('Nearby Labours')}:</h4>
                       <div className="space-y-2">
                         {availableLabours.slice(0, 5).map((labour, index) => (
-                          <div key={index} className="bg-white rounded-lg p-3 flex justify-between items-center">
+                          <div key={index} className="bg-white rounded-lg p-3 flex justify-between items-center flex-wrap gap-2">
                             <div>
                               <span className="font-medium">{labour.name}</span>
                               <span className="text-sm text-gray-600 ml-2">({labour.phone})</span>
                             </div>
-                            <span className="text-sm text-blue-600">{labour.distance}km</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-blue-600">{labour.distance}km</span>
+                              {typeof labour.latitude === 'number' && typeof labour.longitude === 'number' && (
+                                <button
+                                  type="button"
+                                  onClick={() => getOptimalRoute(labour)}
+                                  disabled={routeLoading}
+                                  className="px-2 py-1 text-xs font-medium bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-1"
+                                  title={t('Get optimal route (Dijkstra / SLM)')}
+                                >
+                                  <Navigation className="h-3 w-3" />
+                                  {t('Get route')}
+                                </button>
+                              )}
+                            </div>
                           </div>
                         ))}
                         {availableLabours.length > 5 && (
@@ -572,6 +626,29 @@ const JobUploadPage = () => {
                         )}
                       </div>
                     </div>
+                  )}
+                  {routeLoading && (
+                    <p className="text-sm text-gray-600 flex items-center gap-2">
+                      <span className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent" />
+                      {t('Computing optimal route...')}
+                    </p>
+                  )}
+                  {routeInfo && (
+                    <div className="bg-green-50 rounded-lg p-3 mt-2 flex items-center gap-3 flex-wrap">
+                      <Navigation className="h-5 w-5 text-green-600" />
+                      <div className="text-sm text-green-800">
+                        <span className="font-medium">{t('Optimal route')}:</span>{' '}
+                        {routeInfo.total_distance_km} km, ~{routeInfo.total_time_min} min
+                        {routeInfo.algorithm_used && (
+                          <span className="ml-2 text-green-700">
+                            ({routeInfo.algorithm_used === 'slm' ? t('Spatial Landmark Model') : routeInfo.algorithm_used === 'dijkstra' ? t("Dijkstra's algorithm") : routeInfo.algorithm_used})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {routeError && (
+                    <p className="text-sm text-red-600 mt-2">{routeError}</p>
                   )}
                 </div>
               )}
@@ -591,6 +668,7 @@ const JobUploadPage = () => {
                     zoom={13}
                     height="420px"
                     circleRadiusKm={searchRadius}
+                    routeWaypoints={routeWaypoints}
                     points={availableLabours
                       .filter(l => typeof l.latitude === 'number' && typeof l.longitude === 'number')
                       .map(l => ({

@@ -191,6 +191,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
     responded_at = serializers.DateTimeField(read_only=True)
     has_rating = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
+    has_earning = serializers.SerializerMethodField()
 
     class Meta:
         model = JobApplication
@@ -198,7 +199,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             'id', 'job', 'job_title', 'job_category', 'job_wage',
             'labour', 'labour_name', 'labour_phone', 'message',
             'contact_name', 'contact_phone',
-            'status', 'applied_at', 'responded_at', 'has_rating', 'rating'
+            'status', 'applied_at', 'responded_at', 'has_rating', 'rating', 'has_earning'
         ]
         read_only_fields = ['labour', 'applied_at', 'responded_at']
 
@@ -220,6 +221,13 @@ class JobApplicationSerializer(serializers.ModelSerializer):
         except Exception:
             pass
         return None
+
+    def get_has_earning(self, obj):
+        try:
+            from ..models import LabourEarning
+            return LabourEarning.objects.filter(job_application=obj).exists()
+        except Exception:
+            return False
 
     def create(self, validated_data):
         request = self.context.get('request')
