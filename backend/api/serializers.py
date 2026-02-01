@@ -312,3 +312,8 @@ class LabourEarningSerializer(serializers.ModelSerializer):
             if 'wage_per_day' in validated_data and 'days_worked' in validated_data:
                 validated_data['total_amount'] = validated_data['wage_per_day'] * validated_data['days_worked']
         return super().create(validated_data)
+
+
+
+
+
