@@ -4,9 +4,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { USER_ROLES } from '../utils/constants';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BasicDetailsStep } from '../components/Auth/signup/BasicDetailsStep';
-import { AadhaarVerificationStep } from '../components/Auth/signup/AadhaarVerificationStep';
-import { ProfileCompletionStep } from '../components/Auth/signup/ProfileCompletionStep';
+import { BasicDetailsStep } from '../components/auth/signup/BasicDetailsStep';
+import { AadhaarVerificationStep } from '../components/auth/signup/AadhaarVerificationStep';
+import { ProfileCompletionStep } from '../components/auth/signup/ProfileCompletionStep';
 import { Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 
 const Register = () => {

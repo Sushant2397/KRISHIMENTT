@@ -6,8 +6,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { BoltInput } from '../components/Auth/BoltInput';
-import { BoltButton } from '../components/Auth/BoltButton';
+import { BoltInput } from '../components/auth/BoltInput';
+import { BoltButton } from '../components/auth/BoltButton';
 import { Mail, Lock, Sparkles, ArrowRight } from 'lucide-react';
 
 const loginSchema = z.object({
