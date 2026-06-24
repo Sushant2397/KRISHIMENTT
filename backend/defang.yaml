@@ -1,0 +1,6 @@
+
+services:
+  - name: backend
+    build: .
+    ports:
+      - 8000

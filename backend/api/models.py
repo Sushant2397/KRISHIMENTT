@@ -281,3 +281,34 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.user.email}: {self.title}"
+    
+
+# Landmark model
+class Landmark(models.Model):
+    LOCATION_TYPES = [
+        ('farm', 'Farm'),
+        ('market', 'Market'),
+        ('warehouse', 'Warehouse'),
+        ('other', 'Other'),
+    ]
+
+    name = models.CharField(max_length=255)
+    location_type = models.CharField(max_length=20, choices=LOCATION_TYPES, default='other')
+    address = models.CharField(max_length=300, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+
+    def __str__(self):
+        return f"{self.name} ({self.get_location_type_display()})"
+
+
+# Landmark Distance model
+class LandmarkDistance(models.Model):
+    from_landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE, related_name='distances_from')
+    to_landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE, related_name='distances_to')
+    
+    distance_km = models.DecimalField(max_digits=6, decimal_places=2)
+    travel_time_min = models.IntegerField()  # ✅ Added field required by admin
+
+    def __str__(self):
+        return f"{self.from_landmark} → {self.to_landmark} ({self.distance_km} km, {self.travel_time_min} min)"
