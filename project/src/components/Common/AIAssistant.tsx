@@ -62,8 +62,6 @@ const AIAssistant: React.FC = () => {
     }
   };
 
-  if (!user) return null;
-
   return (
     <>
       <button
@@ -97,7 +95,9 @@ const AIAssistant: React.FC = () => {
           >
             {messages.length === 0 && (
               <p className="text-sm text-gray-500 text-center py-4">
-                Ask about farming, jobs, labour, schemes, or the platform.
+                {user
+                  ? 'Ask about farming, jobs, labour, schemes, or the platform.'
+                  : 'Sign in to ask about farming, jobs, labour, schemes, or the platform.'}
               </p>
             )}
             {messages.map((msg, i) => (
@@ -136,12 +136,12 @@ const AIAssistant: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message..."
               className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              disabled={loading}
+              disabled={loading || !user}
             />
             <Button
               type="submit"
               size="icon"
-              disabled={loading || !input.trim()}
+              disabled={loading || !input.trim() || !user}
               className="shrink-0 bg-emerald-600 hover:bg-emerald-700"
             >
               {loading ? (

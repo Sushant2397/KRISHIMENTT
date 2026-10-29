@@ -134,8 +134,6 @@ class JobSerializer(serializers.ModelSerializer):
         read_only_fields = ['farmer', 'created_at', 'updated_at']
 
     def validate(self, data):
-        print(f"Validating job data: {data}")
-        
         # Check if end_date is after start_date
         if 'start_date' in data and 'end_date' in data:
             if data['start_date'] >= data['end_date']:
@@ -170,16 +168,7 @@ class JobSerializer(serializers.ModelSerializer):
         if request and hasattr(request, 'user'):
             validated_data['farmer'] = request.user
         
-        print(f"Creating job with validated data: {validated_data}")
-        
-        try:
-            job = super().create(validated_data)
-            print(f"Job created successfully with ID: {job.id}")
-            return job
-        except Exception as e:
-            print(f"Error creating job: {e}")
-            print(f"Validated data: {validated_data}")
-            raise
+        return super().create(validated_data)
 
 class JobApplicationSerializer(serializers.ModelSerializer):
     job_title = serializers.CharField(source='job.title', read_only=True)

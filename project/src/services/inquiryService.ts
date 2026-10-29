@@ -1,3 +1,5 @@
+import API from './api';
+
 // export interface CreateInquiryPayload {
 //   equipment: number | string;
 //   buyer_name: string;
@@ -39,40 +41,14 @@ export interface BuyEquipmentPayload {
 }
 
 export async function buyEquipment(payload: BuyEquipmentPayload) {
-  const response = await fetch('http://localhost:8000/api/buy-equipment/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error?.detail || error?.message || 'Failed to send inquiry');
-  }
-
-  return response.json();
+  const response = await API.post('/buy-equipment/', payload);
+  return response.data;
 }
 
 
 
 export async function getMyInquiries() {
-  const tokensRaw = localStorage.getItem('tokens');
-  if (!tokensRaw) throw new Error('Not authenticated');
-  const tokens = JSON.parse(tokensRaw);
-  const access = tokens?.access;
-  if (!access) throw new Error('Not authenticated');
-
-  const response = await fetch('http://localhost:8000/api/inquiries/mine/', {
-    headers: {
-      'Authorization': `Bearer ${access}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error?.detail || 'Failed to load inquiries');
-  }
-
-  return response.json();
+  const response = await API.get('/inquiries/mine/');
+  return response.data;
 }
 

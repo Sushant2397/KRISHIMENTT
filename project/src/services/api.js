@@ -11,25 +11,17 @@ const API = axios.create({
 API.interceptors.request.use(
   (config) => {
     const tokens = localStorage.getItem('tokens');
-    console.log('Request interceptor - tokens from localStorage:', tokens);
     
     if (tokens) {
       try {
         const parsedTokens = JSON.parse(tokens);
-        console.log('Parsed tokens:', parsedTokens);
         
         if (parsedTokens.access) {
           config.headers.Authorization = `Bearer ${parsedTokens.access}`;
-          console.log('Added auth token to request:', config.url);
-          console.log('Authorization header:', config.headers.Authorization);
-        } else {
-          console.warn('No access token found in stored tokens');
         }
-      } catch (error) {
-        console.error('Error parsing tokens:', error);
+      } catch {
+        localStorage.removeItem('tokens');
       }
-    } else {
-      console.warn('No tokens found in localStorage');
     }
     
     // Remove Content-Type header for FormData to let axios set it automatically
@@ -44,25 +36,12 @@ API.interceptors.request.use(
 
 // Response interceptor → handle auth errors
 API.interceptors.response.use(
-  (response) => {
-    console.log('API Response:', response.status, response.config.url);
-    return response;
-  },
+  (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.status, error.response?.data);
-    console.error('Error details:', {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      url: error.config?.url,
-      method: error.config?.method
-    });
-    
     if (error.response?.status === 401) {
-      console.log('401 Unauthorized - clearing tokens and redirecting');
       localStorage.removeItem('tokens');
       localStorage.removeItem('user');
-      window.location.href = '/';
+      if (window.location.pathname !== '/login') window.location.href = '/login';
     }
     return Promise.reject(error);
   }

@@ -13,7 +13,6 @@ const Register = () => {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [basicData, setBasicData] = useState(null);
-  const [aadhaarData, setAadhaarData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const { register: registerUser } = useAuth();
@@ -26,7 +25,9 @@ const Register = () => {
   };
 
   const handleAadhaarNext = (data) => {
-    setAadhaarData(data);
+    // The current verification step is explicitly demo-only. Keep the value
+    // out of the registration request because no Aadhaar integration exists.
+    void data;
     setStep(3);
     setSubmitError('');
   };
@@ -44,8 +45,6 @@ const Register = () => {
         password: basicData.password,
         confirm_password: basicData.confirmPassword,
         role: profileData.role,
-        // Aadhaar data is stored but not sent to backend (demo only)
-        aadhaarNumber: aadhaarData?.aadhaarNumber,
       };
 
       const result = await registerUser(finalPayload);

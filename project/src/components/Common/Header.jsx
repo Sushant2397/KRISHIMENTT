@@ -1,336 +1,180 @@
-// import React, { useState } from 'react';
-// import { useAuth } from '../../contexts/AuthContext';
-// import { Search, Menu, X, User, Shield, Bell, LogOut } from 'lucide-react';
-// import { Button } from '@/components/ui/button';
-// import { Input } from '@/components/ui/input';
-
-// const Header = ({ onMenuClick }) => {
-//   const [isMenuOpen, setIsMenuOpen] = useState(false);
-//   const { user, logout } = useAuth();
-
-//   const handleMenuClick = () => {
-//     setIsMenuOpen(!isMenuOpen);
-//     if (onMenuClick) onMenuClick();
-//   };
-
-//   return (
-//     <div className="bg-background border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
-//       <div className="h-16 px-4">
-//         <div className="flex items-center justify-between h-full max-w-7xl mx-auto">
-//           {/* Logo and menu button */}
-//           <div className="flex items-center space-x-4">
-//             <button 
-//               onClick={handleMenuClick}
-//               className="p-2 rounded-md text-gray-600 hover:bg-gray-100 lg:hidden"
-//               aria-label="Toggle menu"
-//             >
-//               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-//             </button>
-//             <div className="flex items-center space-x-3">
-//               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-//                 <Shield className="w-6 h-6 text-primary-foreground" />
-//               </div>
-//               <div className="hidden md:block">
-//                 <h1 className="text-lg font-semibold text-foreground">
-//                   Smart Agriculture
-//                 </h1>
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Search and user actions */}
-//           <div className="flex-1 max-w-2xl mx-4">
-//             <div className="relative">
-//               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-//               <Input
-//                 type="search"
-//                 placeholder="Search schemes, services, or resources..."
-//                 className="w-full pl-10 pr-4 py-2"
-//                 aria-label="Search government schemes and services"
-//               />
-//             </div>
-//           </div>
-
-//           <div className="flex items-center space-x-4">
-//             {/* Authenticated user */}
-//             {user ? (
-//               <div className="flex items-center space-x-3">
-//                 <div className="flex items-center space-x-2">
-//                   <User size={20} className="text-gray-600" />
-//                   <div>
-//                     <p className="text-sm font-medium text-gray-900">
-//                       {user?.name}
-//                     </p>
-//                     <p className="text-xs text-gray-500 capitalize">
-//                       {user?.role}
-//                     </p>
-//                   </div>
-//                 </div>
-//                 <button
-//                   onClick={logout}
-//                   className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-//                   title="Logout"
-//                 >
-//                   <LogOut size={20} />
-//                 </button>
-//               </div>
-//             ) : (
-//               <div className="flex items-center space-x-2">
-//                 <Button variant="outline" size="sm" className="hidden sm:flex">
-//                   <User className="w-4 h-4 mr-2" />
-//                   Citizen Login
-//                 </Button>
-//                 <Button variant="secondary" size="sm" className="hidden sm:flex">
-//                   Admin Login
-//                 </Button>
-//               </div>
-//             )}
-
-//             {/* Mobile menu button */}
-//             <Button
-//               variant="ghost"
-//               size="icon"
-//               className="lg:hidden"
-//               onClick={handleMenuClick}
-//               aria-label="Toggle navigation menu"
-//             >
-//               {isMenuOpen ? (
-//                 <X className="w-5 h-5" />
-//               ) : (
-//                 <Menu className="w-5 h-5" />
-//               )}
-//             </Button>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Mobile search */}
-//       <div className="md:hidden px-4 pb-4 bg-background">
-//         <div className="relative">
-//           <Input
-//             type="search"
-//             placeholder="Search schemes..."
-//             className="w-full pr-10"
-//             aria-label="Search government schemes"
-//           />
-//           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-//         </div>
-//       </div>
-
-//       {/* Mobile navigation menu */}
-//       {isMenuOpen && (
-//         <div className="lg:hidden border-t border-border bg-card">
-//           <nav className="container mx-auto px-4 py-4">
-//             <div className="flex flex-col space-y-4">
-//               <a href="/" className="text-foreground hover:text-primary transition-colors font-medium py-2">
-//                 Home
-//               </a>
-//               <a href="/services" className="text-foreground hover:text-primary transition-colors font-medium py-2">
-//                 Services
-//               </a>
-//               <a href="/schemes" className="text-foreground hover:text-primary transition-colors font-medium py-2">
-//                 Gov Schemes
-//               </a>
-//               <a href="/resources" className="text-foreground hover:text-primary transition-colors font-medium py-2">
-//                 Resources
-//               </a>
-//               <a href="/support" className="text-foreground hover:text-primary transition-colors font-medium py-2">
-//                 Support
-//               </a>
-
-//               {/* Auth section in mobile menu */}
-//               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-//                 {user ? (
-//                   <button
-//                     onClick={logout}
-//                     className="flex items-center p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-//                   >
-//                     <LogOut className="w-4 h-4 mr-2" />
-//                     Logout
-//                   </button>
-//                 ) : (
-//                   <>
-//                     <Button variant="outline" size="sm" className="justify-start">
-//                       <User className="w-4 h-4 mr-2" />
-//                       Citizen Login
-//                     </Button>
-//                     <Button variant="secondary" size="sm" className="justify-start">
-//                       Admin Login
-//                     </Button>
-//                   </>
-//                 )}
-//               </div>
-//             </div>
-//           </nav>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Header;
-
-
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Search, Menu, X, User, Shield, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useTranslation } from 'react-i18next'; // ✅ Add this
+import { Search, Menu, X, User, LogOut, Bell, ChevronDown, Leaf } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 const Header = ({ onMenuClick, isSidebarOpen = false }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const { user, logout } = useAuth();
-  const { t } = useTranslation(); // ✅ translation hook
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const userMenuRef = useRef(null);
 
-  const handleMenuClick = () => {
-    setIsMenuOpen(!isMenuOpen);
-    if (onMenuClick) onMenuClick();
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleLogout = () => {
+    setIsUserMenuOpen(false);
+    logout();
   };
 
-  const handleSidebarToggle = (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
-    e.stopPropagation();
-    console.log('Button clicked! Current sidebar state:', isSidebarOpen);
-    if (onMenuClick) {
-      console.log('Calling onMenuClick');
-      onMenuClick();
-    } else {
-      console.error('onMenuClick is not defined!');
-    }
+    // Search functionality preserved — connect to existing search endpoint
+  };
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const getRoleLabel = (role) => {
+    if (role === 'farmer') return t('Farmer');
+    if (role === 'labour') return t('Labourer');
+    return role;
   };
 
   return (
-    <div className="bg-background border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
-      <div className="h-16 px-4">
-        <div className="flex items-center justify-between h-full max-w-7xl mx-auto">
-          {/* Logo and Sidebar Toggle */}
-          <div className="flex items-center space-x-4">
-            {/* 3-line Hamburger Menu Button for Sidebar */}
-            <button
-              type="button"
-              onClick={handleSidebarToggle}
-              className="p-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 cursor-pointer relative z-50 border border-transparent hover:border-gray-300"
-              aria-label={t('Toggle sidebar')}
-              title={t('Toggle sidebar')}
-              style={{ minWidth: '40px', minHeight: '40px' }}
-            >
-              <div className="w-6 h-6 flex flex-col justify-center items-center space-y-1.5 pointer-events-none">
-                <span className={`block h-0.5 w-6 bg-gray-700 transition-all duration-300 ${isSidebarOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                <span className={`block h-0.5 w-6 bg-gray-700 transition-all duration-300 ${isSidebarOpen ? 'opacity-0' : ''}`}></span>
-                <span className={`block h-0.5 w-6 bg-gray-700 transition-all duration-300 ${isSidebarOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-              </div>
-            </button>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div className="hidden md:block">
-                <h1 className="text-lg font-semibold text-foreground">
-                  {t('Krishiment')}
-                </h1>
-              </div>
-            </div>
-          </div>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-sm">
+      <div className="h-14 px-4 flex items-center justify-between gap-4">
 
-          {/* Search */}
-          <div className="flex-1 max-w-2xl mx-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder={t('Search schemes, services, or resources...')}
-                className="w-full pl-10 pr-4 py-2"
-                aria-label={t('Search government schemes and services')}
-              />
-            </div>
-          </div>
+        {/* Left — hamburger + logo */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => onMenuClick && onMenuClick()}
+            className="w-9 h-9 flex flex-col items-center justify-center gap-1.5 rounded-lg
+                       text-muted-foreground hover:text-foreground hover:bg-muted
+                       transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+          >
+            <span className={cn(
+              'block h-0.5 w-5 bg-current rounded transition-all duration-300',
+              isSidebarOpen ? 'rotate-45 translate-y-2' : ''
+            )} />
+            <span className={cn(
+              'block h-0.5 w-5 bg-current rounded transition-all duration-300',
+              isSidebarOpen ? 'opacity-0' : ''
+            )} />
+            <span className={cn(
+              'block h-0.5 w-5 bg-current rounded transition-all duration-300',
+              isSidebarOpen ? '-rotate-45 -translate-y-2' : ''
+            )} />
+          </button>
 
-          {/* Buttons */}
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2">
-                  <User size={20} className="text-gray-600" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                    <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
-                  </div>
+          <Link to="/dashboard" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+              <Leaf className="w-4.5 h-4.5 text-primary-foreground" />
+            </div>
+            <span className="hidden sm:block text-base font-bold text-foreground tracking-tight">
+              KrishiMent
+            </span>
+          </Link>
+        </div>
+
+        {/* Center — search */}
+        <form
+          onSubmit={handleSearch}
+          className="flex-1 max-w-md hidden sm:block"
+        >
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            <input
+              type="search"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              placeholder={t('Search jobs, workers, schemes...')}
+              className="w-full h-9 pl-9 pr-4 rounded-lg border border-border bg-background text-sm
+                         placeholder:text-muted-foreground text-foreground
+                         focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary
+                         transition-all duration-200"
+              aria-label={t('Search')}
+            />
+          </div>
+        </form>
+
+        {/* Right — actions */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Notifications bell */}
+          <Link
+            to="/notifications"
+            className="w-9 h-9 flex items-center justify-center rounded-lg
+                       text-muted-foreground hover:text-foreground hover:bg-muted
+                       transition-colors duration-150 relative"
+            aria-label={t('Notifications')}
+          >
+            <Bell className="w-4.5 h-4.5" />
+          </Link>
+
+          {/* User dropdown */}
+          {user ? (
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 h-9 px-2 rounded-lg
+                           hover:bg-muted transition-colors duration-150
+                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label="User menu"
+                aria-expanded={isUserMenuOpen}
+              >
+                {/* Avatar initials */}
+                <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground
+                                flex items-center justify-center text-xs font-semibold">
+                  {getInitials(user.name)}
                 </div>
-                <button
-                  onClick={logout}
-                  className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                  title={t('Logout')}
-                >
-                  <LogOut size={20} />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm" className="hidden sm:flex">
-                  <User className="w-4 h-4 mr-2" />
-                  {t('Citizen Login')}
-                </Button>
-                <Button variant="secondary" size="sm" className="hidden sm:flex">
-                  {t('Admin Login')}
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+                <div className="hidden md:block text-left">
+                  <div className="text-sm font-medium text-foreground leading-none">{user.name}</div>
+                  <div className="text-xs text-muted-foreground capitalize mt-0.5">{getRoleLabel(user.role)}</div>
+                </div>
+                <ChevronDown className={cn(
+                  'w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 hidden md:block',
+                  isUserMenuOpen ? 'rotate-180' : ''
+                )} />
+              </button>
 
-      {/* Mobile search */}
-      <div className="md:hidden px-4 pb-4 bg-background">
-        <div className="relative">
-          <Input
-            type="search"
-            placeholder={t('Search schemes...')}
-            className="w-full pr-10"
-            aria-label={t('Search government schemes')}
-          />
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden border-t border-border bg-card">
-          <nav className="container mx-auto px-4 py-4">
-            <div className="flex flex-col space-y-4">
-              <a href="/" className="text-foreground hover:text-primary transition-colors font-medium py-2">{t('Home')}</a>
-              <a href="/services" className="text-foreground hover:text-primary transition-colors font-medium py-2">{t('Services')}</a>
-              <a href="/schemes" className="text-foreground hover:text-primary transition-colors font-medium py-2">{t('Gov Schemes')}</a>
-              <a href="/resources" className="text-foreground hover:text-primary transition-colors font-medium py-2">{t('Resources')}</a>
-              <a href="/support" className="text-foreground hover:text-primary transition-colors font-medium py-2">{t('Support')}</a>
-
-              <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                {user ? (
+              {/* Dropdown */}
+              {isUserMenuOpen && (
+                <div className="absolute right-0 top-full mt-1.5 w-52 bg-card border border-border
+                                rounded-xl shadow-lg py-1 animate-slide-down z-50">
+                  <div className="px-3 py-2.5 border-b border-border">
+                    <div className="text-sm font-semibold text-foreground">{user.name}</div>
+                    <div className="text-xs text-muted-foreground capitalize mt-0.5">{getRoleLabel(user.role)}</div>
+                  </div>
                   <button
-                    onClick={logout}
-                    className="flex items-center p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-destructive
+                               hover:bg-destructive/10 transition-colors duration-150 mt-1"
                   >
-                    <LogOut className="w-4 h-4 mr-2" />
+                    <LogOut className="w-4 h-4" />
                     {t('Logout')}
                   </button>
-                ) : (
-                  <>
-                    <Button variant="outline" size="sm" className="justify-start">
-                      <User className="w-4 h-4 mr-2" />
-                      {t('Citizen Login')}
-                    </Button>
-                    <Button variant="secondary" size="sm" className="justify-start">
-                      {t('Admin Login')}
-                    </Button>
-                  </>
-                )}
-              </div>
+                </div>
+              )}
             </div>
-          </nav>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link to="/login" className="btn-ghost text-sm px-3 py-1.5 h-9">
+                {t('Login')}
+              </Link>
+              <Link to="/signup" className="btn-primary text-sm px-3 py-1.5 h-9">
+                {t('Sign Up')}
+              </Link>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </header>
   );
 };
 

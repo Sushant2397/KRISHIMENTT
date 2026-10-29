@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import secrets
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 
 # Load .env from backend directory if python-dotenv is available
 try:
@@ -31,11 +33,16 @@ OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-77a%jvm-)kr(=x!qz!5td+i(6vok#avf1_v(-l$&7hvt1fsqc_'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() in {'true', '1', 'yes'}
+
+# Never keep a signing key in source. Local development gets a process-local
+# key; deployments must provide their persistent secret through the environment.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured('DJANGO_SECRET_KEY must be configured when DEBUG is disabled.')
+    SECRET_KEY = secrets.token_urlsafe(48)
 
 ALLOWED_HOSTS = []
 
@@ -203,5 +210,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'rutujakhande97@gmail.com'        # 🔹 replace with your Gmail
-EMAIL_HOST_PASSWORD = 'apnpghhzqgqndglg'       # 🔹 16-char App Password (see below)
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

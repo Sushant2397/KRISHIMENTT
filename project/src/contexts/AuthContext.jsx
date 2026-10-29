@@ -17,7 +17,8 @@ export const AuthProvider = ({ children }) => {
   const [tokens, setTokens] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/')
+    .replace(/\/$/, '');
 
   // Initialize auth state from localStorage on mount
   useEffect(() => {
@@ -34,13 +35,11 @@ export const AuthProvider = ({ children }) => {
             setUser(parsedUser);
             setTokens(parsedTokens);
           } else {
-            console.warn('Invalid user role in stored user:', parsedUser?.role);
             localStorage.removeItem("user");
             localStorage.removeItem("tokens");
           }
         }
       } catch (error) {
-        console.error('Error loading user from localStorage:', error);
         localStorage.removeItem("user");
         localStorage.removeItem("tokens");
       } finally {
@@ -53,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/login/`, {
+      const res = await fetch(`${API_BASE_URL}/auth/login/`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -69,7 +68,6 @@ export const AuthProvider = ({ children }) => {
         } catch (e) {
           errorData = { error: `Server error: ${res.status} ${res.statusText}` };
         }
-        console.error('Login failed:', errorData);
         localStorage.removeItem("user");
         localStorage.removeItem("tokens");
         setUser(null);
@@ -80,7 +78,6 @@ export const AuthProvider = ({ children }) => {
       const data = await res.json();
       
       if (!data.user) {
-        console.error('Invalid login response:', data);
         return { error: 'Invalid server response. Please try again.' };
       }
       
@@ -90,7 +87,6 @@ export const AuthProvider = ({ children }) => {
       };
       
       if (!data.user.role || !Object.values(USER_ROLES).includes(data.user.role)) {
-        console.error('Invalid or missing user role in login response:', data.user.role);
         return { 
           error: 'Your account is not properly configured. Please contact support.' 
         };
@@ -103,7 +99,6 @@ export const AuthProvider = ({ children }) => {
       
       return { user: data.user };
     } catch (error) {
-      console.error('Login error:', error);
       
       // Provide more specific error messages
       if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
@@ -118,7 +113,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/register/`, {
+      const res = await fetch(`${API_BASE_URL}/auth/register/`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -130,9 +125,15 @@ export const AuthProvider = ({ children }) => {
       const data = await res.json();
       
       if (!res.ok) {
-        console.error('Registration failed:', data);
+        const fieldErrors = Object.entries(data || {})
+          .filter(([field]) => !['error', 'detail'].includes(field))
+          .flatMap(([field, messages]) =>
+            (Array.isArray(messages) ? messages : [messages])
+              .filter((message) => typeof message === 'string')
+              .map((message) => `${field}: ${message}`)
+          );
         return { 
-          error: data.error || 'Registration failed. Please try again.',
+          error: data.error || data.detail || fieldErrors.join(' ') || 'Registration failed. Please try again.',
           details: data
         };
       }
@@ -149,7 +150,6 @@ export const AuthProvider = ({ children }) => {
       
       return { user: data.user };
     } catch (error) {
-      console.error('Registration error:', error);
       return { error: 'An error occurred during registration. Please try again.' };
     }
   };

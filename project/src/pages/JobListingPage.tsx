@@ -128,13 +128,13 @@ const JobListingPage = () => {
 
   const getCategoryColor = (category) => {
     const colors = {
-      planting: 'bg-green-100 text-green-800',
-      harvesting: 'bg-yellow-100 text-yellow-800',
-      irrigation: 'bg-blue-100 text-blue-800',
-      pest_control: 'bg-red-100 text-red-800',
-      maintenance: 'bg-gray-100 text-gray-800',
-      transport: 'bg-purple-100 text-purple-800',
-      other: 'bg-indigo-100 text-indigo-800'
+      planting: 'bg-emerald-50 text-emerald-800',
+      harvesting: 'bg-[#F1E8D8] text-[#725a34]',
+      irrigation: 'bg-sky-50 text-sky-800',
+      pest_control: 'bg-rose-50 text-rose-800',
+      maintenance: 'bg-muted text-muted-foreground',
+      transport: 'bg-violet-50 text-violet-800',
+      other: 'bg-primary/10 text-primary'
     };
     return colors[category] || colors.other;
   };
@@ -142,20 +142,20 @@ const JobListingPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-2 border-border border-t-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 min-h-full">
+    <div className="min-h-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
-            <Briefcase className="h-8 w-8 text-blue-600 mr-3" />
+          <h1 className="mb-2 flex items-center text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            <Briefcase className="mr-3 h-8 w-8 text-primary" />
             {t('Available Jobs')}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             {t('Find agricultural work opportunities near you')}
           </p>
           <div className="mt-3">
@@ -168,7 +168,7 @@ const JobListingPage = () => {
                   await loadJobs(latitude, longitude);
                 });
               }}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="btn-secondary"
             >
               {t('Use Current Location')}
             </button>
@@ -176,7 +176,7 @@ const JobListingPage = () => {
         </div>
 
         {/* Map of nearby jobs (always visible) */}
-        <div className="bg-white rounded-xl shadow-lg p-4 mb-8">
+        <div className="mb-8 rounded-2xl border border-border bg-card p-3 shadow-sm sm:p-4">
           <LeafletMap
             center={userLocation ?? (jobs.length > 0 ? {
               lat: Number(jobs[0].latitude),
@@ -197,15 +197,15 @@ const JobListingPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="mb-8 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+            <h2 className="flex items-center text-lg font-semibold text-foreground">
               <Filter className="h-5 w-5 mr-2" />
               {t('Filters')}
             </h2>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="text-indigo-600 hover:text-indigo-700"
+              className="text-sm font-semibold text-primary transition-colors hover:text-primary-hover"
             >
               {showFilters ? t('Hide Filters') : t('Show Filters')}
             </button>
@@ -220,7 +220,7 @@ const JobListingPage = () => {
                 <select
                   value={filters.category}
                   onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="form-input"
                 >
                   {jobCategories.map(cat => (
                     <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -238,7 +238,7 @@ const JobListingPage = () => {
                   onChange={(e) => setFilters(prev => ({ ...prev, maxDistance: parseInt(e.target.value) || 50 }))}
                   min="1"
                   max="100"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="form-input"
                 />
               </div>
               
@@ -251,7 +251,7 @@ const JobListingPage = () => {
                   value={filters.minWage}
                   onChange={(e) => setFilters(prev => ({ ...prev, minWage: e.target.value }))}
                   min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="form-input"
                 />
               </div>
               
@@ -264,7 +264,7 @@ const JobListingPage = () => {
                   value={filters.maxDuration}
                   onChange={(e) => setFilters(prev => ({ ...prev, maxDuration: e.target.value }))}
                   min="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="form-input"
                 />
               </div>
             </div>
@@ -274,69 +274,69 @@ const JobListingPage = () => {
         {/* Jobs List */}
         <div className="space-y-6">
           {filteredJobs.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-              <Briefcase className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+              <Briefcase className="mx-auto mb-4 h-16 w-16 text-primary/50" />
+              <h3 className="mb-2 text-lg font-semibold text-foreground">
                 {t('No jobs found')}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 {t('Try adjusting your filters or check back later for new opportunities.')}
               </p>
             </div>
           ) : (
             filteredJobs.map((job) => (
-              <div key={job.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div key={job.id} className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
                     <div className="flex items-center mb-2">
-                      <h3 className="text-xl font-semibold text-gray-900 mr-3">
+                      <h3 className="mr-3 text-lg font-semibold text-foreground sm:text-xl">
                         {job.title}
                       </h3>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(job.category)}`}>
                         {job.category.replace('_', ' ').toUpperCase()}
                       </span>
                     </div>
-                    <p className="text-gray-600 mb-4">{job.description}</p>
+                    <p className="mb-4 text-muted-foreground">{job.description}</p>
                   </div>
                   
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-green-600 mb-1">
+                    <div className="mb-1 text-2xl font-bold text-primary">
                       ₹{job.wage_per_day}
                     </div>
-                    <div className="text-sm text-gray-500">{t('per day')}</div>
+                    <div className="text-sm text-muted-foreground">{t('per day')}</div>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                  <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-muted-foreground">
                     <Calendar className="h-4 w-4 mr-2" />
                     <span className="text-sm">
                       {formatDate(job.start_date)} - {formatDate(job.end_date)}
                     </span>
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-muted-foreground">
                     <Clock className="h-4 w-4 mr-2" />
                     <span className="text-sm">{job.duration_days} {t('days')}</span>
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-muted-foreground">
                     <Users className="h-4 w-4 mr-2" />
                     <span className="text-sm">{job.required_workers} {t('workers needed')}</span>
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-muted-foreground">
                     <MapPin className="h-4 w-4 mr-2" />
                     <span className="text-sm">{job.distance_from_user}km {t('away')}</span>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-muted-foreground">
                     <span>{t('Posted by')}: {job.farmer_name}</span>
                     {job.farmer_phone && (
                       <span className="ml-4">
-                        <a href={`tel:${job.farmer_phone}`} className="text-blue-600 hover:underline">
+                        <a href={`tel:${job.farmer_phone}`} className="text-primary hover:underline">
                           {job.farmer_phone}
                         </a>
                       </span>
@@ -352,7 +352,7 @@ const JobListingPage = () => {
                         }
                       }}
                       disabled={applyingJob === job.id}
-                      className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center"
+                      className="btn-primary disabled:opacity-50"
                     >
                       {applyingJob === job.id ? (
                         <>
@@ -370,8 +370,8 @@ const JobListingPage = () => {
                 </div>
                 
                 {job.address && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <div className="flex items-center text-gray-600">
+                  <div className="mt-4 border-t border-border pt-4">
+                    <div className="flex items-center text-muted-foreground">
                       <MapPin className="h-4 w-4 mr-2" />
                       <span className="text-sm">{job.address}</span>
                     </div>

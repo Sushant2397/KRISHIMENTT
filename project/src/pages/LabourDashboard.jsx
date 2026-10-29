@@ -1,111 +1,3 @@
-// import React, { useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import Header from '../components/Common/Header';
-// import DashboardCard from '../components/Common/DashboardCard';
-// import { LABOUR_CARDS } from '../utils/constants';
-// import { useAuth } from '../contexts/AuthContext';
-
-// const LabourDashboard = () => {
-//   const { user } = useAuth();
-//   const navigate = useNavigate();
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     // Add any initialization logic here
-//     setLoading(false);
-//   }, []);
-
-//   const handleCardClick = (cardId) => {
-//     console.log(`Clicked on ${cardId}`);
-//     // Add navigation logic based on cardId
-//     switch(cardId) {
-//       case 'find-jobs':
-//         navigate('/jobs');
-//         break;
-//       case 'government-schemes':
-//         navigate('/schemes');
-//         break;
-//       case 'my-applications':
-//         navigate('/my-applications');
-//         break;
-//       case 'skills':
-//         navigate('/skills');
-//         break;
-//       case 'earnings':
-//         navigate('/earnings');
-//         break;
-//       case 'notifications':
-//         navigate('/notifications');
-//         break;
-//       // Add more cases as needed
-//       default:
-//         console.log(`No specific route for ${cardId}`);
-//     }
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-//         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100">
-//       <Header />
-      
-//       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-//         <div className="mb-8">
-//           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-//             Welcome back, {user?.name || 'Worker'}!
-//           </h1>
-//           <p className="text-gray-600">
-//             Find job opportunities and grow your agricultural career.
-//           </p>
-//         </div>
-
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-//           {LABOUR_CARDS && LABOUR_CARDS.length > 0 ? (
-//             LABOUR_CARDS.map((card) => (
-//               <DashboardCard
-//                 key={card.id}
-//                 card={card}
-//                 onClick={() => handleCardClick(card.id)}
-//               />
-//             ))
-//           ) : (
-//             <div className="col-span-full text-center py-8">
-//               <p className="text-gray-500">No dashboard items available at the moment.</p>
-//             </div>
-//           )}
-//         </div>
-
-//         <div className="mt-12 bg-white rounded-xl shadow-lg p-6">
-//           <h2 className="text-xl font-bold text-gray-900 mb-4">Your Activity</h2>
-//           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-//             <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-white">
-//               <h3 className="text-lg font-semibold mb-2">Applications Sent</h3>
-//               <p className="text-2xl font-bold">23</p>
-//             </div>
-//             <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-white">
-//               <h3 className="text-lg font-semibold mb-2">Jobs Completed</h3>
-//               <p className="text-2xl font-bold">15</p>
-//             </div>
-//             <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-4 text-white">
-//               <h3 className="text-lg font-semibold mb-2">Rating</h3>
-//               <p className="text-2xl font-bold">4.8⭐</p>
-//             </div>
-//           </div>
-//         </div>
-//       </main>
-//     </div>
-//   );
-// };
-
-// export default LabourDashboard;
-
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardCard from '../components/Common/DashboardCard';
@@ -115,7 +7,10 @@ import { useTranslation } from 'react-i18next';
 import userService from '../services/userService';
 import ratingService from '../services/ratingService';
 import jobService from '../services/jobService';
-import { Star } from 'lucide-react';
+import {
+  Star, Briefcase, CheckCircle, TrendingUp, ToggleLeft, ToggleRight,
+  AlertCircle, Loader2, Search
+} from 'lucide-react';
 
 const LabourDashboard = () => {
   const { t } = useTranslation();
@@ -123,6 +18,8 @@ const LabourDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isAvailable, setIsAvailable] = useState(null);
+  const [availabilityLoading, setAvailabilityLoading] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState('');
   const [averageRating, setAverageRating] = useState(null);
   const [totalRatings, setTotalRatings] = useState(0);
   const [applicationsSent, setApplicationsSent] = useState(0);
@@ -136,26 +33,21 @@ const LabourDashboard = () => {
       } catch (e) {
         setIsAvailable(null);
       }
-      
-      // Load rating data
+
       try {
         const ratingRes = await ratingService.getMyAverageRating();
         setAverageRating(ratingRes.data.average_rating);
         setTotalRatings(ratingRes.data.total_ratings);
       } catch (e) {
-        console.error('Failed to load rating:', e);
         setAverageRating(null);
       }
 
-      // Load application statistics
       try {
         const applicationsRes = await jobService.getMyApplications();
         const applications = applicationsRes.data || [];
         setApplicationsSent(applications.length);
-        const completedCount = applications.filter(app => app.status === 'completed').length;
-        setJobsCompleted(completedCount);
+        setJobsCompleted(applications.filter(a => a.status === 'completed').length);
       } catch (e) {
-        console.error('Failed to load applications:', e);
         setApplicationsSent(0);
         setJobsCompleted(0);
       } finally {
@@ -167,81 +59,190 @@ const LabourDashboard = () => {
 
   const handleCardClick = (cardId) => {
     switch (cardId) {
-      case 'find-jobs':
-        navigate('/jobs');
-        break;
-      case 'government-schemes':
-        navigate('/schemes');
-        break;
-      case 'my-applications':
-        navigate('/my-applications');
-        break;
-      case 'skills':
-        navigate('/skills');
-        break;
-      case 'earnings':
-        navigate('/earnings');
-        break;
-      case 'notifications':
-        navigate('/notifications');
-        break;
-      default:
-        console.log(`No specific route for ${cardId}`);
+      case 'find-jobs':           navigate('/jobs');            break;
+      case 'government-schemes':  navigate('/schemes');         break;
+      case 'my-applications':     navigate('/my-applications'); break;
+      case 'skills':              navigate('/skills');           break;
+      case 'earnings':            navigate('/earnings');         break;
+      case 'notifications':       navigate('/notifications');   break;
+      default: break;
     }
+  };
+
+  const handleToggleAvailability = async () => {
+    if (isAvailable === null || availabilityLoading) return;
+    const next = !isAvailable;
+    setAvailabilityLoading(true);
+    setAvailabilityError('');
+    setIsAvailable(next); // optimistic
+    try {
+      await userService.setAvailability(next);
+    } catch (e) {
+      setIsAvailable(!next); // revert
+      setAvailabilityError(t('Failed to update availability. Please try again.'));
+    } finally {
+      setAvailabilityLoading(false);
+    }
+  };
+
+  const greeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return t('Good morning');
+    if (hour < 18) return t('Good afternoon');
+    return t('Good evening');
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      <div className="flex items-center justify-center min-h-64">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-sm text-muted-foreground">{t('Loading your dashboard...')}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 min-h-full">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Availability toggle */}
-        <div className="mb-6 bg-white rounded-xl shadow p-4 flex items-center justify-between">
-          <div>
-            <div className="text-sm text-gray-500">{t('Availability')}</div>
-            <div className="text-lg font-semibold text-gray-900">
-              {isAvailable ? t('Active and looking for jobs') : t('Inactive')}
-            </div>
-          </div>
-          <button
-            onClick={async () => {
-              if (isAvailable === null) return;
-              const next = !isAvailable;
-              setIsAvailable(next);
-              try {
-                await userService.setAvailability(next);
-              } catch (e) {
-                // revert on error
-                setIsAvailable(!next);
-                alert(t('Failed to update availability'));
-              }
-            }}
-            className={`px-4 py-2 rounded-lg text-white ${isAvailable ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-500 hover:bg-gray-600'}`}
-            disabled={isAvailable === null}
-          >
-            {isAvailable ? t('Set Inactive') : t('Set Active')}
-          </button>
-        </div>
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {t('Welcome back')}, {user?.name || t('Worker')}!
+    <div className="space-y-6">
+
+      {/* ── Welcome + Availability toggle ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p className="text-sm text-muted-foreground mb-0.5">{greeting()}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+            {user?.name || t('Worker')} 👋
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground mt-1 text-sm">
             {t('Find job opportunities and grow your agricultural career.')}
           </p>
         </div>
 
-        {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {LABOUR_CARDS && LABOUR_CARDS.length > 0 ? (
-            LABOUR_CARDS.map((card) => (
+        {/* Availability toggle */}
+        <div className={`flex-shrink-0 rounded-2xl border p-4 min-w-[200px]
+                         ${isAvailable
+                           ? 'bg-success-light border-success/20'
+                           : 'bg-muted border-border'
+                         }`}>
+          <div className="text-xs font-medium text-muted-foreground mb-1.5">{t('Availability')}</div>
+          <div className={`text-sm font-semibold mb-3 ${isAvailable ? 'text-success' : 'text-muted-foreground'}`}>
+            {isAvailable ? t('Active — accepting jobs') : t('Inactive')}
+          </div>
+          <button
+            onClick={handleToggleAvailability}
+            disabled={isAvailable === null || availabilityLoading}
+            className={`w-full flex items-center justify-center gap-2 h-9 rounded-xl text-sm font-medium
+                        transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+                        disabled:opacity-60 disabled:cursor-not-allowed
+                        ${isAvailable
+                          ? 'bg-success text-success-foreground hover:bg-success/90'
+                          : 'bg-primary text-primary-foreground hover:bg-primary-hover'
+                        }`}
+          >
+            {availabilityLoading
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : isAvailable
+                ? <><ToggleRight className="w-4 h-4" />{t('Set Inactive')}</>
+                : <><ToggleLeft className="w-4 h-4" />{t('Set Active')}</>
+            }
+          </button>
+          {availabilityError && (
+            <p className="text-xs text-destructive mt-2 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3 flex-shrink-0" />
+              {availabilityError}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* ── Activity Stats ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          {
+            label: t('Applications Sent'),
+            value: applicationsSent,
+            icon: Briefcase,
+            bg: 'bg-primary-light',
+            color: 'text-primary',
+            action: () => navigate('/my-applications'),
+            actionLabel: t('View All'),
+          },
+          {
+            label: t('Jobs Completed'),
+            value: jobsCompleted,
+            icon: CheckCircle,
+            bg: 'bg-success-light',
+            color: 'text-success',
+            action: () => navigate('/my-applications'),
+            actionLabel: t('View History'),
+          },
+          {
+            label: t('Your Rating'),
+            value: averageRating !== null ? averageRating.toFixed(1) : '—',
+            icon: Star,
+            bg: 'bg-warning-light',
+            color: 'text-warning',
+            sub: averageRating !== null
+              ? `${totalRatings} ${totalRatings === 1 ? t('rating') : t('ratings')}`
+              : t('No ratings yet'),
+            action: null,
+          },
+        ].map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.label} className="stat-card">
+              <div className="flex items-start justify-between">
+                <div className={`w-9 h-9 ${stat.bg} ${stat.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                  <Icon className="w-4.5 h-4.5" />
+                </div>
+                {stat.action && (
+                  <button
+                    onClick={stat.action}
+                    className="text-xs text-primary hover:underline font-medium"
+                  >
+                    {stat.actionLabel}
+                  </button>
+                )}
+              </div>
+              <div className="mt-3">
+                <div className="flex items-baseline gap-1">
+                  <span className="stat-number">{stat.value}</span>
+                  {stat.label === t('Your Rating') && averageRating !== null && (
+                    <Star className="w-4 h-4 text-warning fill-warning" />
+                  )}
+                </div>
+                <div className="stat-label mt-0.5">{stat.label}</div>
+                {stat.sub && (
+                  <div className="text-xs text-muted-foreground mt-0.5">{stat.sub}</div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Find Jobs CTA ── */}
+      <div className="card-sand rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center
+                       justify-between gap-4">
+        <div>
+          <h3 className="text-base font-semibold text-foreground mb-1">{t('Looking for work?')}</h3>
+          <p className="text-sm text-muted-foreground">{t('Browse available farm jobs near your location.')}</p>
+        </div>
+        <button
+          onClick={() => navigate('/jobs')}
+          className="btn-primary h-10 px-6 gap-2 flex-shrink-0"
+        >
+          <Search className="w-4 h-4" />
+          {t('Browse Jobs')}
+        </button>
+      </div>
+
+      {/* ── Quick actions grid ── */}
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-4">{t('Quick Actions')}</h2>
+        {LABOUR_CARDS && LABOUR_CARDS.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {LABOUR_CARDS.map((card) => (
               <DashboardCard
                 key={card.id}
                 card={{
@@ -251,47 +252,17 @@ const LabourDashboard = () => {
                 }}
                 onClick={() => handleCardClick(card.id)}
               />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-8">
-              <p className="text-gray-500">{t('No dashboard items available at the moment.')}</p>
-            </div>
-          )}
-        </div>
-
-        {/* Activity Section */}
-        <div className="mt-12 bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">{t('Your Activity')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-white">
-              <h3 className="text-lg font-semibold mb-2">{t('Applications Sent')}</h3>
-              <p className="text-2xl font-bold">{applicationsSent}</p>
-            </div>
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-white">
-              <h3 className="text-lg font-semibold mb-2">{t('Jobs Completed')}</h3>
-              <p className="text-2xl font-bold">{jobsCompleted}</p>
-            </div>
-            <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-4 text-white">
-              <h3 className="text-lg font-semibold mb-2">{t('Rating')}</h3>
-              {averageRating !== null ? (
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="text-2xl font-bold">{averageRating.toFixed(1)}</p>
-                    <Star className="w-6 h-6 fill-current" />
-                  </div>
-                  <p className="text-sm opacity-90">
-                    {totalRatings} {totalRatings === 1 ? t('rating') : t('ratings')}
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <p className="text-2xl font-bold">-</p>
-                  <p className="text-sm opacity-90">{t('No ratings yet')}</p>
-                </div>
-              )}
-            </div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div className="empty-state card">
+            <div className="empty-state-icon">
+              <Briefcase className="w-7 h-7" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground mb-1">{t('No actions available')}</h3>
+            <p className="text-sm text-muted-foreground">{t('No dashboard items available at the moment.')}</p>
+          </div>
+        )}
       </div>
     </div>
   );

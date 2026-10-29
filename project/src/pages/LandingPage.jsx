@@ -1,528 +1,557 @@
-// import React, { useState } from 'react';
-// import { ArrowRight, Users, Tractor, TrendingUp, Shield, Clock, Award, Sparkles } from 'lucide-react';
-// import Navbar from '../components/Common/Navbar';
-// import ContactModal from '../components/Common/ContactModal';
-
-// const LandingPage = ({ onGetStarted }) => {
-//   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-
-//   const features = [
-//     {
-//       icon: Users,
-//       title: 'Connect Farmers & Workers',
-//       description: 'Bridge the gap between farmers and agricultural workers with our smart matching system.'
-//     },
-//     {
-//       icon: TrendingUp,
-//       title: 'Real-time Market Prices',
-//       description: 'Stay updated with live market prices for crops, grains, and vegetables.'
-//     },
-//     {
-//       icon: Shield,
-//       title: 'Government Schemes',
-//       description: 'Access information about government agricultural schemes and subsidies.'
-//     },
-//     {
-//       icon: Clock,
-//       title: 'Equipment Marketplace',
-//       description: 'Buy and sell agricultural equipment with ease and transparency.'
-//     }
-//   ];
-
-//   const stats = [
-//     { number: '10,000+', label: 'Active Farmers' },
-//     { number: '25,000+', label: 'Agricultural Workers' },
-//     { number: '500+', label: 'Equipment Listed' },
-//     { number: '98%', label: 'Success Rate' }
-//   ];
-
-//   return (
-//     <div className="min-h-screen bg-white">
-//       <Navbar 
-//         onLoginClick={onGetStarted}
-//         onContactClick={() => setIsContactModalOpen(true)}
-//       />
-
-//       {/* Hero Section */}
-//       <section id="home" className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 py-20 relative overflow-hidden">
-//         {/* Animated Background Elements */}
-//         <div className="absolute inset-0 overflow-hidden">
-//           <div className="absolute -top-4 -left-4 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-//           <div className="absolute -bottom-8 -right-4 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
-//           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
-//         </div>
-        
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <div className="text-center relative z-10">
-//             <div className="flex justify-center mb-6">
-//               <div className="animate-bounce">
-//                 <Sparkles className="text-green-500 w-8 h-8" />
-//               </div>
-//             </div>
-//             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 animate-fade-in-up">
-//               Smart Agriculture
-//               <span className="block text-green-600 animate-fade-in-up animation-delay-300">Platform</span>
-//             </h1>
-//             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto animate-fade-in-up animation-delay-600">
-//               Connecting farmers and agricultural workers through technology. 
-//               Access government schemes, real-time market prices, and equipment marketplace all in one place.
-//             </p>
-//             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up animation-delay-900">
-//               <button
-//                 onClick={onGetStarted}
-//                 className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:-translate-y-1 flex items-center justify-center space-x-2 group"
-//               >
-//                 <span>Get Started</span>
-//                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-300" />
-//               </button>
-//               <button
-//                 onClick={() => setIsContactModalOpen(true)}
-//                 className="border-2 border-green-500 text-green-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-50 hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
-//               >
-//                 Learn More
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Stats Section */}
-//       <section className="py-16 bg-white relative">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-//             {stats.map((stat, index) => (
-//               <div key={index} className="text-center group">
-//                 <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2 transform transition-all duration-500 group-hover:scale-125 group-hover:text-green-700">
-//                   {stat.number}
-//                 </div>
-//                 <div className="text-gray-600 font-medium transition-colors duration-300 group-hover:text-gray-800">
-//                   {stat.label}
-//                 </div>
-//                 <div className="w-0 h-0.5 bg-green-500 mx-auto mt-2 transition-all duration-500 group-hover:w-full"></div>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Features Section */}
-//       <section id="features" className="py-20 bg-gray-50 relative overflow-hidden">
-//         {/* Floating Animation Elements */}
-//         <div className="absolute top-10 left-10 w-4 h-4 bg-green-300 rounded-full animate-ping opacity-40"></div>
-//         <div className="absolute top-32 right-20 w-3 h-3 bg-blue-300 rounded-full animate-ping opacity-40 animation-delay-1000"></div>
-//         <div className="absolute bottom-20 left-1/4 w-2 h-2 bg-yellow-300 rounded-full animate-ping opacity-40 animation-delay-2000"></div>
-        
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <div className="text-center mb-16">
-//             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 animate-fade-in-up">
-//               Why Choose Our Platform?
-//             </h2>
-//             <p className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in-up animation-delay-300">
-//               We provide comprehensive solutions for modern agriculture with cutting-edge technology.
-//             </p>
-//           </div>
-
-//           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-//             {features.map((feature, index) => (
-//               <div
-//                 key={index}
-//                 className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-110 hover:-translate-y-3 group animate-fade-in-up"
-//                 style={{ animationDelay: `${index * 200}ms` }}
-//               >
-//                 <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mb-4 transform transition-all duration-500 group-hover:rotate-12 group-hover:scale-110">
-//                   <feature.icon size={24} className="text-white transition-all duration-300 group-hover:scale-125" />
-//                 </div>
-//                 <h3 className="text-xl font-semibold text-gray-900 mb-3 transition-colors duration-300 group-hover:text-green-600">
-//                   {feature.title}
-//                 </h3>
-//                 <p className="text-gray-600 transition-colors duration-300 group-hover:text-gray-700">
-//                   {feature.description}
-//                 </p>
-//                 <div className="w-0 h-1 bg-gradient-to-r from-green-500 to-blue-500 mt-4 transition-all duration-500 group-hover:w-full rounded-full"></div>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* About Section */}
-//       <section id="about" className="py-20 bg-white relative">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <div className="grid lg:grid-cols-2 gap-12 items-center">
-//             <div>
-//               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 animate-fade-in-left">
-//                 Empowering Agriculture Through Technology
-//               </h2>
-//               <p className="text-lg text-gray-600 mb-6 animate-fade-in-left animation-delay-300">
-//                 Our platform bridges the gap between traditional farming and modern technology. 
-//                 We connect farmers with skilled workers, provide access to government schemes, 
-//                 and offer real-time market insights to help make informed decisions.
-//               </p>
-//               <div className="space-y-4 animate-fade-in-left animation-delay-600">
-//                 <div className="flex items-center space-x-3">
-//                   <Award className="text-green-600 animate-pulse" size={20} />
-//                   <span className="text-gray-700">Trusted by thousands of farmers</span>
-//                 </div>
-//                 <div className="flex items-center space-x-3">
-//                   <Shield className="text-green-600 animate-pulse animation-delay-500" size={20} />
-//                   <span className="text-gray-700">Secure and reliable platform</span>
-//                 </div>
-//                 <div className="flex items-center space-x-3">
-//                   <Clock className="text-green-600 animate-pulse animation-delay-1000" size={20} />
-//                   <span className="text-gray-700">24/7 customer support</span>
-//                 </div>
-//               </div>
-//             </div>
-//             <div className="bg-gradient-to-br from-green-100 to-blue-100 rounded-2xl p-8 animate-fade-in-right transform hover:scale-105 transition-all duration-500">
-//               <div className="grid grid-cols-2 gap-6">
-//                 <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 group">
-//                   <Tractor className="text-green-600 mb-2 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" size={32} />
-//                   <h4 className="font-semibold text-gray-900">For Farmers</h4>
-//                   <p className="text-sm text-gray-600">Manage operations, find workers, access schemes</p>
-//                 </div>
-//                 <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 group animation-delay-300">
-//                   <Users className="text-blue-600 mb-2 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" size={32} />
-//                   <h4 className="font-semibold text-gray-900">For Workers</h4>
-//                   <p className="text-sm text-gray-600">Find jobs, build reputation, grow career</p>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* CTA Section */}
-//       <section className="py-20 bg-gradient-to-r from-green-500 to-green-600 relative overflow-hidden">
-//         {/* Animated Background Pattern */}
-//         <div className="absolute inset-0">
-//           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/5 to-transparent"></div>
-//           <div className="absolute top-10 left-10 w-20 h-20 border border-white/20 rounded-full animate-spin-slow"></div>
-//           <div className="absolute bottom-10 right-10 w-32 h-32 border border-white/10 rounded-full animate-spin-slow animation-delay-2000"></div>
-//           <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-white/15 rounded-full animate-spin-slow animation-delay-1000"></div>
-//         </div>
-        
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-//           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 animate-fade-in-up relative z-10">
-//             Ready to Transform Your Agricultural Journey?
-//           </h2>
-//           <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto animate-fade-in-up animation-delay-300 relative z-10">
-//             Join thousands of farmers and workers who are already benefiting from our platform.
-//           </p>
-//           <button
-//             onClick={onGetStarted}
-//             className="bg-white text-green-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:-translate-y-2 inline-flex items-center space-x-2 group animate-fade-in-up animation-delay-600 relative z-10"
-//           >
-//             <span>Start Your Journey</span>
-//             <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-300" />
-//           </button>
-//         </div>
-//       </section>
-
-//       {/* Footer */}
-//       <footer className="bg-gray-900 text-white py-12">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <div className="grid md:grid-cols-4 gap-8">
-//             <div>
-//               <div className="flex items-center space-x-2 mb-4">
-//                 <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-//                   <span className="text-white font-bold text-sm">AG</span>
-//                 </div>
-//                 <h3 className="text-lg font-bold">Smart Agriculture</h3>
-//               </div>
-//               <p className="text-gray-400">
-//                 Connecting farmers and workers through innovative technology solutions.
-//               </p>
-//             </div>
-//             <div>
-//               <h4 className="font-semibold mb-4">Platform</h4>
-//               <ul className="space-y-2 text-gray-400">
-//                 <li>For Farmers</li>
-//                 <li>For Workers</li>
-//                 <li>Equipment Marketplace</li>
-//                 <li>Government Schemes</li>
-//               </ul>
-//             </div>
-//             <div>
-//               <h4 className="font-semibold mb-4">Support</h4>
-//               <ul className="space-y-2 text-gray-400">
-//                 <li>Help Center</li>
-//                 <li>Contact Us</li>
-//                 <li>Privacy Policy</li>
-//                 <li>Terms of Service</li>
-//               </ul>
-//             </div>
-//             <div>
-//               <h4 className="font-semibold mb-4">Contact</h4>
-//               <ul className="space-y-2 text-gray-400">
-//                 <li>+91 98765 43210</li>
-//                 <li>support@smartagriculture.com</li>
-//                 <li>123 Agriculture Hub</li>
-//                 <li>Green Valley, India</li>
-//               </ul>
-//             </div>
-//           </div>
-//           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-//             <p>&copy; 2025 Smart Agriculture Platform. All rights reserved.</p>
-//           </div>
-//         </div>
-//       </footer>
-
-//       <ContactModal 
-//         isOpen={isContactModalOpen}
-//         onClose={() => setIsContactModalOpen(false)}
-//       />
-//     </div>
-//   );
-// };
-
-// export default LandingPage;
-
-
-
 import React, { useState } from 'react';
-import { ArrowRight, Users, Tractor, TrendingUp, Shield, Clock, Award, Sparkles } from 'lucide-react';
-import Navbar from '../components/Common/Navbar';
+import {
+  ArrowRight, Users, Tractor, TrendingUp, Shield, Clock, Award,
+  CheckCircle, MapPin, Star, Leaf, ChevronDown, Menu, X,
+  Briefcase, Zap, Globe, Phone, Mail
+} from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import ContactModal from '../components/Common/ContactModal';
 import { useTranslation } from 'react-i18next';
 
 const LandingPage = ({ onGetStarted }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // Simple icon fallback for ShoppingCart
+  const ShoppingCart = TrendingUp; // reuse as visual
+
+  const handleGetStarted = () => {
+    if (onGetStarted) onGetStarted();
+    else navigate('/login');
+  };
 
   const features = [
     {
       icon: Users,
       title: t('features.connectTitle'),
-      description: t('features.connectDesc')
+      description: t('features.connectDesc'),
+      color: 'bg-primary-light text-primary',
     },
     {
       icon: TrendingUp,
       title: t('features.marketTitle'),
-      description: t('features.marketDesc')
+      description: t('features.marketDesc'),
+      color: 'bg-[#F1E8D8] text-[#315C63]',
     },
     {
       icon: Shield,
       title: t('features.schemesTitle'),
-      description: t('features.schemesDesc')
+      description: t('features.schemesDesc'),
+      color: 'bg-success-light text-success',
     },
     {
-      icon: Clock,
+      icon: ShoppingCart,
       title: t('features.equipmentTitle'),
-      description: t('features.equipmentDesc')
-    }
+      description: t('features.equipmentDesc'),
+      color: 'bg-info-light text-info',
+    },
+  ];
+
+  const steps = [
+    { step: '01', title: 'Create Your Profile',   desc: 'Sign up as a farmer or agricultural worker and complete your profile.' },
+    { step: '02', title: 'Post or Discover',       desc: 'Farmers post job requirements; workers browse nearby opportunities.' },
+    { step: '03', title: 'Smart Matching',         desc: 'AI-powered system connects the right workers to the right farms.' },
+    { step: '04', title: 'Work & Get Paid',        desc: 'Complete the job, get rated, and build your agricultural reputation.' },
   ];
 
   const stats = [
     { number: '10,000+', label: t('stats.farmers') },
     { number: '25,000+', label: t('stats.workers') },
-    { number: '500+', label: t('stats.equipment') },
-    { number: '98%', label: t('stats.success') }
+    { number: '500+',    label: t('stats.equipment') },
+    { number: '98%',     label: t('stats.success') },
   ];
 
+  const languages = ['English', 'हिंदी', 'मराठी'];
+
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar 
-        onLoginClick={onGetStarted}
-        onContactClick={() => setIsContactModalOpen(true)}
-      />
+    <div className="min-h-screen bg-background">
 
-      {/* Hero Section */}
-      <section id="home" className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 py-20 relative overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-4 -left-4 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-          <div className="absolute -bottom-8 -right-4 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="flex justify-center mb-6">
-            <div className="animate-bounce">
-              <Sparkles className="text-green-500 w-8 h-8" />
-            </div>
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 animate-fade-in-up">
-            {t('hero.title')} <span className="block text-green-600 animate-fade-in-up animation-delay-300">{t('hero.subtitle')}</span>
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto animate-fade-in-up animation-delay-600">
-            {t('hero.description')}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up animation-delay-900">
-            <button
-              onClick={onGetStarted}
-              className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:-translate-y-1 flex items-center justify-center space-x-2 group"
-            >
-              <span>{t('hero.getStarted')}</span>
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-300" />
-            </button>
-            <button
-              onClick={() => setIsContactModalOpen(true)}
-              className="border-2 border-green-500 text-green-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-50 hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
-            >
-              {t('hero.learnMore')}
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 bg-white relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-center group">
-              <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2 transform transition-all duration-500 group-hover:scale-125 group-hover:text-green-700">
-                {stat.number}
-              </div>
-              <div className="text-gray-600 font-medium transition-colors duration-300 group-hover:text-gray-800">
-                {stat.label}
-              </div>
-              <div className="w-0 h-0.5 bg-green-500 mx-auto mt-2 transition-all duration-500 group-hover:w-full"></div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-50 relative overflow-hidden">
-        <div className="absolute top-10 left-10 w-4 h-4 bg-green-300 rounded-full animate-ping opacity-40"></div>
-        <div className="absolute top-32 right-20 w-3 h-3 bg-blue-300 rounded-full animate-ping opacity-40 animation-delay-1000"></div>
-        <div className="absolute bottom-20 left-1/4 w-2 h-2 bg-yellow-300 rounded-full animate-ping opacity-40 animation-delay-2000"></div>
-
+      {/* ── Navbar ── */}
+      <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 animate-fade-in-up">
-              {t('featuresSection.title')}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in-up animation-delay-300">
-              {t('featuresSection.subtitle')}
-            </p>
+          <div className="h-16 flex items-center justify-between">
+
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2.5">
+              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
+                <Leaf className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <span className="text-lg font-bold text-foreground tracking-tight">KrishiMent</span>
+            </Link>
+
+            {/* Desktop nav links */}
+            <div className="hidden md:flex items-center gap-6">
+              {[
+                { label: t('Home'),     href: '#home'     },
+                { label: t('Features'), href: '#features' },
+                { label: t('How It Works'), href: '#how-it-works' },
+                { label: t('About'),    href: '#about'    },
+              ].map(({ label, href }) => (
+                <a
+                  key={href}
+                  href={href}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground
+                             relative group transition-colors duration-150"
+                >
+                  {label}
+                  <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary rounded-full
+                                   transition-all duration-300 group-hover:w-full" />
+                </a>
+              ))}
+              <button
+                onClick={() => setIsContactModalOpen(true)}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground
+                           relative group transition-colors duration-150"
+              >
+                {t('Contact')}
+                <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary rounded-full
+                                 transition-all duration-300 group-hover:w-full" />
+              </button>
+            </div>
+
+            {/* CTA */}
+            <div className="hidden md:flex items-center gap-3">
+              {/* Language selector */}
+              <select
+                value={i18n.language}
+                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                className="text-xs border border-border rounded-lg px-2 py-1.5 bg-background
+                           text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                aria-label="Select language"
+              >
+                <option value="en">EN</option>
+                <option value="hi">हि</option>
+                <option value="mr">म</option>
+              </select>
+              <Link to="/login" className="btn-ghost text-sm h-9 px-4">
+                {t('Login')}
+              </Link>
+              <button
+                onClick={handleGetStarted}
+                className="btn-primary text-sm h-9 px-5"
+              >
+                {t('Get Started')}
+              </button>
+            </div>
+
+            {/* Mobile menu toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg
+                         text-muted-foreground hover:bg-muted transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-110 hover:-translate-y-3 group animate-fade-in-up"
-                style={{ animationDelay: `${index * 200}ms` }}
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mb-4 transform transition-all duration-500 group-hover:rotate-12 group-hover:scale-110">
-                  <feature.icon size={24} className="text-white transition-all duration-300 group-hover:scale-125" />
+          {/* Mobile menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden pb-4 border-t border-border mt-0 pt-3 animate-slide-down">
+              <div className="flex flex-col gap-1">
+                {['#home', '#features', '#how-it-works', '#about'].map((href, i) => (
+                  <a
+                    key={href}
+                    href={href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-3 py-2 rounded-lg text-sm text-muted-foreground
+                               hover:bg-muted hover:text-foreground transition-colors"
+                  >
+                    {['Home', 'Features', 'How It Works', 'About'][i]}
+                  </a>
+                ))}
+                <div className="flex gap-2 mt-2 px-3">
+                  <Link to="/login" className="btn-ghost flex-1 justify-center text-sm h-9">
+                    {t('Login')}
+                  </Link>
+                  <button
+                    onClick={handleGetStarted}
+                    className="btn-primary flex-1 justify-center text-sm h-9"
+                  >
+                    {t('Get Started')}
+                  </button>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 transition-colors duration-300 group-hover:text-green-600">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 transition-colors duration-300 group-hover:text-gray-700">
-                  {feature.description}
-                </p>
-                <div className="w-0 h-1 bg-gradient-to-r from-green-500 to-blue-500 mt-4 transition-all duration-500 group-hover:w-full rounded-full"></div>
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* ── Hero Section ── */}
+      <section id="home" className="relative overflow-hidden py-20 sm:py-28 lg:py-32">
+        {/* Subtle warm background decoration */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full
+                          bg-primary/6 blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full
+                          bg-[#F1E8D8]/60 blur-3xl" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+            {/* Left — copy */}
+            <div className="animate-fade-in-up">
+              {/* Eyebrow */}
+              <div className="inline-flex items-center gap-2 bg-primary-light text-primary
+                              rounded-full px-4 py-1.5 text-sm font-medium mb-6">
+                <Leaf className="w-3.5 h-3.5" />
+                {t('AI-Powered Agricultural Platform')}
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6
+                             leading-[1.1] tracking-tight">
+                {t('The Right Hands')}
+                <span className="block text-primary mt-1">{t('for Every Farm.')}</span>
+              </h1>
+
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-xl">
+                {t('KrishiMent connects farmers who need skilled agricultural labour with workers looking for meaningful farm work — with transparent wages, smart matching, and full traceability.')}
+              </p>
+
+              {/* Primary CTAs */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                <button
+                  onClick={handleGetStarted}
+                  className="btn-primary h-12 px-7 text-base gap-2.5 group"
+                >
+                  {t('Find Workers')}
+                  <ArrowRight className="w-4.5 h-4.5 transition-transform duration-200 group-hover:translate-x-1" />
+                </button>
+                <Link to="/login" className="btn-outline h-12 px-7 text-base gap-2.5 group">
+                  {t('Find Farm Jobs')}
+                  <Briefcase className="w-4.5 h-4.5" />
+                </Link>
+              </div>
+
+              {/* Trust signals */}
+              <div className="flex flex-wrap gap-4">
+                {[
+                  { icon: CheckCircle, text: t('Verified Profiles') },
+                  { icon: MapPin,      text: t('Location-Based Matching') },
+                  { icon: Globe,       text: t('Marathi & Hindi Support') },
+                ].map(({ icon: Icon, text }) => (
+                  <div key={text} className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <Icon className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span>{text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — visual card group */}
+            <div className="animate-fade-in-right animation-delay-200 relative">
+              {/* Main illustration card */}
+              <div className="relative bg-card rounded-2xl border border-border shadow-lg p-6">
+                <div className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-primary" />
+                  {t('Live Connections')}
+                </div>
+
+                {/* Worker cards preview */}
+                {[
+                  { name: 'Suresh Patil',   skill: 'Wheat Harvesting',  wage: '₹650/day', dist: '2.1 km', avail: true  },
+                  { name: 'Meena Jadhav',   skill: 'Rice Transplanting', wage: '₹580/day', dist: '3.8 km', avail: true  },
+                  { name: 'Ramesh Yadav',   skill: 'Irrigation Work',   wage: '₹700/day', dist: '5.0 km', avail: false },
+                ].map((w, i) => (
+                  <div
+                    key={w.name}
+                    className={`flex items-center justify-between p-3 rounded-xl mb-2 last:mb-0
+                                border border-border bg-background/60
+                                animate-fade-in-up`}
+                    style={{ animationDelay: `${300 + i * 100}ms` }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-primary/15 text-primary
+                                      flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {w.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-foreground">{w.name}</div>
+                        <div className="text-xs text-muted-foreground">{w.skill}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-primary">{w.wage}</div>
+                      <div className="text-xs text-muted-foreground">{w.dist}</div>
+                    </div>
+                    <div className={`ml-3 w-2 h-2 rounded-full flex-shrink-0 ${w.avail ? 'bg-success' : 'bg-muted-foreground'}`} />
+                  </div>
+                ))}
+
+                {/* Stats row */}
+                <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-border">
+                  {stats.slice(0, 3).map(s => (
+                    <div key={s.label} className="text-center">
+                      <div className="text-lg font-bold text-primary">{s.number}</div>
+                      <div className="text-[11px] text-muted-foreground leading-tight">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Floating badge */}
+              <div className="absolute -top-4 -right-4 bg-[#F1E8D8] border border-border
+                              rounded-2xl px-4 py-2 shadow-md animate-float">
+                <div className="flex items-center gap-1.5 text-[#315C63]">
+                  <Star className="w-4 h-4 fill-current text-warning" />
+                  <span className="text-sm font-semibold">4.8 avg rating</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stats Banner ── */}
+      <section className="py-10 bg-primary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+            {stats.map((stat, i) => (
+              <div
+                key={stat.label}
+                className="text-center animate-fade-in-up"
+                style={{ animationDelay: `${i * 100}ms` }}
+              >
+                <div className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-1">
+                  {stat.number}
+                </div>
+                <div className="text-primary-foreground/75 text-sm font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-20 bg-white relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 animate-fade-in-left">
-              {t('about.title')}
+      {/* ── Features ── */}
+      <section id="features" className="py-20 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <div className="badge-teal mb-4 mx-auto w-fit">{t('Platform Features')}</div>
+            <h2 className="section-title text-3xl sm:text-4xl mb-4">
+              {t('featuresSection.title')}
             </h2>
-            <p className="text-lg text-gray-600 mb-6 animate-fade-in-left animation-delay-300">
-              {t('about.description')}
-            </p>
-            <div className="space-y-4 animate-fade-in-left animation-delay-600">
-              <div className="flex items-center space-x-3">
-                <Award className="text-green-600 animate-pulse" size={20} />
-                <span className="text-gray-700">{t('about.point1')}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Shield className="text-green-600 animate-pulse animation-delay-500" size={20} />
-                <span className="text-gray-700">{t('about.point2')}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Clock className="text-green-600 animate-pulse animation-delay-1000" size={20} />
-                <span className="text-gray-700">{t('about.point3')}</span>
-              </div>
-            </div>
+            <p className="section-subtitle">{t('featuresSection.subtitle')}</p>
           </div>
-          <div className="bg-gradient-to-br from-green-100 to-blue-100 rounded-2xl p-8 animate-fade-in-right transform hover:scale-105 transition-all duration-500">
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 group">
-                <Tractor className="text-green-600 mb-2 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" size={32} />
-                <h4 className="font-semibold text-gray-900">{t('about.farmerTitle')}</h4>
-                <p className="text-sm text-gray-600">{t('about.farmerDesc')}</p>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: Users,      title: t('features.connectTitle'),   desc: t('features.connectDesc'),   bg: 'bg-primary-light', ic: 'text-primary' },
+              { icon: TrendingUp, title: t('features.marketTitle'),    desc: t('features.marketDesc'),    bg: 'bg-[#F1E8D8]',     ic: 'text-[#315C63]' },
+              { icon: Shield,     title: t('features.schemesTitle'),   desc: t('features.schemesDesc'),   bg: 'bg-success-light', ic: 'text-success' },
+              { icon: Clock,      title: t('features.equipmentTitle'), desc: t('features.equipmentDesc'), bg: 'bg-info-light',    ic: 'text-info' },
+            ].map((f, i) => {
+              const Icon = f.icon;
+              return (
+                <div
+                  key={f.title}
+                  className="card p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-300
+                             animate-fade-in-up group"
+                  style={{ animationDelay: `${i * 100}ms` }}
+                >
+                  <div className={`w-11 h-11 ${f.bg} ${f.ic} rounded-xl flex items-center justify-center mb-4
+                                   group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-base font-semibold text-foreground mb-2">{f.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── How It Works ── */}
+      <section id="how-it-works" className="py-20 sm:py-24 bg-[#F1E8D8]/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <div className="badge-teal mb-4 mx-auto w-fit">{t('Simple Process')}</div>
+            <h2 className="section-title text-3xl sm:text-4xl mb-4">{t('How KrishiMent Works')}</h2>
+            <p className="section-subtitle">{t('Connect, hire, and manage agricultural workers in four easy steps.')}</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {steps.map((step, i) => (
+              <div
+                key={step.step}
+                className="relative animate-fade-in-up"
+                style={{ animationDelay: `${i * 120}ms` }}
+              >
+                {/* Connector line */}
+                {i < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-7 left-[calc(50%+2rem)] right-0
+                                  h-0.5 bg-primary/20 z-0" />
+                )}
+                <div className="relative z-10 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground
+                                  flex items-center justify-center font-bold text-xl mx-auto mb-4 shadow-md">
+                    {step.step}
+                  </div>
+                  <h3 className="text-base font-semibold text-foreground mb-2">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 group animation-delay-300">
-                <Users className="text-blue-600 mb-2 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" size={32} />
-                <h4 className="font-semibold text-gray-900">{t('about.workerTitle')}</h4>
-                <p className="text-sm text-gray-600">{t('about.workerDesc')}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Two-audience section ── */}
+      <section id="about" className="py-20 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-8">
+
+            {/* Farmer card */}
+            <div className="card p-8 animate-fade-in-left">
+              <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center mb-5">
+                <Tractor className="w-6 h-6 text-primary-foreground" />
               </div>
+              <h3 className="text-2xl font-bold text-foreground mb-2">{t('For Farmers')}</h3>
+              <p className="text-muted-foreground mb-5 leading-relaxed">{t('about.farmerDesc')}</p>
+              <ul className="space-y-2.5 mb-6">
+                {[
+                  t('Post farm jobs with location and wage'),
+                  t('Smart worker matching by skill and proximity'),
+                  t('Accept/reject applications with one tap'),
+                  t('Rate workers after completion'),
+                  t('Track equipment and government schemes'),
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-foreground">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={handleGetStarted}
+                className="btn-primary w-full justify-center h-11"
+              >
+                {t('Start as Farmer')}
+              </button>
+            </div>
+
+            {/* Worker card */}
+            <div className="card-sand p-8 animate-fade-in-right animation-delay-100">
+              <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center mb-5">
+                <Users className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <h3 className="text-2xl font-bold mb-2">{t('For Workers')}</h3>
+              <p className="text-muted-foreground mb-5 leading-relaxed">{t('about.workerDesc')}</p>
+              <ul className="space-y-2.5 mb-6">
+                {[
+                  t('Browse nearby jobs by distance and wage'),
+                  t('Apply with message and contact details'),
+                  t('Track application status in real time'),
+                  t('Manage skills and build your reputation'),
+                  t('View earnings and work history'),
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-foreground">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={handleGetStarted}
+                className="btn-primary w-full justify-center h-11"
+              >
+                {t('Find Farm Work')}
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-green-500 to-green-600 relative overflow-hidden text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 animate-fade-in-up relative z-10">
-          {t('cta.title')}
-        </h2>
-        <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto animate-fade-in-up animation-delay-300 relative z-10">
-          {t('cta.subtitle')}
-        </p>
-        <button
-          onClick={onGetStarted}
-          className="bg-white text-green-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:-translate-y-2 inline-flex items-center space-x-2 group animate-fade-in-up animation-delay-600 relative z-10"
-        >
-          <span>{t('cta.button')}</span>
-          <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-300" />
-        </button>
+      {/* ── CTA banner ── */}
+      <section className="py-16 sm:py-20 bg-primary relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/2" />
+        </div>
+        <div className="relative max-w-3xl mx-auto px-4 text-center animate-fade-in-up">
+          <h2 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
+            {t('cta.title')}
+          </h2>
+          <p className="text-primary-foreground/75 text-lg mb-8 max-w-xl mx-auto">
+            {t('cta.subtitle')}
+          </p>
+          <button
+            onClick={handleGetStarted}
+            className="inline-flex items-center gap-2.5 bg-[#F1E8D8] text-primary
+                       font-semibold px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg
+                       hover:-translate-y-0.5 transition-all duration-200 group"
+          >
+            {t('cta.button')}
+            <ArrowRight className="w-4.5 h-4.5 group-hover:translate-x-1 transition-transform duration-200" />
+          </button>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      {/* ── Footer ── */}
+      <footer className="bg-[#1C2E33] text-white/80 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">AG</span>
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                  <Leaf className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="text-lg font-bold">{t('footer.title')}</h3>
+                <span className="text-white font-bold text-base">KrishiMent</span>
               </div>
-              <p className="text-gray-400">{t('footer.desc')}</p>
+              <p className="text-sm leading-relaxed text-white/60">{t('footer.desc')}</p>
             </div>
+
+            {/* Platform */}
             <div>
-              <h4 className="font-semibold mb-4">{t('footer.platformTitle')}</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>{t('footer.platform1')}</li>
-                <li>{t('footer.platform2')}</li>
-                <li>{t('footer.platform3')}</li>
-                <li>{t('footer.platform4')}</li>
+              <h4 className="text-white font-semibold text-sm mb-3">{t('footer.platformTitle')}</h4>
+              <ul className="space-y-2 text-sm">
+                {[t('footer.platform1'), t('footer.platform2'), t('footer.platform3'), t('footer.platform4')].map((item) => (
+                  <li key={item}><span className="hover:text-white cursor-default transition-colors">{item}</span></li>
+                ))}
               </ul>
             </div>
+
+            {/* Support */}
             <div>
-              <h4 className="font-semibold mb-4">{t('footer.supportTitle')}</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>{t('footer.support1')}</li>
-                <li>{t('footer.support2')}</li>
-                <li>{t('footer.support3')}</li>
-                <li>{t('footer.support4')}</li>
+              <h4 className="text-white font-semibold text-sm mb-3">{t('footer.supportTitle')}</h4>
+              <ul className="space-y-2 text-sm">
+                {[t('footer.support1'), t('footer.support2'), t('footer.support3'), t('footer.support4')].map((item) => (
+                  <li key={item}><span className="hover:text-white cursor-default transition-colors">{item}</span></li>
+                ))}
               </ul>
             </div>
+
+            {/* Contact */}
             <div>
-              <h4 className="font-semibold mb-4">{t('footer.contactTitle')}</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>+91 98765 43210</li>
-                <li>support@smartagriculture.com</li>
+              <h4 className="text-white font-semibold text-sm mb-3">{t('footer.contactTitle')}</h4>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  +91 98765 43210
+                </li>
+                <li className="flex items-center gap-2">
+                  <Mail className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  support@krishiment.com
+                </li>
                 <li>{t('footer.address1')}</li>
                 <li>{t('footer.address2')}</li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>{t('footer.copyright')}</p>
+
+          <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-white/50">{t('footer.copyright')}</p>
+            <div className="flex items-center gap-4">
+              {['Privacy Policy', 'Terms of Service'].map((item) => (
+                <span key={item} className="text-xs text-white/50 hover:text-white cursor-default transition-colors">
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </footer>

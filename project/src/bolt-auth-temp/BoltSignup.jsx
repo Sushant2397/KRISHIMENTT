@@ -33,7 +33,7 @@ export default function Register() {
       ...profileData,
     };
 
-    console.log("FINAL SIGNUP DATA:", finalPayload);
+    // This legacy demo flow is not connected to account registration.
 
     // 👉 Call your backend / supabase signup here
 

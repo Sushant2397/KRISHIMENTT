@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, get_user_model
-from django.contrib.auth.hashers import make_password
 from ..serializers import UserSerializer, RegisterSerializer
 
 User = get_user_model()
@@ -28,9 +27,9 @@ class RegisterView(APIView):
                     'access': str(refresh.access_token),
                 }, status=status.HTTP_201_CREATED)
                 
-            except Exception as e:
+            except Exception:
                 return Response(
-                    {'error': str(e)},
+                    {'error': 'Registration could not be completed. Please try again.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         
@@ -38,43 +37,38 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     def post(self, request):
-        username = request.data.get('username')
+        identifier = request.data.get('username')
         password = request.data.get('password')
         
-        # Debug logging
-        print(f"Attempting to authenticate user: {username}")
-        
-        # Try to get the user first to check if they exist
+        if not identifier or not password:
+            return Response(
+                {'error': 'Username or email and password are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Keep the existing `username` request field while allowing users to
+        # sign in with the email address they provided during registration.
         try:
-            user = User.objects.get(username=username)
-            print(f"User found: {user.username}, checking password...")
+            user = User.objects.filter(username__iexact=identifier).first()
+            if user is None:
+                user = User.objects.filter(email__iexact=identifier).first()
             
-            # Manually check the password
-            if not user.check_password(password):
-                print("Password check failed")
+            if user is None or not user.check_password(password):
                 return Response(
-                    {'error': 'Invalid username or password'}, 
+                    {'error': 'Invalid username/email or password'},
                     status=status.HTTP_401_UNAUTHORIZED
                 )
                 
             # If password is correct, generate tokens
             refresh = RefreshToken.for_user(user)
             user_data = UserSerializer(user).data
-            print("Authentication successful")
             return Response({
                 'user': user_data,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             })
             
-        except User.DoesNotExist:
-            print(f"User {username} does not exist")
-            return Response(
-                {'error': 'Invalid username or password'}, 
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-        except Exception as e:
-            print(f"Error during authentication: {str(e)}")
+        except Exception:
             return Response(
                 {'error': 'An error occurred during authentication'}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

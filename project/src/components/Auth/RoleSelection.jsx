@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { USER_ROLES } from '../../utils/constants';
@@ -45,14 +45,6 @@ const RoleSelection = () => {
   // Check if all password requirements are met
   const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
   
-  // Debug password requirements
-  useEffect(() => {
-    console.log('Password requirements:', {
-      requirements: passwordRequirements,
-      allMet: isPasswordValid
-    });
-  }, [passwordRequirements, isPasswordValid]);
-
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -74,13 +66,11 @@ const RoleSelection = () => {
     e.preventDefault();
     
     if (!isPasswordValid) {
-      console.log('Password validation failed');
       setError('Please ensure all password requirements are met.');
       return;
     }
     
     if (formData.password !== formData.confirmPassword) {
-      console.log('Passwords do not match');
       setError('Passwords do not match.');
       return;
     }
@@ -89,8 +79,6 @@ const RoleSelection = () => {
     setError('');
     setSuccess(false);
     
-    console.log('Form data before submission:', formData);
-
     try {
       // Format the data for the backend
       const registrationData = {
@@ -103,19 +91,12 @@ const RoleSelection = () => {
         confirm_password: formData.confirmPassword
       };
       
-      console.log('Registration data being sent:', registrationData);
-      
-      // Call the register function from AuthContext
-      console.log('Calling register function...');
       const response = await register(registrationData);
-      console.log('Register response:', response);
       
-      if (response && response.success) {
-        console.log('Registration successful, setting success state');
+      if (response?.user) {
         setSuccess(true);
         // Show success message briefly before redirecting
         setTimeout(() => {
-          console.log('Redirecting to dashboard...');
           // Navigate based on role
           if (formData.role === USER_ROLES.FARMER) {
             navigate('/farmer-dashboard');
@@ -124,35 +105,16 @@ const RoleSelection = () => {
           }
         }, 1500);
       } else if (response && response.error) {
-        console.log('Registration error:', response.error);
-        // Handle specific error messages
-        if (response.details) {
-          console.error('Error details:', response.details);
-        }
         setError(response.error || 'Registration failed. Please try again.');
       } else {
-        console.log('Unknown registration error');
         setError('Registration failed. Please try again.');
       }
-    } catch (error) {
-      console.error('Registration failed:', error);
+    } catch {
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  // Debug form validation
-  useEffect(() => {
-    console.log('Form validation state:', {
-      name: !!formData.name,
-      email: !!formData.email,
-      phone: !!formData.phone,
-      role: !!formData.role,
-      isPasswordValid,
-      allValid: formData.name && formData.email && formData.phone && formData.role && isPasswordValid
-    });
-  }, [formData, isPasswordValid]);
 
   const isFormValid = formData.name && formData.email && formData.phone && formData.role && isPasswordValid;
 

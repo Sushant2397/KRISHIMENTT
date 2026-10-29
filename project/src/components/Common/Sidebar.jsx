@@ -1,416 +1,243 @@
-// import React from 'react';
-// import { 
-//   Search, 
-//   Menu, 
-//   X, 
-//   User, 
-//   Shield, 
-//   Bell, 
-//   LogOut, 
-//   Home, 
-//   FileText, 
-//   ShoppingCart, 
-//   Users, 
-//   BarChart2, 
-//   Clock,
-//   ChevronRight,
-//   ChevronDown
-// } from 'lucide-react';
-// import { Link, useLocation } from 'react-router-dom';
-// import { cn } from '@/lib/utils';
-
-// const Sidebar = ({ isOpen, onClose }) => {
-//   const location = useLocation();
-//   const [openSubmenu, setOpenSubmenu] = React.useState(null);
-
-//   const menuItems = [
-//     { 
-//       title: 'Dashboard', 
-//       icon: <Home size={20} />, 
-//       path: '/dashboard',
-//       submenu: [],
-//       description: ''
-//     },
-//     { 
-//       title: 'Government Schemes', 
-//       icon: <FileText size={20} />, 
-//       path: '/schemes',
-//       submenu: [],
-//       description: ''
-//     },
-//     { 
-//       title: 'Equipment Marketplace', 
-//       icon: <ShoppingCart size={20} />, 
-//       path: '/equipment',
-//       submenu: [
-//         { 
-//           title: 'Buy Equipment', 
-//           path: '/equipment/buy',
-//           description: 'Browse and purchase agricultural equipment'
-//         },
-//         { 
-//           title: 'Sell Equipment', 
-//           path: '/equipment/sell',
-//           description: 'List your equipment for sale'
-//         }
-//       ]
-//     },
-//     { 
-//       title: 'Worker Management', 
-//       icon: <Users size={20} />, 
-//       path: '/workers',
-//       submenu: [
-//         { 
-//           title: 'Applications', 
-//           path: '/workers/applications',
-//           description: ''
-//         },
-//         { 
-//           title: 'Post Jobs', 
-//           path: '/workers/post-job',
-//           description: ''
-//         }
-//       ]
-//     },
-//     { 
-//       title: 'Market Prices', 
-//       icon: <BarChart2 size={20} />, 
-//       path: '/market-prices',
-//       submenu: [],
-//       description: ''
-//     },
-//     { 
-//       title: 'Notifications', 
-//       icon: <Bell size={20} />, 
-//       path: '/notifications',
-//       submenu: [],
-//       description: ''
-//     },
-//     { 
-//       title: 'History', 
-//       icon: <Clock size={20} />, 
-//       path: '/history',
-//       submenu: [],
-//       description: ''
-//     },
-//   ];
-
-//   const toggleSubmenu = (index) => {
-//     setOpenSubmenu(openSubmenu === index ? null : index);
-//   };
-
-//   const isActive = (path) => {
-//     // For exact matches (like dashboard)
-//     if (path === '/dashboard') {
-//       return location.pathname === path;
-//     }
-//     // For nested routes (like /equipment/*)
-//     return location.pathname.startsWith(path);
-//   };
-
-//   return (
-//     <aside 
-//       className={cn(
-//         "fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0",
-//         isOpen ? 'translate-x-0' : '-translate-x-full'
-//       )}
-//       aria-label="Sidebar"
-//     >
-//       <div className="h-full overflow-y-auto">
-//         <div className="p-4 border-b border-gray-200">
-//           <h2 className="text-xl font-semibold text-gray-800">Admin Panel</h2>
-//         </div>
-        
-//         <nav className="p-2">
-//           <ul className="space-y-1">
-//             {menuItems.map((item, index) => (
-//               <li key={item.title}>
-//                 {item.submenu.length > 0 ? (
-//                   <>
-//                     <button
-//                       onClick={() => toggleSubmenu(index)}
-//                       className={cn(
-//                         "w-full flex items-center justify-between p-3 rounded-lg text-sm font-medium transition-colors group",
-//                         isActive(item.path) 
-//                           ? "bg-blue-50 text-blue-600 font-semibold" 
-//                           : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-//                       )}
-//                     >
-//                       <div className="flex items-center space-x-3">
-//                         <span className="text-gray-500">{item.icon}</span>
-//                         <span>{item.title}</span>
-//                       </div>
-//                       <span className={cn(
-//                         "transition-transform duration-200",
-//                         isActive(item.path) ? "text-blue-500" : "text-gray-400 group-hover:text-gray-600"
-//                       )}>
-//                         {openSubmenu === index ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-//                       </span>
-//                     </button>
-//                   </>
-//                 ) : (
-//                   <Link
-//                     to={item.path}
-//                     className={cn(
-//                       "block w-full p-3 rounded-lg text-sm font-medium transition-colors",
-//                       isActive(item.path) 
-//                         ? "bg-blue-50 text-blue-600 font-semibold" 
-//                         : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-//                     )}
-//                     onClick={onClose}
-//                   >
-//                     <div className="flex items-center space-x-3">
-//                       <span className={cn("text-gray-500", isActive(item.path) && "text-blue-500")}>
-//                         {item.icon}
-//                       </span>
-//                       <span>{item.title}</span>
-//                     </div>
-//                   </Link>
-//                 )}
-//                 {item.submenu.length > 0 && openSubmenu === index && (
-//                   <ul className="ml-8 mt-1 space-y-1">
-//                     {item.submenu.map((subItem) => (
-//                       <li key={subItem.title}>
-//                         <Link
-//                           to={subItem.path}
-//                           className={cn(
-//                             "block p-2 pl-11 text-sm rounded-md transition-colors duration-200",
-//                             isActive(subItem.path) 
-//                               ? "bg-blue-50 text-blue-600 font-medium shadow-md"
-//                               : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 hover:shadow-md"
-//                           )}
-//                           onClick={onClose}
-//                         >
-//                           {subItem.title}
-//                         </Link>
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 )}
-//               </li>
-//             ))}
-//           </ul>
-//         </nav>
-        
-//         <div className="absolute bottom-0 w-full p-4 border-t border-gray-200">
-//           <button className="flex items-center w-full p-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
-//             <LogOut size={18} className="mr-3 text-gray-500" />
-//             Logout
-//           </button>
-//         </div>
-//       </div>
-//     </aside>
-//   );
-// };
-
-// export default Sidebar;
-
-
 import React from 'react';
-import { 
-  Search, 
-  Menu, 
-  X, 
-  User, 
-  Shield, 
-  Bell, 
-  LogOut, 
-  Home, 
-  FileText, 
-  ShoppingCart, 
-  Users, 
-  BarChart2, 
+import {
+  Home,
+  FileText,
+  ShoppingCart,
+  Users,
+  BarChart2,
+  Bell,
   Clock,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Briefcase,
+  LogOut,
+  BookOpen,
+  Star,
+  DollarSign,
+  Leaf,
+  X,
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
-import { Briefcase } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = React.useState(null);
-  const { t } = useTranslation(); // Translation hook
-  const { user } = useAuth(); // Get user role
+  const { t } = useTranslation();
+  const { user, logout } = useAuth();
 
-  // Base menu items
-  const baseMenuItems = [
-    { 
-      title: t('Dashboard'), 
-      icon: <Home size={20} />, 
-      path: '/dashboard',
-      submenu: []
-    },
-    { 
-      title: t('Government Schemes'), 
-      icon: <FileText size={20} />, 
-      path: '/schemes',
-      submenu: []
-    },
-    { 
-      title: t('Equipment Marketplace'), 
-      icon: <ShoppingCart size={20} />, 
-      path: '/equipment',
+  // ─── Farmer menu ───────────────────────────────────────
+  const farmerMenu = [
+    { title: t('Dashboard'),             icon: Home,          path: '/farmer-dashboard', submenu: [] },
+    {
+      title: t('Worker Management'),     icon: Users,         path: '/workers',
       submenu: [
-        { title: t('Buy Equipment'), path: '/equipment/buy' },
-        { title: t('Sell Equipment'), path: '/equipment/sell' }
+        { title: t('Worker Applications'), path: '/worker-applications' },
+        { title: t('Post a Job'),          path: '/upload-jobs' },
       ]
     },
-    { 
-      title: t('Market Prices'), 
-      icon: <BarChart2 size={20} />, 
-      path: '/market-prices',
-      submenu: []
-    },
-    { 
-      title: t('Notifications'), 
-      icon: <Bell size={20} />, 
-      path: '/notifications',
-      submenu: []
-    },
-    { 
-      title: t('History'), 
-      icon: <Clock size={20} />, 
-      path: '/history',
-      submenu: []
-    }
-  ];
-
-  // Role-specific menu items
-  const roleSpecificItems = [];
-  
-  if (user?.role === 'labour') {
-    // For laborers: Show "Find Jobs" instead of "Worker Management"
-    roleSpecificItems.push({
-      title: t('Find Jobs'),
-      icon: <Briefcase size={20} />,
-      path: '/jobs',
-      submenu: []
-    });
-  } else if (user?.role === 'farmer') {
-    // For farmers: Show "Worker Management"
-    roleSpecificItems.push({
-      title: t('Worker Management'),
-      icon: <Users size={20} />,
-      path: '/workers',
+    {
+      title: t('Equipment Marketplace'), icon: ShoppingCart,  path: '/equipment',
       submenu: [
-        { title: t('Applications'), path: '/worker-applications' },
-        { title: t('Post Jobs'), path: '/upload-jobs' }
+        { title: t('Buy Equipment'),  path: '/equipment/buy' },
+        { title: t('Sell Equipment'), path: '/equipment/sell' },
       ]
-    });
-  }
-
-  // Combine base items with role-specific items (insert role-specific items after Equipment Marketplace)
-  const menuItems = [
-    ...baseMenuItems.slice(0, 3), // Dashboard, Government Schemes, Equipment Marketplace
-    ...roleSpecificItems, // Role-specific items
-    ...baseMenuItems.slice(3) // Market Prices, Notifications, History
+    },
+    { title: t('Government Schemes'),    icon: FileText,      path: '/schemes',        submenu: [] },
+    { title: t('Market Prices'),         icon: BarChart2,     path: '/market-prices',  submenu: [] },
+    { title: t('Notifications'),         icon: Bell,          path: '/notifications',  submenu: [] },
+    { title: t('History'),               icon: Clock,         path: '/history',        submenu: [] },
   ];
+
+  // ─── Labour menu ───────────────────────────────────────
+  const labourMenu = [
+    { title: t('Dashboard'),             icon: Home,          path: '/labour-dashboard', submenu: [] },
+    { title: t('Find Jobs'),             icon: Briefcase,     path: '/jobs',           submenu: [] },
+    { title: t('My Applications'),       icon: BookOpen,      path: '/my-applications',submenu: [] },
+    { title: t('My Skills'),             icon: Star,          path: '/skills',         submenu: [] },
+    { title: t('My Earnings'),           icon: DollarSign,    path: '/earnings',       submenu: [] },
+    {
+      title: t('Equipment Marketplace'), icon: ShoppingCart,  path: '/equipment',
+      submenu: [
+        { title: t('Buy Equipment'),  path: '/equipment/buy' },
+        { title: t('Sell Equipment'), path: '/equipment/sell' },
+      ]
+    },
+    { title: t('Government Schemes'),    icon: FileText,      path: '/schemes',        submenu: [] },
+    { title: t('Market Prices'),         icon: BarChart2,     path: '/market-prices',  submenu: [] },
+    { title: t('Notifications'),         icon: Bell,          path: '/notifications',  submenu: [] },
+  ];
+
+  const menuItems = user?.role === 'labour' ? labourMenu : farmerMenu;
 
   const toggleSubmenu = (index) => {
     setOpenSubmenu(openSubmenu === index ? null : index);
   };
 
   const isActive = (path) => {
-    if (path === '/dashboard') return location.pathname === path;
+    const exactPaths = ['/farmer-dashboard', '/labour-dashboard', '/dashboard'];
+    if (exactPaths.includes(path)) return location.pathname === path;
     return location.pathname.startsWith(path);
   };
 
+  const handleNav = () => {
+    // Close sidebar on mobile when navigating
+    if (window.innerWidth < 1024 && onClose) onClose();
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
-    <aside 
-      className={cn(
-        "fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out",
-        isOpen ? 'translate-x-0' : '-translate-x-full'
+    <>
+      {/* Mobile backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-20 bg-black/40 backdrop-blur-sm lg:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
       )}
-      aria-label="Sidebar"
-    >
-      <div className="h-full overflow-y-auto">
-        <div className="p-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">{t('Admin Panel')}</h2>
-        </div>
-        
-        <nav className="p-2">
-          <ul className="space-y-1">
-            {menuItems.map((item, index) => (
-              <li key={item.title}>
-                {item.submenu.length > 0 ? (
-                  <>
-                    <button
-                      onClick={() => toggleSubmenu(index)}
-                      className={cn(
-                        "w-full flex items-center justify-between p-3 rounded-lg text-sm font-medium transition-colors group",
-                        isActive(item.path) 
-                          ? "bg-blue-50 text-blue-600 font-semibold" 
-                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                      )}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-gray-500">{item.icon}</span>
-                        <span>{item.title}</span>
-                      </div>
-                      <span className={cn(
-                        "transition-transform duration-200",
-                        isActive(item.path) ? "text-blue-500" : "text-gray-400 group-hover:text-gray-600"
-                      )}>
-                        {openSubmenu === index ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                      </span>
-                    </button>
-                    {openSubmenu === index && (
-                      <ul className="ml-8 mt-1 space-y-1">
-                        {item.submenu.map((subItem) => (
-                          <li key={subItem.title}>
-                            <Link
-                              to={subItem.path}
-                              className={cn(
-                                "block p-2 pl-11 text-sm rounded-md transition-colors duration-200",
-                                isActive(subItem.path) 
-                                  ? "bg-blue-50 text-blue-600 font-medium shadow-md"
-                                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 hover:shadow-md"
-                              )}
-                              onClick={onClose}
-                            >
-                              {subItem.title}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </>
-                ) : (
-                  <Link
-                    to={item.path}
-                    className={cn(
-                      "block w-full p-3 rounded-lg text-sm font-medium transition-colors",
-                      isActive(item.path) 
-                        ? "bg-blue-50 text-blue-600 font-semibold" 
-                        : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                    onClick={onClose}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <span className={cn("text-gray-500", isActive(item.path) && "text-blue-500")}>
-                        {item.icon}
-                      </span>
-                      <span>{item.title}</span>
-                    </div>
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </nav>
-        
-        <div className="absolute bottom-0 w-full p-4 border-t border-gray-200">
-          <button className="flex items-center w-full p-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
-            <LogOut size={18} className="mr-3 text-gray-500" />
-            {t('Logout')}
+
+      {/* Sidebar panel */}
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-30 w-64 bg-sidebar flex flex-col',
+          'transform transition-transform duration-300 ease-in-out',
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+        aria-label="Navigation sidebar"
+      >
+        {/* Brand header */}
+        <div className="h-14 flex items-center justify-between px-4 border-b border-sidebar-border flex-shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-sand flex items-center justify-center">
+              <Leaf className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sidebar-foreground font-bold text-base tracking-tight">KrishiMent</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 flex items-center justify-center rounded-lg
+                       text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent
+                       transition-colors duration-150 lg:hidden"
+            aria-label="Close sidebar"
+          >
+            <X className="w-4 h-4" />
           </button>
         </div>
-      </div>
-    </aside>
+
+        {/* User chip */}
+        {user && (
+          <div className="mx-3 mt-3 p-3 rounded-xl bg-sidebar-accent/60 border border-sidebar-border">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-sand text-primary flex items-center justify-center
+                              text-xs font-bold flex-shrink-0">
+                {user.name?.charAt(0)?.toUpperCase() || 'U'}
+              </div>
+              <div className="min-w-0">
+                <div className="text-sidebar-foreground font-medium text-sm truncate">{user.name}</div>
+                <div className="text-sidebar-foreground/60 text-xs capitalize">
+                  {user.role === 'labour' ? t('Labourer') : t('Farmer')}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+          {menuItems.map((item, index) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+
+            if (item.submenu.length > 0) {
+              const isExpanded = openSubmenu === index;
+              const hasActiveSub = item.submenu.some(s => isActive(s.path));
+              return (
+                <div key={item.path}>
+                  <button
+                    onClick={() => toggleSubmenu(index)}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium',
+                      'transition-all duration-150',
+                      (active || hasActiveSub)
+                        ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                        : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                    )}
+                  >
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="flex-1 text-left">{item.title}</span>
+                    <ChevronDown className={cn(
+                      'w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200',
+                      isExpanded ? 'rotate-180' : ''
+                    )} />
+                  </button>
+
+                  {isExpanded && (
+                    <div className="ml-4 mt-0.5 space-y-0.5 border-l border-sidebar-border pl-3">
+                      {item.submenu.map((sub) => (
+                        <Link
+                          key={sub.path}
+                          to={sub.path}
+                          onClick={handleNav}
+                          className={cn(
+                            'block px-3 py-2 rounded-lg text-xs font-medium',
+                            'transition-colors duration-150',
+                            isActive(sub.path)
+                              ? 'bg-sidebar-primary/80 text-sidebar-primary-foreground font-semibold'
+                              : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                          )}
+                        >
+                          {sub.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={handleNav}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium',
+                  'transition-all duration-150',
+                  active
+                    ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
+                    : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                )}
+              >
+                <Icon className="w-4 h-4 flex-shrink-0" />
+                <span>{item.title}</span>
+                {active && <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-60" />}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Bottom — logout */}
+        <div className="flex-shrink-0 p-3 border-t border-sidebar-border">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+                       text-sidebar-foreground/70 hover:bg-red-500/15 hover:text-red-400
+                       transition-all duration-150"
+          >
+            <LogOut className="w-4 h-4 flex-shrink-0" />
+            <span>{t('Logout')}</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 

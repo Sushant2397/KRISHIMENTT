@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { isAxiosError } from 'axios';
 import LeafletMap from '../components/Common/LeafletMap';
 import type { RouteWaypoint } from '../components/Common/LeafletMap';
 import { jobService } from '../services/jobService';
@@ -39,6 +40,8 @@ const JobUploadPage = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const editJobId = searchParams.get('edit');
   
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -59,6 +62,7 @@ const JobUploadPage = () => {
   const [labourCount, setLabourCount] = useState(0);
   const [searchRadius, setSearchRadius] = useState(5);
   const [loading, setLoading] = useState(false);
+  const [loadingJob, setLoadingJob] = useState(false);
   const [checkingLocation, setCheckingLocation] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [showMap, setShowMap] = useState(false);
@@ -98,6 +102,37 @@ const JobUploadPage = () => {
       navigate('/dashboard');
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (!editJobId) return;
+    let active = true;
+    setLoadingJob(true);
+    jobService.getJob(editJobId)
+      .then(({ data }) => {
+        if (!active) return;
+        setFormData({
+          title: data.title || '',
+          description: data.description || '',
+          category: data.category || 'planting',
+          wage_per_day: String(data.wage_per_day ?? ''),
+          duration_days: String(data.duration_days ?? ''),
+          required_workers: String(data.required_workers ?? ''),
+          start_date: data.start_date || '',
+          end_date: data.end_date || '',
+          address: data.address || '',
+          latitude: String(data.latitude ?? ''),
+          longitude: String(data.longitude ?? ''),
+          radius_km: String(data.radius_km ?? 5),
+        });
+      })
+      .catch(() => {
+        if (active) setErrors(prev => ({ ...prev, submit: t('Could not load this job for editing.') }));
+      })
+      .finally(() => {
+        if (active) setLoadingJob(false);
+      });
+    return () => { active = false; };
+  }, [editJobId, t]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -150,8 +185,7 @@ const JobUploadPage = () => {
           
           setCheckingLocation(false);
         },
-        (error: GeolocationPositionError) => {
-          console.error('Error getting location:', error);
+        () => {
           setCheckingLocation(false);
           setErrors(prev => ({
             ...prev,
@@ -178,11 +212,6 @@ const JobUploadPage = () => {
     }
 
     try {
-      console.log('Checking labour availability with:', {
-        latitude: formData.latitude,
-        longitude: formData.longitude,
-        radius: searchRadius
-      });
       
       const response = await jobService.getLabourCount(
         formData.latitude,
@@ -190,7 +219,6 @@ const JobUploadPage = () => {
         searchRadius
       );
       
-      console.log('Labour availability response:', response.data);
       
       setLabourCount(response.data.available_labours_count);
       setAvailableLabours(response.data.labours);
@@ -201,12 +229,11 @@ const JobUploadPage = () => {
         ...prev,
         radius_km: response.data.search_radius_used
       }));
-    } catch (error: any) {
-      console.error('Error checking labour availability:', error);
-      console.error('Error details:', error.response?.data);
+    } catch (error: unknown) {
+      const responseData = isAxiosError(error) ? error.response?.data as Record<string, unknown> | undefined : undefined;
       setErrors(prev => ({
         ...prev,
-        labourCheck: t('Failed to check labour availability: ') + (error.response?.data?.error || error.message)
+        labourCheck: t('Failed to check labour availability: ') + (responseData?.error || (error instanceof Error ? error.message : ''))
       }));
     }
   };
@@ -263,7 +290,6 @@ const JobUploadPage = () => {
       newErrors.end_date = t('End date must be after start date');
     }
     
-    console.log('Validation errors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -296,21 +322,18 @@ const JobUploadPage = () => {
         radius_km: parseFloat(formData.radius_km)
       };
       
-      console.log('Creating job with data:', jobData);
-      console.log('Coordinates - Latitude:', jobData.latitude, 'Longitude:', jobData.longitude);
-      console.log('Coordinate precision - Lat decimal places:', jobData.latitude.toString().split('.')[1]?.length || 0);
-      console.log('Coordinate precision - Lon decimal places:', jobData.longitude.toString().split('.')[1]?.length || 0);
-      
-      const response = await jobService.createJob(jobData);
-      console.log('Job created successfully:', response.data);
+      if (editJobId) await jobService.updateJob(editJobId, jobData);
+      else await jobService.createJob(jobData);
       
       navigate('/dashboard');
-    } catch (error: any) {
-      console.error('Error creating job:', error);
-      console.error('Error details:', error.response?.data);
+    } catch (error: unknown) {
+      const responseData = isAxiosError(error) ? error.response?.data as Record<string, unknown> | string | undefined : undefined;
+      const serverMessage = typeof responseData === 'string'
+        ? responseData
+        : responseData?.detail || responseData?.error || Object.values(responseData || {}).flat().map(String).join(' ');
       setErrors(prev => ({
         ...prev,
-        submit: t('Failed to create job: ') + (error.response?.data?.error || error.message)
+        submit: (editJobId ? t('Failed to update job: ') : t('Failed to create job: ')) + (serverMessage || (error instanceof Error ? error.message : ''))
       }));
     } finally {
       setLoading(false);
@@ -694,7 +717,7 @@ const JobUploadPage = () => {
               </button>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || loadingJob}
                 className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center"
               >
                 {loading ? (
@@ -705,7 +728,7 @@ const JobUploadPage = () => {
                 ) : (
                   <>
                     <Upload className="h-4 w-4 mr-2" />
-                    {t('Create Job')}
+                {editJobId ? t('Save Changes') : t('Create Job')}
                   </>
                 )}
               </button>

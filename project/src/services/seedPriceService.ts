@@ -86,12 +86,16 @@ function buildAgmarkUrl(apiKey: string, filters: AgmarkFilters = {}): string {
   return `https://api.data.gov.in/resource/${AGMARK_RESOURCE_ID}?${params.toString()}`;
 }
 
-function parseArrivalDate(value: any): string {
+type AgmarkRecord = Record<string, unknown>;
+
+function parseArrivalDate(value: unknown): string {
   if (!value || typeof value !== 'string') return new Date().toISOString();
   // Common AGMARK format: DD/MM/YYYY
   const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
   if (m) {
-    const [_, dd, mm, yyyy] = m;
+    const dd = m[1];
+    const mm = m[2];
+    const yyyy = m[3];
     const d = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
     if (!isNaN(d.getTime())) return d.toISOString();
   }
@@ -108,10 +112,10 @@ export async function fetchAgmarkPrices(apiKey: string, filters: AgmarkFilters =
     const errText = await res.text().catch(() => '');
     throw new Error(`AGMARK request failed: ${res.status} ${errText}`);
   }
-  const json = await res.json();
-  const records = json?.records ?? [];
+  const json = await res.json() as { records?: AgmarkRecord[] };
+  const records = json.records ?? [];
   const now = new Date();
-  const mapped: SeedPrice[] = records.map((r: any, idx: number) => {
+  const mapped: SeedPrice[] = records.map((r, idx) => {
     const priceNum = Number(r?.modal_price ?? r?.max_price ?? r?.min_price ?? 0);
     const prevNum = Number(r?.min_price ?? priceNum);
     const price = isFinite(priceNum) ? priceNum : 0;
@@ -119,10 +123,10 @@ export async function fetchAgmarkPrices(apiKey: string, filters: AgmarkFilters =
     const updatedAt = r?.arrival_date ? parseArrivalDate(r.arrival_date) : now.toISOString();
     return {
       id: `${updatedAt}-${idx}-${r?.market ?? ''}`,
-      crop: r?.commodity ?? 'Unknown',
-      variety: r?.variety ?? '—',
-      state: r?.state ?? r?.state_keyword ?? '—',
-      market: r?.market ?? '—',
+      crop: typeof r.commodity === 'string' ? r.commodity : 'Unknown',
+      variety: typeof r.variety === 'string' ? r.variety : '—',
+      state: typeof r.state === 'string' ? r.state : typeof r.state_keyword === 'string' ? r.state_keyword : '—',
+      market: typeof r.market === 'string' ? r.market : '—',
       unit: '₹/quintal',
       price,
       prevPrice: prev,
@@ -137,12 +141,15 @@ export function startPollingAgmark(
   callback: (data: SeedPrice[]) => void,
   filters: AgmarkFilters = {},
   intervalMs = 60000,
+  onError?: (error: Error) => void,
 ) {
   let cancelled = false;
   const tick = async () => {
     try {
       const data = await fetchAgmarkPrices(apiKey, filters);
       if (!cancelled) callback(data);
+    } catch (error) {
+      if (!cancelled) onError?.(error instanceof Error ? error : new Error('Market data request failed'));
     } finally {
       if (!cancelled) setTimeout(tick, intervalMs);
     }

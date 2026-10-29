@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Phone, Mail, MapPin, Send } from 'lucide-react';
 
 const ContactModal = ({ isOpen, onClose }) => {
+  const [submitMessage, setSubmitMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,9 +19,7 @@ const ContactModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: Handle form submission
-    console.log('Contact form submitted:', formData);
-    onClose();
+    setSubmitMessage('This contact form is not connected yet. Your message was not sent.');
   };
 
   if (!isOpen) return null;
@@ -93,6 +92,12 @@ const ContactModal = ({ isOpen, onClose }) => {
                     required
                   />
                 </div>
+
+                {submitMessage && (
+                  <p role="alert" className="text-sm text-amber-700" aria-live="polite">
+                    {submitMessage}
+                  </p>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">

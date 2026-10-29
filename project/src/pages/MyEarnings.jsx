@@ -92,21 +92,21 @@ const MyEarnings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-2 border-border border-t-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 min-h-full">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-full">
+      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
-            <DollarSign className="h-8 w-8 text-green-600 mr-3" />
+          <h1 className="mb-2 flex items-center text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            <DollarSign className="mr-3 h-8 w-8 text-primary" />
             {t('My Earnings')}
           </h1>
-          <p className="text-gray-600">{t('Track your job earnings and payment history')}</p>
+          <p className="text-muted-foreground">{t('Track your job earnings and payment history')}</p>
         </div>
 
         {/* Summary Cards */}
@@ -115,7 +115,7 @@ const MyEarnings = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white"
+              className="rounded-2xl border border-primary/20 bg-primary p-6 text-primary-foreground shadow-sm"
             >
               <div className="flex items-center justify-between mb-4">
                 <Wallet className="w-8 h-8 opacity-90" />
@@ -130,7 +130,7 @@ const MyEarnings = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white"
+              className="rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm"
             >
               <div className="flex items-center justify-between mb-4">
                 <CheckCircle className="w-8 h-8 opacity-90" />
@@ -147,7 +147,7 @@ const MyEarnings = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg p-6 text-white"
+              className="rounded-2xl border border-border bg-[#F1E8D8]/65 p-6 text-foreground shadow-sm"
             >
               <div className="flex items-center justify-between mb-4">
                 <Clock className="w-8 h-8 opacity-90" />
@@ -162,7 +162,7 @@ const MyEarnings = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white"
+              className="rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm"
             >
               <div className="flex items-center justify-between mb-4">
                 <TrendingUp className="w-8 h-8 opacity-90" />
@@ -182,29 +182,29 @@ const MyEarnings = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl shadow-lg p-6 mb-8"
+            className="mb-8 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6"
           >
-            <h2 className="text-xl font-bold text-gray-900 mb-6">{t('Monthly Earnings (Last 6 Months)')}</h2>
+            <h2 className="mb-6 text-lg font-semibold text-foreground">{t('Monthly Earnings (Last 6 Months)')}</h2>
             <div className="space-y-4">
               {summary.monthly_earnings.map((month, index) => {
                 const maxEarning = Math.max(...summary.monthly_earnings.map(m => m.total));
                 const percentage = maxEarning > 0 ? (month.total / maxEarning) * 100 : 0;
                 return (
                   <div key={index} className="flex items-center gap-4">
-                    <div className="w-32 text-sm text-gray-600">{month.month}</div>
+                    <div className="w-24 shrink-0 text-sm text-muted-foreground sm:w-32">{month.month}</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-gray-900">
+                        <span className="text-sm font-medium text-foreground">
                           {formatCurrency(month.total)}
                         </span>
-                        <span className="text-xs text-gray-500">{month.jobs} {t('jobs')}</span>
+                        <span className="text-xs text-muted-foreground">{month.jobs} {t('jobs')}</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${percentage}%` }}
                           transition={{ delay: index * 0.1, duration: 0.5 }}
-                          className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full"
+                          className="h-full rounded-full bg-primary"
                         />
                       </div>
                     </div>
@@ -219,11 +219,11 @@ const MyEarnings = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-lg p-6"
+          className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">{t('Earnings History')}</h2>
-            <span className="text-sm text-gray-600">{earnings.length} {t('records')}</span>
+            <h2 className="text-lg font-semibold text-foreground">{t('Earnings History')}</h2>
+            <span className="text-sm text-muted-foreground">{earnings.length} {t('records')}</span>
           </div>
 
           {earnings.length === 0 ? (
@@ -252,23 +252,23 @@ const MyEarnings = () => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                      className="border-b border-border/70 transition-colors hover:bg-[#F1E8D8]/25"
                     >
                       <td className="py-4 px-4">
-                        <div className="font-medium text-gray-900">{earning.job_title}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-medium text-foreground">{earning.job_title}</div>
+                        <div className="text-sm text-muted-foreground">
                           {formatDate(earning.job_start_date)} - {formatDate(earning.job_end_date)}
                         </div>
                       </td>
-                      <td className="py-4 px-4 text-gray-700">{earning.farmer_name}</td>
+                      <td className="py-4 px-4 text-muted-foreground">{earning.farmer_name}</td>
                       <td className="py-4 px-4">
-                        <div className="text-gray-700">{earning.days_worked} {t('days')}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-foreground">{earning.days_worked} {t('days')}</div>
+                        <div className="text-sm text-muted-foreground">
                           {formatCurrency(earning.wage_per_day)}/{t('day')}
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <div className="font-bold text-gray-900 text-lg">
+                        <div className="text-lg font-bold text-foreground">
                           {formatCurrency(earning.total_amount)}
                         </div>
                       </td>
@@ -282,7 +282,7 @@ const MyEarnings = () => {
                           {earning.payment_status}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-sm text-gray-600">
+                      <td className="py-4 px-4 text-sm text-muted-foreground">
                         {earning.payment_date ? formatDate(earning.payment_date) : '-'}
                       </td>
                     </motion.tr>

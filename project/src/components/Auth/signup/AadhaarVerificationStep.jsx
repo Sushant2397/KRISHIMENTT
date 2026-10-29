@@ -22,7 +22,6 @@ export function AadhaarVerificationStep({ onNext, onBack }) {
 
   const onSubmit = (data) => {
     // DEMO ONLY - In production, this would verify with Aadhaar API
-    console.log('Aadhaar verification (DEMO):', data);
     onNext(data);
   };
 

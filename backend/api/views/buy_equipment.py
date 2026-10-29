@@ -161,8 +161,6 @@ from api.models import Equipment, Inquiry
 @api_view(['POST'])
 def buy_equipment(request):
     try:
-        print("Payload:", request.data)  # Log incoming data
-
         equipment_id = int(request.data.get('equipment_id'))
         buyer_name = request.data.get('buyer_name')
         buyer_email = request.data.get('buyer_email')
@@ -220,6 +218,5 @@ def buy_equipment(request):
 
     except Equipment.DoesNotExist:
         return Response({"detail": "Equipment not found"}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        print("Error sending inquiry:", str(e))  # Log full error
+    except Exception:
         return Response({"detail": "Failed to send inquiry"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

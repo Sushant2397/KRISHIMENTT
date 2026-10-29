@@ -336,7 +336,9 @@ import { Input } from '../Common/ui/input';
 import { Label } from '../Common/ui/label';
 import { Textarea } from '../Common/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../Common/ui/select';
-import { Upload, X, Tractor, Droplet, Sprout, Warehouse, Wrench, MapPin, IndianRupee, Plus } from 'lucide-react';
+import { Upload, X, Tractor, Droplet, Sprout, Warehouse, Wrench, Plus } from 'lucide-react';
+import API from '../../services/api';
+import { isAxiosError } from 'axios';
 
 interface ProductFormProps {
   open: boolean;
@@ -367,6 +369,7 @@ export function ProductForm({ open, onOpenChange, onProductAdded }: ProductFormP
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -398,30 +401,16 @@ export function ProductForm({ open, onOpenChange, onProductAdded }: ProductFormP
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError('');
     
     try {
-      const tokens = localStorage.getItem('tokens');
-      if (!tokens) {
-        alert(t('login_required'));
-        return;
-      }
-
-      const parsedTokens = JSON.parse(tokens);
-      const accessToken = parsedTokens.access;
-
       const formDataToSend = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
       });
       if (images.length > 0) formDataToSend.append('image', images[0]);
 
-      const response = await fetch('http://localhost:8000/api/equipment/', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${accessToken}` },
-        body: formDataToSend,
-      });
-
-      if (!response.ok) throw new Error('Failed to create listing');
+      await API.post('/equipment/', formDataToSend);
 
       onOpenChange(false);
       setFormData({
@@ -436,8 +425,9 @@ export function ProductForm({ open, onOpenChange, onProductAdded }: ProductFormP
       setPreviews([]);
       if (onProductAdded) onProductAdded();
       alert(t('success_message'));
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      const responseData = isAxiosError(error) ? error.response?.data as Record<string, unknown> | string | undefined : undefined;
+      setSubmitError(typeof responseData === 'string' ? responseData : responseData?.detail || responseData?.error || t('Failed to create listing. Please try again.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -452,6 +442,7 @@ export function ProductForm({ open, onOpenChange, onProductAdded }: ProductFormP
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {submitError && <p className="rounded-lg bg-destructive-light px-3 py-2 text-sm text-destructive" role="alert">{submitError}</p>}
           {/* Image Upload */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-700">{t('equipment_photos')}</Label>

@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from django.db.models import Q, Count
 from django.utils import timezone
 from decimal import Decimal
@@ -35,7 +36,6 @@ def find_available_labours(job_lat, job_lon, radius_km, required_workers):
     current_radius = float(radius_km)
     available_labours = []  # Initialize the list
     
-    print(f"Searching for labours at {job_lat}, {job_lon} with radius {radius_km}km")
     
     while current_radius <= max_radius:
         # Get all available labours
@@ -46,7 +46,6 @@ def find_available_labours(job_lat, job_lon, radius_km, required_workers):
             longitude__isnull=False
         )
         
-        print(f"Found {labours.count()} total labours in database")
         
         # Filter by distance for current radius
         current_radius_labours = []
@@ -61,7 +60,6 @@ def find_available_labours(job_lat, job_lon, radius_km, required_workers):
                     'distance': distance
                 })
         
-        print(f"Found {len(current_radius_labours)} labours within {current_radius}km")
         
         # Update the main list with current radius results
         available_labours = current_radius_labours
@@ -74,7 +72,6 @@ def find_available_labours(job_lat, job_lon, radius_km, required_workers):
         current_radius += 5
     
     # Return all available labours if we can't find enough
-    print(f"Final result: {len(available_labours)} labours within {current_radius}km")
     return available_labours, current_radius
 
 
@@ -106,13 +103,11 @@ class JobViewSet(viewsets.ModelViewSet):
         return Job.objects.none()
     
     def perform_create(self, serializer):
-        print(f"perform_create called with user: {self.request.user}")
-        print(f"User role: {getattr(self.request.user, 'role', 'No role')}")
-        print(f"Serializer data: {serializer.validated_data}")
-        
+        if self.request.user.role != 'farmer':
+            raise PermissionDenied('Only farmers can post jobs.')
+
         try:
             job = serializer.save()
-            print(f"Job created successfully: {job.id}")
             
             # Find available labours and send notifications
             available_labours, final_radius = find_available_labours(
@@ -120,13 +115,11 @@ class JobViewSet(viewsets.ModelViewSet):
                 job.radius_km, job.required_workers
             )
             
-            print(f"Found {len(available_labours)} available labours")
             
             # Update job radius if it was expanded
             if final_radius != job.radius_km:
                 job.radius_km = final_radius
                 job.save()
-                print(f"Updated job radius to {final_radius}km")
             
             # Send notifications to available labours
             for labour_data in available_labours:
@@ -141,10 +134,18 @@ class JobViewSet(viewsets.ModelViewSet):
                            f"Distance: {distance:.1f}km away.",
                     job=job
                 )
-                print(f"Notification sent to {labour.first_name}")
-        except Exception as e:
-            print(f"Error in perform_create: {e}")
+        except Exception:
             raise
+
+    def update(self, request, *args, **kwargs):
+        if request.user.role != 'farmer':
+            raise PermissionDenied('Only farmers can edit jobs.')
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        if request.user.role != 'farmer':
+            raise PermissionDenied('Only farmers can delete jobs.')
+        return super().destroy(request, *args, **kwargs)
     
     @action(detail=True, methods=['post'])
     def apply(self, request, pk=None):
@@ -188,7 +189,7 @@ class JobViewSet(viewsets.ModelViewSet):
                     )
             except (ValueError, TypeError) as e:
                 # If distance calculation fails, log but don't block application
-                print(f"Distance calculation error: {e}")
+                pass
         
         # Create application
         application_data = {
@@ -200,18 +201,12 @@ class JobViewSet(viewsets.ModelViewSet):
         
         serializer = JobApplicationSerializer(data=application_data, context={'request': request, 'job': job})
         
-        # Debug: Print what we're sending
-        print(f"Application data: {application_data}")
-        print(f"Serializer is_valid: {serializer.is_valid()}")
-        if not serializer.is_valid():
-            print(f"Serializer errors: {serializer.errors}")
         if serializer.is_valid():
             try:
                 application = serializer.save()
-            except Exception as e:
-                print(f"Error saving application: {e}")
+            except Exception:
                 return Response(
-                    {'error': f'Failed to create application: {str(e)}'}, 
+                    {'error': 'Failed to create application. Please try again.'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
             
@@ -230,9 +225,9 @@ class JobViewSet(viewsets.ModelViewSet):
                 job_application=application
             )
             
-            except Exception as e:
-                print(f"Error creating notification: {e}")
+            except Exception:
                 # Don't fail the application if notification fails
+                pass
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
@@ -337,7 +332,6 @@ class JobViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def nearby(self, request):
         """Get nearby jobs for labours"""
-        print(f"Nearby jobs request from user: {request.user.email}, role: {request.user.role}")
         
         if not request.user.is_authenticated:
             return Response(
@@ -366,11 +360,9 @@ class JobViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
         
-        print(f"Searching for jobs near user location: {user_lat}, {user_lon}")
         
         # Get open jobs
         jobs = Job.objects.filter(status='open')
-        print(f"Found {jobs.count()} open jobs in database")
         
         nearby_jobs = []
         
@@ -379,15 +371,12 @@ class JobViewSet(viewsets.ModelViewSet):
                 user_lat, user_lon,
                 job.latitude, job.longitude
             )
-            print(f"Job {job.id} ({job.title}) is {distance:.1f}km away (radius: {job.radius_km}km)")
             
             if distance <= float(job.radius_km):
                 job_data = JobSerializer(job).data
                 job_data['distance_from_user'] = round(distance, 1)
                 nearby_jobs.append(job_data)
-                print(f"Added job {job.id} to nearby jobs")
         
-        print(f"Found {len(nearby_jobs)} nearby jobs")
         
         # Sort by distance
         nearby_jobs.sort(key=lambda x: x['distance_from_user'])
@@ -397,7 +386,6 @@ class JobViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def labour_count(self, request):
         """Get count of available labours in area (for farmers)"""
-        print(f"Labour count request from user: {request.user.email}, role: {request.user.role}")
         
         if not request.user.is_authenticated:
             return Response(
@@ -415,7 +403,6 @@ class JobViewSet(viewsets.ModelViewSet):
         lon = request.query_params.get('longitude')
         radius = request.query_params.get('radius', 5)
         
-        print(f"Labour count request params: lat={lat}, lon={lon}, radius={radius}")
         
         if not lat or not lon:
             return Response(
@@ -561,16 +548,11 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         # Only allow status updates
         new_status = request.data.get('status')
         if new_status:
-            # Validate status transition
-            if instance.status == 'pending' and new_status == 'completed':
+            # Accept/reject decisions belong to the farmer action endpoint. Both
+            # parties may confirm completion only after the farmer accepted it.
+            if new_status != 'completed' or instance.status != 'accepted':
                 return Response(
-                    {'error': 'Cannot mark pending application as completed. Please accept it first.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            
-            if instance.status == 'rejected' and new_status == 'completed':
-                return Response(
-                    {'error': 'Cannot mark rejected application as completed.'},
+                    {'error': 'Only accepted applications can be marked completed.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
@@ -603,12 +585,20 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
                             job_end_date=job.end_date,
                             payment_status='pending'
                         )
-                except Exception as e:
+                except Exception:
                     # Log error but don't fail the status update
-                    print(f"Error creating earning record: {e}")
+                    pass
             
             serializer = self.get_serializer(instance)
             return Response(serializer.data)
         
         # For other fields, use default update
         return super().update(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        if self.request.user.role != 'labour':
+            raise PermissionDenied('Only labours can create job applications.')
+        job = serializer.validated_data.get('job')
+        if not job or job.status != 'open':
+            raise PermissionDenied('Applications can only be created for open jobs.')
+        serializer.save(labour=self.request.user)

@@ -4,7 +4,17 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import jobService from '../services/jobService';
 import RatingModal from '../components/Common/RatingModal';
-import { Users, Clock, Calendar, MapPin, CheckCircle, XCircle, MessageSquare, Phone, Star, CheckCircle2 } from 'lucide-react';
+import {
+  Users, Clock, Calendar, MapPin, CheckCircle, XCircle, MessageSquare,
+  Phone, Star, CheckCircle2, Briefcase, Inbox, Loader2, ChevronRight
+} from 'lucide-react';
+
+const STATUS_CONFIG = {
+  pending:   { label: 'Pending',   className: 'badge-warning' },
+  accepted:  { label: 'Accepted',  className: 'badge-success' },
+  rejected:  { label: 'Rejected',  className: 'badge-destructive' },
+  completed: { label: 'Completed', className: 'badge-info' },
+};
 
 const WorkerApplications = () => {
   const { t } = useTranslation();
@@ -81,7 +91,9 @@ const WorkerApplications = () => {
     }
   };
 
-  const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
+  const formatDate = (dateString) => new Date(dateString).toLocaleDateString('en-IN', {
+    day: 'numeric', month: 'short', year: 'numeric'
+  });
 
   const handleOpenRatingModal = (application) => {
     setSelectedApplication(application);
@@ -89,199 +101,233 @@ const WorkerApplications = () => {
   };
 
   const handleRatingSubmitted = () => {
-    if (selectedJob) {
-      loadApplications(selectedJob);
-    }
+    if (selectedJob) loadApplications(selectedJob);
   };
 
-  const renderStars = (rating) => {
-    return (
-      <div className="flex items-center gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-4 h-4 ${
-              star <= rating
-                ? 'fill-yellow-400 text-yellow-400'
-                : 'text-gray-300'
-            }`}
-          />
-        ))}
-        <span className="ml-1 text-sm text-gray-600">({rating}/5)</span>
-      </div>
-    );
-  };
+  const renderStars = (rating) => (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`w-4 h-4 ${star <= rating ? 'fill-warning text-warning' : 'text-muted-foreground'}`}
+        />
+      ))}
+      <span className="ml-1 text-xs text-muted-foreground">({rating}/5)</span>
+    </div>
+  );
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      <div className="flex items-center justify-center min-h-64">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-sm text-muted-foreground">{t('Loading applications...')}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 min-h-full">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
-            <Users className="h-8 w-8 text-blue-600 mr-3" />
-            {t('Worker Applications')}
-          </h1>
-          <p className="text-gray-600">{t('Manage job applications from workers')}</p>
-        </div>
+    <div className="space-y-6">
+      {/* Page header */}
+      <div>
+        <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2.5">
+          <Users className="w-6 h-6 text-primary" />
+          {t('Worker Applications')}
+        </h1>
+        <p className="text-muted-foreground text-sm mt-0.5">
+          {t('Manage job applications from workers')}
+        </p>
+      </div>
 
-        {jobs.length === 0 ? (
-          <div className="bg-white rounded-xl shadow p-8 text-center">
-            <p className="text-gray-600">{t('You have not posted any jobs yet.')}</p>
+      {/* Empty — no jobs */}
+      {jobs.length === 0 ? (
+        <div className="card">
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <Briefcase className="w-7 h-7" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground mb-1">{t('No jobs posted yet')}</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              {t('You have not posted any jobs yet.')}
+            </p>
+            <button
+              onClick={() => navigate('/upload-jobs')}
+              className="btn-primary h-10 px-6 gap-2"
+            >
+              {t('Post a Job')}
+            </button>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Jobs list */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('My Jobs')}</h2>
-                <div className="space-y-3">
-                  {jobs.map(job => (
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Jobs sidebar */}
+          <div className="lg:col-span-1">
+            <div className="card p-4">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 px-1">
+                {t('My Jobs')}
+              </h2>
+              <div className="space-y-1.5">
+                {jobs.map(job => {
+                  const isSelected = selectedJob === job.id;
+                  return (
                     <button
                       key={job.id}
                       onClick={() => setSelectedJob(job.id)}
-                      className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${
-                        selectedJob === job.id
-                          ? 'border-indigo-600 bg-indigo-50'
-                          : 'border-gray-200 hover:border-indigo-300'
-                      }`}
+                      className={`w-full text-left px-3 py-3 rounded-xl border transition-all duration-200
+                                  ${isSelected
+                                    ? 'border-primary/30 bg-primary-light text-primary font-semibold'
+                                    : 'border-border hover:border-primary/20 hover:bg-muted/40'
+                                  }`}
                     >
-                      <div className="font-semibold text-gray-900">{job.title}</div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm font-medium truncate">{job.title}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">
                         {job.applications_count || 0} {t('applications')}
                       </div>
                     </button>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             </div>
+          </div>
 
-            {/* Applications list */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('Applications')}</h2>
-                {applications.length === 0 ? (
-                  <p className="text-gray-600">{t('No applications yet for this job.')}</p>
-                ) : (
-                  <div className="space-y-4">
-                    {applications.map(app => (
-                      <div key={app.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          {/* Applications panel */}
+          <div className="lg:col-span-2">
+            <div className="card">
+              <div className="p-5 border-b border-border">
+                <h2 className="text-base font-semibold text-foreground">{t('Applications')}</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {applications.length} {t('total')}
+                </p>
+              </div>
+
+              {applications.length === 0 ? (
+                <div className="empty-state py-12">
+                  <div className="empty-state-icon">
+                    <Inbox className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-base font-semibold text-foreground mb-1">{t('No applications yet')}</h3>
+                  <p className="text-sm text-muted-foreground">{t('No applications yet for this job.')}</p>
+                </div>
+              ) : (
+                <div className="p-4 space-y-3">
+                  {applications.map(app => {
+                    const status = app.status || 'pending';
+                    const statusCfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+                    return (
+                      <div
+                        key={app.id}
+                        className="border border-border rounded-xl p-4 hover:shadow-sm
+                                   transition-all duration-200"
+                      >
+                        {/* Header */}
                         <div className="flex items-start justify-between mb-3">
                           <div>
-                            <div className="font-semibold text-gray-900">{app.labour_name}</div>
-                            <div className="text-sm text-gray-600 mt-1">
-                              <span className="capitalize">{app.job_title}</span>
-                            </div>
+                            <div className="font-semibold text-sm text-foreground">{app.labour_name}</div>
+                            <div className="text-xs text-muted-foreground mt-0.5 capitalize">{app.job_title}</div>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            app.status === 'accepted'
-                              ? 'bg-green-100 text-green-800'
-                              : app.status === 'rejected'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {app.status || 'pending'}
+                          <span className={`badge ${statusCfg.className} capitalize`}>
+                            {statusCfg.label}
                           </span>
                         </div>
 
+                        {/* Message */}
                         {app.message && (
-                          <div className="mb-3 text-sm text-gray-600">
-                            <MessageSquare className="inline h-4 w-4 mr-1" />
-                            {app.message}
+                          <div className="mb-3 p-2.5 rounded-lg bg-muted/40 flex gap-2 text-sm text-muted-foreground">
+                            <MessageSquare className="w-4 h-4 flex-shrink-0 mt-0.5 text-primary" />
+                            <span className="text-xs leading-relaxed">{app.message}</span>
                           </div>
                         )}
 
-                        <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 mb-3">
-                          <div className="flex items-center">
-                            <Phone className="h-4 w-4 mr-2" />
+                        {/* Meta */}
+                        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mb-3">
+                          <div className="flex items-center gap-1.5">
+                            <Phone className="w-3.5 h-3.5" />
                             {app.contact_phone || app.labour_phone || 'N/A'}
                           </div>
-                          <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-2" />
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5" />
                             {app.applied_at ? formatDate(app.applied_at) : 'N/A'}
                           </div>
                         </div>
 
-                        {/* Rating display for completed jobs */}
-                        {app.status === 'completed' && app.has_rating && app.rating && (
-                          <div className="mb-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <div className="text-sm font-medium text-gray-700 mb-1">
-                                  {t('Your Rating')}
-                                </div>
-                                {renderStars(app.rating.rating)}
-                              </div>
-                              {app.rating.comment && (
-                                <div className="text-sm text-gray-600 italic">
-                                  "{app.rating.comment}"
-                                </div>
-                              )}
-                            </div>
+                        {/* Rating display */}
+                        {status === 'completed' && app.has_rating && app.rating && (
+                          <div className="mb-3 p-3 rounded-xl bg-success-light border border-success/20">
+                            <div className="text-xs font-medium text-success mb-1.5">{t('Your Rating')}</div>
+                            {renderStars(app.rating.rating)}
+                            {app.rating.comment && (
+                              <p className="text-xs text-muted-foreground mt-1.5 italic">
+                                "{app.rating.comment}"
+                              </p>
+                            )}
                           </div>
                         )}
 
-                        {/* Action buttons */}
-                        {app.status === 'pending' && (
-                          <div className="flex space-x-2">
+                        {/* Actions */}
+                        {status === 'pending' && (
+                          <div className="flex gap-2">
                             <button
                               onClick={() => handleResponse(app.id, 'accepted')}
                               disabled={processing === app.id}
-                              className="flex-1 flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                              className="flex-1 btn-primary h-8 text-xs gap-1.5 disabled:opacity-60"
                             >
-                              <CheckCircle className="h-4 w-4 mr-2" />
+                              {processing === app.id
+                                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                : <CheckCircle className="w-3.5 h-3.5" />
+                              }
                               {t('Accept')}
                             </button>
                             <button
                               onClick={() => handleResponse(app.id, 'rejected')}
                               disabled={processing === app.id}
-                              className="flex-1 flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                              className="flex-1 h-8 px-4 rounded-xl text-xs font-medium gap-1.5
+                                         bg-destructive text-destructive-foreground
+                                         hover:bg-destructive/90 transition-colors duration-150
+                                         flex items-center justify-center disabled:opacity-60"
                             >
-                              <XCircle className="h-4 w-4 mr-2" />
+                              <XCircle className="w-3.5 h-3.5" />
                               {t('Reject')}
                             </button>
                           </div>
                         )}
 
-                        {/* Mark as completed button for accepted applications */}
-                        {app.status === 'accepted' && (
+                        {status === 'accepted' && (
                           <button
                             onClick={() => handleMarkCompleted(app.id)}
                             disabled={processing === app.id}
-                            className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                            className="w-full btn-primary h-8 text-xs gap-1.5 disabled:opacity-60"
                           >
-                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            {processing === app.id
+                              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              : <CheckCircle2 className="w-3.5 h-3.5" />
+                            }
                             {t('Mark as Completed')}
                           </button>
                         )}
 
-                        {/* Rate button for completed jobs without rating */}
-                        {app.status === 'completed' && !app.has_rating && (
+                        {status === 'completed' && !app.has_rating && (
                           <button
                             onClick={() => handleOpenRatingModal(app)}
-                            className="w-full flex items-center justify-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                            className="w-full h-8 px-4 rounded-xl text-xs font-medium gap-1.5
+                                       bg-warning text-warning-foreground
+                                       hover:bg-warning/90 transition-colors duration-150
+                                       flex items-center justify-center"
                           >
-                            <Star className="h-4 w-4 mr-2 fill-current" />
+                            <Star className="w-3.5 h-3.5 fill-current" />
                             {t('Rate Performance')}
                           </button>
                         )}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Rating Modal */}
       <RatingModal
         isOpen={ratingModalOpen}
         onClose={() => setRatingModalOpen(false)}
@@ -293,4 +339,3 @@ const WorkerApplications = () => {
 };
 
 export default WorkerApplications;
-
